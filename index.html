@@ -180,16 +180,60 @@
       });
     }
 
-    // SEARCH
-    document.getElementById('searchInput').addEventListener('keyup', (e)=>{
-      const q = e.target.value.toLowerCase();
-      const list = document.getElementById('list');
-      list.querySelectorAll('.item').forEach((it, i)=>{
-        const f = geoData.features[i];
-        const txt = JSON.stringify(f.properties).toLowerCase();
-        if(!q || txt.includes(q)) it.style.display='block'; else it.style.display='none';
-      });
-    });
+    // SEARCH - substitua o handler antigo por este para geocodificar itens encontrados sem coords
+document.getElementById('searchInput').addEventListener('keyup', async (e) => {
+  const q = e.target.value.trim().toLowerCase();
+  const list = document.getElementById('list');
+  const items = Array.from(list.querySelectorAll('.item'));
+
+  // feedback visual simples
+  const searchInput = document.getElementById('searchInput');
+  let originalPlaceholder = searchInput.placeholder;
+  if(q) {
+    searchInput.placeholder = 'Pesquisando e geocodificando (se necessário)...';
+    searchInput.disabled = true;
+  }
+
+  // encontra índices de features que batem com a query
+  const matchedIndices = [];
+  items.forEach((it, i) => {
+    const f = geoData.features[i];
+    const txt = JSON.stringify(f.properties || {}).toLowerCase();
+    if(!q || txt.includes(q)) {
+      it.style.display = 'block';
+      matchedIndices.push(i);
+    } else {
+      it.style.display = 'none';
+    }
+  });
+
+  // Para cada item que bateu e não tem geometry, tentar geocodificar (com delay)
+  if(q && matchedIndices.length) {
+    for (let idx of matchedIndices) {
+      const f = geoData.features[idx];
+      if (!f.geometry || !f.geometry.coordinates) {
+        // tenta geocodificar, com delay para respeitar limites
+        const ok = await geocodeFeature(f);
+        await new Promise(r => setTimeout(r, 1200)); // 1.2s entre chamadas
+        // se geocodificou com sucesso, atualizamos a lista item visível e os marcadores
+        if (ok) {
+          // atualizar sidebar item (para evitar re-render completo)
+          // re-criamos a lista inteira para manter consistência
+          populateSidebar();
+          refreshMarkers();
+        }
+      }
+    }
+  }
+
+  // após geocodificação, atualiza marcadores (caso novas coords apareçam)
+  refreshMarkers();
+
+  // desbloquear input e restaurar placeholder
+  searchInput.disabled = false;
+  searchInput.placeholder = originalPlaceholder;
+});
+
 
     // Geocoding (lazy, using Nominatim, with caching in localStorage)
     async function geocodeFeature(f){
