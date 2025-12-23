@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<title>Mapa Interativo Cultural</title>
+<title>Mapeamento Cultural</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <!-- Leaflet -->
@@ -14,13 +14,19 @@ html,body{
   margin:0;
   font-family:Arial,sans-serif;
 }
-#app{width:100%;height:100%;position:relative}
+
+#app{
+  position:relative;
+  width:100%;
+  height:100%;
+}
 
 /* SIDEBAR */
 #sidebar{
   position:absolute;
   left:0;top:0;bottom:0;
-  width:90vw;max-width:900px;
+  width:90vw;
+  max-width:900px;
   background:#fff;
   padding:12px;
   overflow:auto;
@@ -32,13 +38,16 @@ html,body{
 /* MAPA */
 #map{
   position:absolute;
-  top:0;bottom:0;right:0;
+  top:0;
+  bottom:0;
+  right:0;
   left:calc(min(90vw,900px));
 }
 #map.compact{left:60vw}
 
 #togglePanel{
-  background:#111;color:#fff;
+  background:#111;
+  color:#fff;
   padding:10px;
   text-align:center;
   cursor:pointer;
@@ -59,8 +68,17 @@ html,body{
   border-radius:4px;
 }
 
-input,select{width:100%;padding:8px;margin-bottom:6px}
-.status{font-size:13px;color:#444;margin-top:6px}
+input,select{
+  width:100%;
+  padding:8px;
+  margin-bottom:6px;
+}
+
+.status{
+  font-size:13px;
+  color:#444;
+  margin-top:6px;
+}
 </style>
 </head>
 
@@ -73,106 +91,4 @@ input,select{width:100%;padding:8px;margin-bottom:6px}
 
   <input id="search" placeholder="Buscar por nome">
   <select id="categoryFilter"><option value="">Categoria</option></select>
-  <select id="stateFilter"><option value="">Estado</option></select>
-  <select id="cityFilter"><option value="">Cidade</option></select>
-
-  <div id="list"></div>
-  <div class="status" id="status">Carregando dados…</div>
-</div>
-
-<div id="map"></div>
-
-</div>
-
-<!-- Leaflet -->
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-
-<!-- PapaParse (CSV correto) -->
-<script src="https://unpkg.com/papaparse@5.4.1/papaparse.min.js"></script>
-
-<script>
-let map, markersLayer, data=[];
-
-// MAPA
-map = L.map('map').setView([-14.5,-52],4);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
-  attribution:'© OpenStreetMap'
-}).addTo(map);
-markersLayer = L.layerGroup().addTo(map);
-
-// CSV CORRETO
-Papa.parse('localizacoes.csv',{
-  download:true,
-  header:true,
-  skipEmptyLines:true,
-  complete:(res)=>{
-    data = res.data;
-    populateFilters();
-    applyFilters();
-  },
-  error:(err)=>{
-    status.innerText='Erro ao carregar CSV';
-    console.error(err);
-  }
-});
-
-// FILTROS
-function populateFilters(){
-  fill(categoryFilter,[...new Set(data.map(d=>d.categoria))]);
-  fill(stateFilter,[...new Set(data.map(d=>d.estado))]);
-  fill(cityFilter,[...new Set(data.map(d=>d.cidade))]);
-}
-
-function fill(sel,arr){
-  arr.forEach(v=>{
-    if(!v) return;
-    const o=document.createElement('option');
-    o.value=v;o.textContent=v;
-    sel.appendChild(o);
-  });
-}
-
-function applyFilters(){
-  const q=search.value.toLowerCase();
-  const list=data.filter(d=>
-    (!q||d.nome.toLowerCase().includes(q)) &&
-    (!categoryFilter.value||d.categoria===categoryFilter.value) &&
-    (!stateFilter.value||d.estado===stateFilter.value) &&
-    (!cityFilter.value||d.cidade===cityFilter.value)
-  );
-  renderList(list);
-  renderMap(list);
-}
-
-// LISTA
-function renderList(list){
-  listDiv.innerHTML='';
-  let pend=0;
-
-  list.forEach(d=>{
-    const valid=d.latitude&&d.longitude;
-    if(!valid) pend++;
-
-    const div=document.createElement('div');
-    div.className='item'+(!valid?' invalid':'');
-    div.innerHTML=`
-      <strong>${d.nome}</strong><br>
-      ${d.cidade||''} - ${d.estado||''}<br>
-      <small>${d.categoria||''}</small>
-      ${!valid?'<div class="badge">Localização pendente</div>':''}
-    `;
-    if(valid){
-      div.onclick=()=>map.setView([+d.latitude,+d.longitude],15);
-    }
-    listDiv.appendChild(div);
-  });
-
-  status.innerText=`Resultados: ${list.length} | Pendentes: ${pend}`;
-}
-
-// MAPA
-function renderMap(list){
-  markersLayer.clearLayers();
-  list.forEach(d=>{
-    if(!d.latitude||!d.longitude) return;
-    L.marker([+d.latitude,+d.longit]()
+  <select id="stateFilter"><option value="">Estado</op
