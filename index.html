@@ -1,5 +1,5 @@
 <!doctype html>
-<html>
+<html lang="pt-BR">
 <head>
 <meta charset="utf-8">
 <title>Mapa Interativo Cultural</title>
@@ -8,17 +8,91 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 
 <style>
-html,body,#map{height:100%;margin:0}
-#map{position:absolute;left:320px;right:0}
-#sidebar{
-  position:absolute;left:0;top:0;bottom:0;width:320px;
-  background:#fff;overflow:auto;padding:12px;
-  box-shadow:2px 0 6px rgba(0,0,0,.2)
+html,body,#map{
+  height:100%;
+  margin:0;
 }
-.item{border-bottom:1px solid #ddd;padding:8px}
-button{margin:4px 0;padding:6px;width:100%}
-input,select{width:100%;padding:6px;margin-bottom:6px}
-.status{font-size:13px;color:#444}
+body{
+  overflow:hidden;
+  font-family: Arial, sans-serif;
+}
+
+/* ===============================
+   SIDEBAR
+================================ */
+#sidebar{
+  position:absolute;
+  left:0;
+  top:0;
+  bottom:0;
+  width:90vw;              /* 🔹 90% padrão */
+  max-width:900px;
+  background:#fff;
+  overflow:auto;
+  padding:12px;
+  box-shadow:2px 0 6px rgba(0,0,0,.2);
+  transition:width .3s ease;
+  z-index:1000;
+}
+
+/* Modo compacto (60%) */
+#sidebar.compact{
+  width:60vw;
+}
+
+/* ===============================
+   MAPA
+================================ */
+#map{
+  position:absolute;
+  top:0;
+  bottom:0;
+  left:90vw;
+  right:0;
+  transition:left .3s ease;
+}
+
+#map.compact{
+  left:60vw;
+}
+
+/* ===============================
+   TOGGLE
+================================ */
+#togglePanel{
+  background:#111;
+  color:#fff;
+  padding:10px;
+  text-align:center;
+  cursor:pointer;
+  border-radius:6px;
+  margin-bottom:10px;
+  font-weight:bold;
+}
+
+/* ===============================
+   UI
+================================ */
+.item{
+  border-bottom:1px solid #ddd;
+  padding:8px;
+  cursor:pointer;
+}
+.item:hover{
+  background:#f2f2f2;
+}
+
+input,select{
+  width:100%;
+  padding:8px;
+  margin-bottom:6px;
+}
+
+.status{
+  font-size:13px;
+  color:#444;
+  margin-top:6px;
+}
 </style>
 </head>
 
@@ -26,10 +100,15 @@ input,select{width:100%;padding:6px;margin-bottom:6px}
 
 <div id="sidebar">
   <h3>Mapeamento Cultural</h3>
+
+  <!-- ABA CLICÁVEL -->
+  <div id="togglePanel">⇆ Ajustar painel</div>
+
   <input id="search" placeholder="Buscar por nome, cidade ou estado">
   <select id="stateFilter">
     <option value="">Filtrar por estado</option>
   </select>
+
   <div id="list"></div>
   <div class="status" id="status">Status: pronto</div>
 </div>
@@ -39,8 +118,13 @@ input,select{width:100%;padding:6px;margin-bottom:6px}
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <script>
+// ===============================
+// MAPA
+// ===============================
 const map = L.map('map').setView([-14.5,-52],4);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+  attribution:'© OpenStreetMap'
+}).addTo(map);
 
 let geoData = [];
 let markersLayer = L.layerGroup().addTo(map);
@@ -52,27 +136,27 @@ fetch('mapeamento.geojson')
   .then(r => r.json())
   .then(d => {
     geoData = d.features || [];
-    populateFilters();
+    populateStates();
     applyFilters();
   });
 
 // ===============================
 // FILTROS
 // ===============================
-function populateFilters(){
-  const stateSelect = document.getElementById('stateFilter');
-  stateSelect.innerHTML = '<option value="">Filtrar por estado</option>';
+function populateStates(){
+  const select = document.getElementById('stateFilter');
+  select.innerHTML = '<option value="">Filtrar por estado</option>';
 
   const states = new Set();
-  geoData.forEach(f => {
+  geoData.forEach(f=>{
     if(f.properties?.ESTADO) states.add(f.properties.ESTADO);
   });
 
-  states.forEach(s => {
+  states.forEach(s=>{
     const o = document.createElement('option');
     o.value = s;
     o.textContent = s;
-    stateSelect.appendChild(o);
+    select.appendChild(o);
   });
 }
 
@@ -80,7 +164,7 @@ function applyFilters(){
   const q = document.getElementById('search').value.toLowerCase();
   const state = document.getElementById('stateFilter').value;
 
-  const filtered = geoData.filter(f => {
+  const filtered = geoData.filter(f=>{
     const p = f.properties || {};
     const text = `
       ${p["COLETIVO/NOME"]||""}
@@ -103,7 +187,7 @@ function renderList(data){
   const list = document.getElementById('list');
   list.innerHTML = '';
 
-  data.forEach(f => {
+  data.forEach(f=>{
     const p = f.properties || {};
     const div = document.createElement('div');
     div.className = 'item';
@@ -111,7 +195,7 @@ function renderList(data){
       <strong>${p["COLETIVO/NOME"]||"Sem nome"}</strong><br>
       ${p.CIDADE||""} - ${p.ESTADO||""}
     `;
-    div.onclick = () => {
+    div.onclick = ()=>{
       if(f.geometry?.coordinates){
         const [lng,lat] = f.geometry.coordinates;
         map.setView([lat,lng],15);
@@ -125,12 +209,12 @@ function renderList(data){
 }
 
 // ===============================
-// MAPA
+// MAPA MARKERS
 // ===============================
 function renderMap(data){
   markersLayer.clearLayers();
 
-  data.forEach(f => {
+  data.forEach(f=>{
     if(!f.geometry?.coordinates) return;
     const [lng,lat] = f.geometry.coordinates;
 
@@ -149,6 +233,22 @@ document.getElementById('search')
 document.getElementById('stateFilter')
   .addEventListener('change', applyFilters);
 
+// ===============================
+// TOGGLE DO PAINEL
+// ===============================
+const sidebar = document.getElementById('sidebar');
+const mapDiv = document.getElementById('map');
+const toggleBtn = document.getElementById('togglePanel');
+
+toggleBtn.addEventListener('click',()=>{
+  sidebar.classList.toggle('compact');
+  mapDiv.classList.toggle('compact');
+
+  setTimeout(()=>{
+    map.invalidateSize();
+  },350);
+});
 </script>
+
 </body>
 </html>
