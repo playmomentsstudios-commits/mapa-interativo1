@@ -8,61 +8,80 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 
 <style>
-html,body,#map{height:100%;margin:0}
-body{overflow:hidden;font-family:Arial,sans-serif}
-
-/* VARIÁVEL GLOBAL */
-:root{ --sidebar-width:90vw; }
+html,body{
+  height:100%;
+  margin:0;
+  font-family:Arial,sans-serif;
+}
+body{overflow:hidden}
 
 /* SIDEBAR */
 #sidebar{
-  position:absolute;left:0;top:0;bottom:0;
-  width:var(--sidebar-width);max-width:900px;
-  background:#fff;overflow:auto;padding:12px;
+  position:absolute;
+  left:0;top:0;bottom:0;
+  width:90vw;
+  max-width:900px;
+  background:#fff;
+  padding:12px;
+  overflow:auto;
   box-shadow:2px 0 6px rgba(0,0,0,.2);
-  transition:width .3s ease;z-index:1000
+  z-index:10;
 }
-#sidebar.compact{ width:60vw }
+#sidebar.compact{width:60vw}
 
 /* MAPA */
 #map{
-  position:absolute;top:0;bottom:0;
-  left:calc(min(var(--sidebar-width),900px));
-  right:0;transition:left .3s ease
+  position:absolute;
+  top:0;bottom:0;right:0;
+  left:calc(min(90vw,900px));
 }
-#map.compact{ left:60vw }
+#map.compact{left:60vw}
 
-/* UI */
 #togglePanel{
-  background:#111;color:#fff;padding:10px;
-  text-align:center;cursor:pointer;
-  border-radius:6px;margin-bottom:10px;font-weight:bold
+  background:#111;
+  color:#fff;
+  padding:10px;
+  text-align:center;
+  cursor:pointer;
+  margin-bottom:10px;
+  border-radius:6px;
+  font-weight:bold;
 }
 
 .item{
   border-bottom:1px solid #ddd;
-  padding:8px;cursor:pointer
+  padding:8px;
+  cursor:pointer
 }
 .item:hover{background:#f2f2f2}
 
 .item.invalid{
   background:#fff3f3;
-  cursor:not-allowed;
-  opacity:.7
+  opacity:.7;
+  cursor:not-allowed
 }
 
 .badge{
-  display:inline-block;
   background:#d9534f;
   color:#fff;
   padding:2px 6px;
   font-size:11px;
   border-radius:4px;
-  margin-top:4px
+  margin-top:4px;
+  display:inline-block
 }
 
-input,select{width:100%;padding:8px;margin-bottom:6px}
-.status{font-size:13px;color:#444;margin-top:6px}
+input,select{
+  width:100%;
+  padding:8px;
+  margin-bottom:6px
+}
+
+.status{
+  font-size:13px;
+  color:#444;
+  margin-top:6px
+}
 </style>
 </head>
 
@@ -84,6 +103,7 @@ input,select{width:100%;padding:8px;margin-bottom:6px}
 <div id="map"></div>
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://unpkg.com/papaparse@5.4.1/papaparse.min.js"></script>
 
 <script>
 // ===============================
@@ -94,63 +114,83 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
   attribution:'© OpenStreetMap'
 }).addTo(map);
 
+const markersLayer = L.layerGroup().addTo(map);
 let data = [];
-let markersLayer = L.layerGroup().addTo(map);
 
 // ===============================
-// CSV → OBJETO (COM VALIDAÇÃO)
+// NORMALIZAR CHAVES
 // ===============================
-fetch('Mapeamento práticas culturais e comunicacionais - Página1.csv')
-  .then(r => r.text())
-  .then(text => {
-    data = parseCSV(text);
-    populateFilters();
-    applyFilters();
-  });
-
-function parseCSV(text){
-  const lines = text.split('\n');
-  const headers = lines[0].split(',').map(h=>h.trim().toLowerCase());
-
-  return lines.slice(1).map(l=>{
-    const cols = l.split(',');
-    let obj = {};
-    headers.forEach((h,i)=> obj[h]=cols[i]?.trim());
-
-    // valida latitude/longitude
-    obj.latOk = isValidCoord(obj.latitude);
-    obj.lngOk = isValidCoord(obj.longitude);
-    obj.validLocation = obj.latOk && obj.lngOk;
-
-    return obj;
-  });
+function norm(k){
+  return k.toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/[^a-z0-9]/g,'');
 }
 
-function isValidCoord(v){
-  if(!v) return false;
-  const n = parseFloat(v.replace(',','.'));
-  return !isNaN(n);
-}
+// ===============================
+// LER CSV REAL
+// ===============================
+Papa.parse(
+  'Mapeamento práticas culturais e comunicacionais - Página1.csv',
+  {
+    download:true,
+    header:true,
+    delimiter:';',
+    skipEmptyLines:true,
+    complete:(res)=>{
+      data = res.data.map(row=>{
+        let o = {};
+        Object.keys(row).forEach(k=>{
+          o[norm(k)] = row[k]?.trim();
+        });
+
+        o.nome = o.coletivonome || o.nome || 'Sem nome';
+        o.cidade = o.cidade || '';
+        o.estado = o.estado || '';
+        o.categoria = o.tipodeatividade || '';
+
+        o.validLocation =
+          o.latitude && o.longitude &&
+          !isNaN(parseFloat(o.latitude.replace(',','.'))) &&
+          !isNaN(parseFloat(o.longitude.replace(',','.')));
+
+        if(o.validLocation){
+          o.lat = parseFloat(o.latitude.replace(',','.'));
+          o.lng = parseFloat(o.longitude.replace(',','.'));
+        }
+
+        return o;
+      });
+
+      populateFilters();
+      applyFilters();
+    },
+    error:()=>{
+      status.innerText='Erro ao carregar o CSV';
+    }
+  }
+);
 
 // ===============================
 // FILTROS
 // ===============================
 function populateFilters(){
-  const states = new Set(), cities = new Set();
+  const states = new Set();
+  const cities = new Set();
+
   data.forEach(d=>{
     if(d.estado) states.add(d.estado);
     if(d.cidade) cities.add(d.cidade);
   });
 
-  fillSelect('stateFilter', states);
-  fillSelect('cityFilter', cities);
+  fillSelect(stateFilter, states);
+  fillSelect(cityFilter, cities);
 }
 
-function fillSelect(id,set){
-  const sel = document.getElementById(id);
+function fillSelect(sel,set){
   set.forEach(v=>{
     const o=document.createElement('option');
-    o.value=v;o.textContent=v;
+    o.value=v;
+    o.textContent=v;
     sel.appendChild(o);
   });
 }
@@ -161,9 +201,9 @@ function applyFilters(){
   const ct = cityFilter.value;
 
   const filtered = data.filter(d =>
-    (!q || d.nome?.toLowerCase().includes(q)) &&
-    (!st || d.estado===st) &&
-    (!ct || d.cidade===ct)
+    (!q || d.nome.toLowerCase().includes(q)) &&
+    (!st || d.estado === st) &&
+    (!ct || d.cidade === ct)
   );
 
   renderList(filtered);
@@ -174,87 +214,9 @@ function applyFilters(){
 // LISTA
 // ===============================
 function renderList(list){
-  const div = document.getElementById('list');
-  div.innerHTML='';
-
-  let invalidCount = 0;
+  listDiv.innerHTML='';
+  let pend=0;
 
   list.forEach(d=>{
-    const i=document.createElement('div');
-    i.className='item';
-
-    if(!d.validLocation){
-      i.classList.add('invalid');
-      invalidCount++;
-    }
-
-    i.innerHTML=`
-      <strong>${d.nome||'Sem nome'}</strong><br>
-      ${d.cidade||''} - ${d.estado||''}
-      ${!d.validLocation ? '<div class="badge">Localização pendente</div>' : ''}
-    `;
-
-    if(d.validLocation){
-      i.onclick=()=>{
-        map.setView(
-          [parseFloat(d.latitude),parseFloat(d.longitude)],15
-        );
-      };
-    }
-
-    div.appendChild(i);
-  });
-
-  status.innerText =
-    `Resultados: ${list.length} | Pendentes: ${invalidCount}`;
-}
-
-// ===============================
-// MAPA
-// ===============================
-function renderMap(list){
-  markersLayer.clearLayers();
-
-  list.forEach(d=>{
-    if(!d.validLocation) return;
-
-    L.marker([+d.latitude,+d.longitude])
-      .bindPopup(`
-        <b>${d.nome}</b><br>
-        ${d.cidade} - ${d.estado}<br>
-        ${d.categoria||''}
-      `)
-      .addTo(markersLayer);
-  });
-
-  const valid = list.filter(d=>d.validLocation);
-  if(valid.length===1){
-    map.setView([+valid[0].latitude,+valid[0].longitude],15);
-  }
-}
-
-// ===============================
-// EVENTOS
-// ===============================
-search.oninput = applyFilters;
-stateFilter.onchange = applyFilters;
-cityFilter.onchange = applyFilters;
-
-// ===============================
-// TOGGLE PAINEL
-// ===============================
-togglePanel.onclick=()=>{
-  sidebar.classList.toggle('compact');
-  map.classList.toggle('compact');
-
-  document.documentElement.style.setProperty(
-    '--sidebar-width',
-    sidebar.classList.contains('compact')?'60vw':'90vw'
-  );
-
-  setTimeout(()=>map.invalidateSize(),350);
-};
-</script>
-
-</body>
-</html>
+    const div=document.createElement('div');
+    div.classNam
