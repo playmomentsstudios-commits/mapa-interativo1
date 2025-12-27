@@ -77,8 +77,8 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
 let data = [];
 let markersLayer = L.layerGroup().addTo(map);
 
-// CSV (BR)
-fetch('Mapeamento práticas culturais e comunicacionais - Página1.csv')
+// CSV (BR) — NOME CORRETO
+fetch('Mapeamento práticas culturais e comunicacionais.csv')
   .then(r => r.text())
   .then(text => {
     data = parseCSV(text);
@@ -165,4 +165,58 @@ function renderList(list){
     if(d.validLocation){
       div.onclick=()=>{
         map.setView(
-          [parseFloat(d.latitude.replace(',','.')]()
+          [
+            parseFloat(d.latitude.replace(',','.')),
+            parseFloat(d.longitude.replace(',','.'))
+          ],
+          15
+        );
+      };
+    }
+
+    listDiv.appendChild(div);
+  });
+
+  status.innerText = `Resultados: ${list.length} | Pendentes: ${invalidCount}`;
+}
+
+// MAPA
+function renderMap(list){
+  markersLayer.clearLayers();
+
+  list.forEach(d=>{
+    if(!d.validLocation) return;
+
+    L.marker([
+      parseFloat(d.latitude.replace(',','.')),
+      parseFloat(d.longitude.replace(',','.'))
+    ])
+    .bindPopup(`
+      <b>${d.nome}</b><br>
+      ${d.cidade} - ${d.estado}
+    `)
+    .addTo(markersLayer);
+  });
+}
+
+// EVENTOS
+search.oninput = applyFilters;
+stateFilter.onchange = applyFilters;
+cityFilter.onchange = applyFilters;
+
+// TOGGLE
+togglePanel.onclick=()=>{
+  sidebar.classList.toggle('compact');
+  map.classList.toggle('compact');
+  document.documentElement.style.setProperty(
+    '--sidebar-width',
+    sidebar.classList.contains('compact')?'60vw':'90vw'
+  );
+  setTimeout(()=>map.invalidateSize(),350);
+};
+
+const listDiv = document.getElementById('list');
+</script>
+
+</body>
+</html>
