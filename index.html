@@ -13,6 +13,7 @@ body{overflow:hidden;font-family:Arial,sans-serif}
 
 :root{ --sidebar-width:90vw; }
 
+/* SIDEBAR */
 #sidebar{
   position:absolute;left:0;top:0;bottom:0;
   width:var(--sidebar-width);max-width:900px;
@@ -22,6 +23,7 @@ body{overflow:hidden;font-family:Arial,sans-serif}
 }
 #sidebar.compact{ width:60vw }
 
+/* MAPA */
 #map{
   position:absolute;top:0;bottom:0;
   left:calc(min(var(--sidebar-width),900px));
@@ -29,6 +31,7 @@ body{overflow:hidden;font-family:Arial,sans-serif}
 }
 #map.compact{ left:60vw }
 
+/* UI */
 #togglePanel{
   background:#111;color:#fff;padding:10px;
   text-align:center;cursor:pointer;
@@ -55,9 +58,12 @@ input,select{width:100%;padding:8px;margin-bottom:6px}
   <h3>Mapeamento Cultural</h3>
   <div id="togglePanel">⇆ Ajustar painel</div>
 
+  <!-- FILTROS -->
   <input id="search" placeholder="Buscar por nome">
+
   <select id="stateFilter"><option value="">Estado</option></select>
   <select id="cityFilter"><option value="">Cidade</option></select>
+  <select id="categoryFilter"><option value="">Categoria</option></select>
 
   <div id="list"></div>
   <div class="status" id="status">Carregando dados…</div>
@@ -68,7 +74,9 @@ input,select{width:100%;padding:8px;margin-bottom:6px}
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <script>
+// ===============================
 // MAPA
+// ===============================
 const map = L.map('map').setView([-14.5,-52],4);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
   attribution:'© OpenStreetMap'
@@ -77,8 +85,10 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
 let data = [];
 let markersLayer = L.layerGroup().addTo(map);
 
-// CSV (BR) — NOME CORRETO
-fetch('Mapeamento práticas culturais e comunicacionais.csv')
+// ===============================
+// CARREGAR CSV MESTRE (BR)
+// ===============================
+fetch('Mapeamento_mestre.csv')
   .then(r => r.text())
   .then(text => {
     data = parseCSV(text);
@@ -86,18 +96,26 @@ fetch('Mapeamento práticas culturais e comunicacionais.csv')
     applyFilters();
   });
 
+// ===============================
+// CSV → OBJETO
+// ===============================
 function parseCSV(text){
   const lines = text.trim().split('\n');
-  const headers = lines[0].split(';').map(h=>h.trim().toLowerCase());
+  const headers = lines[0].split(',').map(h=>h.trim().toLowerCase());
 
   return lines.slice(1).map(l=>{
-    const cols = l.split(';');
+    const cols = l.split(',');
     let obj = {};
     headers.forEach((h,i)=> obj[h]=cols[i]?.trim());
 
     obj.validLocation =
       isValidCoord(obj.latitude) &&
       isValidCoord(obj.longitude);
+
+    if(obj.validLocation){
+      obj.lat = parseFloat(obj.latitude.replace(',','.'));
+      obj.lng = parseFloat(obj.longitude.replace(',','.'));
+    }
 
     return obj;
   });
@@ -109,16 +127,23 @@ function isValidCoord(v){
   return !isNaN(n);
 }
 
+// ===============================
 // FILTROS
+// ===============================
 function populateFilters(){
-  const states = new Set(), cities = new Set();
+  const states = new Set();
+  const cities = new Set();
+  const categories = new Set();
+
   data.forEach(d=>{
     if(d.estado) states.add(d.estado);
     if(d.cidade) cities.add(d.cidade);
+    if(d.categoria) categories.add(d.categoria);
   });
 
   fillSelect(stateFilter, states);
   fillSelect(cityFilter, cities);
+  fillSelect(categoryFilter, categories);
 }
 
 function fillSelect(sel,set){
@@ -134,18 +159,22 @@ function applyFilters(){
   const q = search.value.toLowerCase();
   const st = stateFilter.value;
   const ct = cityFilter.value;
+  const cat = categoryFilter.value;
 
   const filtered = data.filter(d =>
     (!q || (d.nome||'').toLowerCase().includes(q)) &&
     (!st || d.estado===st) &&
-    (!ct || d.cidade===ct)
+    (!ct || d.cidade===ct) &&
+    (!cat || d.categoria===cat)
   );
 
   renderList(filtered);
   renderMap(filtered);
 }
 
+// ===============================
 // LISTA
+// ===============================
 function renderList(list){
   listDiv.innerHTML='';
   let invalidCount = 0;
@@ -158,20 +187,13 @@ function renderList(list){
 
     div.innerHTML = `
       <strong>${d.nome||'Sem nome'}</strong><br>
-      ${d.cidade||''} - ${d.estado||''}
+      ${d.cidade||''} - ${d.estado||''}<br>
+      <small>${d.categoria||''}</small>
       ${!d.validLocation?'<div class="badge">Localização pendente</div>':''}
     `;
 
     if(d.validLocation){
-      div.onclick=()=>{
-        map.setView(
-          [
-            parseFloat(d.latitude.replace(',','.')),
-            parseFloat(d.longitude.replace(',','.'))
-          ],
-          15
-        );
-      };
+      div.onclick=()=>map.setView([d.lat,d.lng],15);
     }
 
     listDiv.appendChild(div);
@@ -180,31 +202,36 @@ function renderList(list){
   status.innerText = `Resultados: ${list.length} | Pendentes: ${invalidCount}`;
 }
 
+// ===============================
 // MAPA
+// ===============================
 function renderMap(list){
   markersLayer.clearLayers();
 
   list.forEach(d=>{
     if(!d.validLocation) return;
 
-    L.marker([
-      parseFloat(d.latitude.replace(',','.')),
-      parseFloat(d.longitude.replace(',','.'))
-    ])
-    .bindPopup(`
-      <b>${d.nome}</b><br>
-      ${d.cidade} - ${d.estado}
-    `)
-    .addTo(markersLayer);
+    L.marker([d.lat,d.lng])
+      .bindPopup(`
+        <b>${d.nome}</b><br>
+        ${d.cidade} - ${d.estado}<br>
+        ${d.categoria}
+      `)
+      .addTo(markersLayer);
   });
 }
 
+// ===============================
 // EVENTOS
+// ===============================
 search.oninput = applyFilters;
 stateFilter.onchange = applyFilters;
 cityFilter.onchange = applyFilters;
+categoryFilter.onchange = applyFilters;
 
-// TOGGLE
+// ===============================
+// TOGGLE PAINEL
+// ===============================
 togglePanel.onclick=()=>{
   sidebar.classList.toggle('compact');
   map.classList.toggle('compact');
