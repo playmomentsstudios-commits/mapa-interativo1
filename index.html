@@ -13,7 +13,6 @@ body{overflow:hidden;font-family:Arial,sans-serif}
 
 :root{ --sidebar-width:90vw; }
 
-/* SIDEBAR */
 #sidebar{
   position:absolute;left:0;top:0;bottom:0;
   width:var(--sidebar-width);max-width:900px;
@@ -23,7 +22,6 @@ body{overflow:hidden;font-family:Arial,sans-serif}
 }
 #sidebar.compact{ width:60vw }
 
-/* MAPA */
 #map{
   position:absolute;top:0;bottom:0;
   left:calc(min(var(--sidebar-width),900px));
@@ -31,7 +29,6 @@ body{overflow:hidden;font-family:Arial,sans-serif}
 }
 #map.compact{ left:60vw }
 
-/* UI */
 #togglePanel{
   background:#111;color:#fff;padding:10px;
   text-align:center;cursor:pointer;
@@ -58,9 +55,7 @@ input,select{width:100%;padding:8px;margin-bottom:6px}
   <h3>Mapeamento Cultural</h3>
   <div id="togglePanel">⇆ Ajustar painel</div>
 
-  <!-- FILTROS -->
   <input id="search" placeholder="Buscar por nome">
-
   <select id="stateFilter"><option value="">Estado</option></select>
   <select id="cityFilter"><option value="">Cidade</option></select>
   <select id="categoryFilter"><option value="">Categoria</option></select>
@@ -74,9 +69,7 @@ input,select{width:100%;padding:8px;margin-bottom:6px}
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <script>
-// ===============================
 // MAPA
-// ===============================
 const map = L.map('map').setView([-14.5,-52],4);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
   attribution:'© OpenStreetMap'
@@ -85,9 +78,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
 let data = [];
 let markersLayer = L.layerGroup().addTo(map);
 
-// ===============================
-// CARREGAR CSV MESTRE (BR)
-// ===============================
+// CSV
 fetch('Mapeamento_mestre.csv')
   .then(r => r.text())
   .then(text => {
@@ -96,9 +87,6 @@ fetch('Mapeamento_mestre.csv')
     applyFilters();
   });
 
-// ===============================
-// CSV → OBJETO
-// ===============================
 function parseCSV(text){
   const lines = text.trim().split('\n');
   const headers = lines[0].split(',').map(h=>h.trim().toLowerCase());
@@ -127,30 +115,18 @@ function isValidCoord(v){
   return !isNaN(n);
 }
 
-// ===============================
 // FILTROS
-// ===============================
 function populateFilters(){
-  const states = new Set();
-  const cities = new Set();
-  const categories = new Set();
-
-  data.forEach(d=>{
-    if(d.estado) states.add(d.estado);
-    if(d.cidade) cities.add(d.cidade);
-    if(d.categoria) categories.add(d.categoria);
-  });
-
-  fillSelect(stateFilter, states);
-  fillSelect(cityFilter, cities);
-  fillSelect(categoryFilter, categories);
+  fillSelect(stateFilter, new Set(data.map(d=>d.estado)));
+  fillSelect(cityFilter, new Set(data.map(d=>d.cidade)));
+  fillSelect(categoryFilter, new Set(data.map(d=>d.categoria)));
 }
 
 function fillSelect(sel,set){
   set.forEach(v=>{
+    if(!v) return;
     const o=document.createElement('option');
-    o.value=v;
-    o.textContent=v;
+    o.value=v;o.textContent=v;
     sel.appendChild(o);
   });
 }
@@ -172,21 +148,18 @@ function applyFilters(){
   renderMap(filtered);
 }
 
-// ===============================
 // LISTA
-// ===============================
 function renderList(list){
   listDiv.innerHTML='';
-  let invalidCount = 0;
+  let pend=0;
 
   list.forEach(d=>{
     const div=document.createElement('div');
     div.className='item'+(!d.validLocation?' invalid':'');
+    if(!d.validLocation) pend++;
 
-    if(!d.validLocation) invalidCount++;
-
-    div.innerHTML = `
-      <strong>${d.nome||'Sem nome'}</strong><br>
+    div.innerHTML=`
+      <strong>${d.nome}</strong><br>
       ${d.cidade||''} - ${d.estado||''}<br>
       <small>${d.categoria||''}</small>
       ${!d.validLocation?'<div class="badge">Localização pendente</div>':''}
@@ -195,55 +168,18 @@ function renderList(list){
     if(d.validLocation){
       div.onclick=()=>map.setView([d.lat,d.lng],15);
     }
-
     listDiv.appendChild(div);
   });
 
-  status.innerText = `Resultados: ${list.length} | Pendentes: ${invalidCount}`;
+  status.innerText=`Resultados: ${list.length} | Pendentes: ${pend}`;
 }
 
-// ===============================
-// MAPA
-// ===============================
+// MAPA + POPUP COMPLETO
 function renderMap(list){
   markersLayer.clearLayers();
 
   list.forEach(d=>{
     if(!d.validLocation) return;
 
-    L.marker([d.lat,d.lng])
-      .bindPopup(`
-        <b>${d.nome}</b><br>
-        ${d.cidade} - ${d.estado}<br>
-        ${d.categoria}
-      `)
-      .addTo(markersLayer);
-  });
-}
-
-// ===============================
-// EVENTOS
-// ===============================
-search.oninput = applyFilters;
-stateFilter.onchange = applyFilters;
-cityFilter.onchange = applyFilters;
-categoryFilter.onchange = applyFilters;
-
-// ===============================
-// TOGGLE PAINEL
-// ===============================
-togglePanel.onclick=()=>{
-  sidebar.classList.toggle('compact');
-  map.classList.toggle('compact');
-  document.documentElement.style.setProperty(
-    '--sidebar-width',
-    sidebar.classList.contains('compact')?'60vw':'90vw'
-  );
-  setTimeout(()=>map.invalidateSize(),350);
-};
-
-const listDiv = document.getElementById('list');
-</script>
-
-</body>
-</html>
+    const popupHTML = `
+      <strong>${d.n
