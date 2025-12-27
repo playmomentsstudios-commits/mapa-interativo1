@@ -11,10 +11,8 @@
 html,body,#map{height:100%;margin:0}
 body{overflow:hidden;font-family:Arial,sans-serif}
 
-/* VARIÁVEL GLOBAL */
 :root{ --sidebar-width:90vw; }
 
-/* SIDEBAR */
 #sidebar{
   position:absolute;left:0;top:0;bottom:0;
   width:var(--sidebar-width);max-width:900px;
@@ -24,7 +22,6 @@ body{overflow:hidden;font-family:Arial,sans-serif}
 }
 #sidebar.compact{ width:60vw }
 
-/* MAPA */
 #map{
   position:absolute;top:0;bottom:0;
   left:calc(min(var(--sidebar-width),900px));
@@ -32,33 +29,19 @@ body{overflow:hidden;font-family:Arial,sans-serif}
 }
 #map.compact{ left:60vw }
 
-/* UI */
 #togglePanel{
   background:#111;color:#fff;padding:10px;
   text-align:center;cursor:pointer;
   border-radius:6px;margin-bottom:10px;font-weight:bold
 }
 
-.item{
-  border-bottom:1px solid #ddd;
-  padding:8px;cursor:pointer
-}
+.item{border-bottom:1px solid #ddd;padding:8px;cursor:pointer}
 .item:hover{background:#f2f2f2}
-
-.item.invalid{
-  background:#fff3f3;
-  cursor:not-allowed;
-  opacity:.7
-}
+.item.invalid{background:#fff3f3;opacity:.7;cursor:not-allowed}
 
 .badge{
-  display:inline-block;
-  background:#d9534f;
-  color:#fff;
-  padding:2px 6px;
-  font-size:11px;
-  border-radius:4px;
-  margin-top:4px
+  display:inline-block;background:#d9534f;color:#fff;
+  padding:2px 6px;font-size:11px;border-radius:4px;margin-top:4px
 }
 
 input,select{width:100%;padding:8px;margin-bottom:6px}
@@ -70,7 +53,6 @@ input,select{width:100%;padding:8px;margin-bottom:6px}
 
 <div id="sidebar">
   <h3>Mapeamento Cultural</h3>
-
   <div id="togglePanel">⇆ Ajustar painel</div>
 
   <input id="search" placeholder="Buscar por nome">
@@ -78,7 +60,7 @@ input,select{width:100%;padding:8px;margin-bottom:6px}
   <select id="cityFilter"><option value="">Cidade</option></select>
 
   <div id="list"></div>
-  <div class="status" id="status">Sistema carregado.</div>
+  <div class="status" id="status">Carregando dados…</div>
 </div>
 
 <div id="map"></div>
@@ -86,14 +68,101 @@ input,select{width:100%;padding:8px;margin-bottom:6px}
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <script>
-// ===============================
 // MAPA
-// ===============================
 const map = L.map('map').setView([-14.5,-52],4);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
   attribution:'© OpenStreetMap'
 }).addTo(map);
 
-// ===============================
-// TOGGLE PAINEL
-// ======
+let data = [];
+let markersLayer = L.layerGroup().addTo(map);
+
+// CSV (BR)
+fetch('Mapeamento práticas culturais e comunicacionais - Página1.csv')
+  .then(r => r.text())
+  .then(text => {
+    data = parseCSV(text);
+    populateFilters();
+    applyFilters();
+  });
+
+function parseCSV(text){
+  const lines = text.trim().split('\n');
+  const headers = lines[0].split(';').map(h=>h.trim().toLowerCase());
+
+  return lines.slice(1).map(l=>{
+    const cols = l.split(';');
+    let obj = {};
+    headers.forEach((h,i)=> obj[h]=cols[i]?.trim());
+
+    obj.validLocation =
+      isValidCoord(obj.latitude) &&
+      isValidCoord(obj.longitude);
+
+    return obj;
+  });
+}
+
+function isValidCoord(v){
+  if(!v) return false;
+  const n = parseFloat(v.replace(',','.'));
+  return !isNaN(n);
+}
+
+// FILTROS
+function populateFilters(){
+  const states = new Set(), cities = new Set();
+  data.forEach(d=>{
+    if(d.estado) states.add(d.estado);
+    if(d.cidade) cities.add(d.cidade);
+  });
+
+  fillSelect(stateFilter, states);
+  fillSelect(cityFilter, cities);
+}
+
+function fillSelect(sel,set){
+  set.forEach(v=>{
+    const o=document.createElement('option');
+    o.value=v;
+    o.textContent=v;
+    sel.appendChild(o);
+  });
+}
+
+function applyFilters(){
+  const q = search.value.toLowerCase();
+  const st = stateFilter.value;
+  const ct = cityFilter.value;
+
+  const filtered = data.filter(d =>
+    (!q || (d.nome||'').toLowerCase().includes(q)) &&
+    (!st || d.estado===st) &&
+    (!ct || d.cidade===ct)
+  );
+
+  renderList(filtered);
+  renderMap(filtered);
+}
+
+// LISTA
+function renderList(list){
+  listDiv.innerHTML='';
+  let invalidCount = 0;
+
+  list.forEach(d=>{
+    const div=document.createElement('div');
+    div.className='item'+(!d.validLocation?' invalid':'');
+
+    if(!d.validLocation) invalidCount++;
+
+    div.innerHTML = `
+      <strong>${d.nome||'Sem nome'}</strong><br>
+      ${d.cidade||''} - ${d.estado||''}
+      ${!d.validLocation?'<div class="badge">Localização pendente</div>':''}
+    `;
+
+    if(d.validLocation){
+      div.onclick=()=>{
+        map.setView(
+          [parseFloat(d.latitude.replace(',','.')]()
