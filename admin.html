@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Painel Admin – Mapa Cultural</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body{
+  font-family:Arial,sans-serif;
+  background:#f4f4f4;
+  margin:0;
+  padding:20px;
+}
+.container{
+  max-width:700px;
+  margin:auto;
+  background:#fff;
+  padding:20px;
+  border-radius:8px;
+  box-shadow:0 4px 12px rgba(0,0,0,.1);
+}
+h1{margin-top:0}
+label{
+  display:block;
+  margin-top:15px;
+  font-weight:bold;
+}
+input,textarea{
+  width:100%;
+  padding:10px;
+  margin-top:6px;
+}
+button{
+  margin-top:20px;
+  padding:12px 20px;
+  border:none;
+  background:#111;
+  color:#fff;
+  font-size:15px;
+  cursor:pointer;
+  border-radius:6px;
+}
+.status{
+  margin-top:15px;
+  color:green;
+  font-weight:bold;
+}
+.small{
+  font-size:13px;
+  color:#666;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>Painel Administrativo</h1>
+  <p class="small">
+    Configurações visuais e dados do Mapa Cultural  
+    <br>As informações são salvas localmente no navegador.
+  </p>
+
+  <label>Título do Mapa</label>
+  <input id="title" placeholder="Ex: Mapeamento Cultural">
+
+  <label>Subtítulo</label>
+  <input id="subtitle" placeholder="Ex: Práticas culturais e comunicacionais">
+
+  <label>URL da Logomarca</label>
+  <input id="logo" placeholder="https://site.com/logo.png">
+
+  <label>Cor principal (hex)</label>
+  <input id="color" placeholder="#111111">
+
+  <label>Texto do Rodapé</label>
+  <textarea id="footer" rows="3"></textarea>
+
+  <label>Arquivo CSV (mapa)</label>
+  <input type="file" id="csv" accept=".csv">
+  <div class="small">
+    O arquivo não é enviado para servidor. Apenas o nome será salvo.
+  </div>
+
+  <button onclick="saveConfig()">Salvar Configurações</button>
+
+  <div class="status" id="status"></div>
+</div>
+
+<script>
+function saveConfig(){
+  const config = {
+    title: title.value,
+    subtitle: subtitle.value,
+    logo: logo.value,
+    color: color.value,
+    footer: footer.value,
+    csvFile: csv.files[0]?.name || ''
+  };
+
+  localStorage.setItem('mapConfig', JSON.stringify(config));
+  status.innerText = 'Configurações salvas com sucesso!';
+}
+
+// carregar config se existir
+const saved = localStorage.getItem('mapConfig');
+if(saved){
+  const c = JSON.parse(saved);
+  title.value = c.title || '';
+  subtitle.value = c.subtitle || '';
+  logo.value = c.logo || '';
+  color.value = c.color || '';
+  footer.value = c.footer || '';
+}
+</script>
+
+</body>
+</html>
