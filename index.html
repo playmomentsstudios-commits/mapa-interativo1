@@ -182,4 +182,41 @@ function renderMap(list){
     if(!d.validLocation) return;
 
     const popupHTML = `
-      <strong>${d.n
+      <strong>${d.nome}</strong><br><br>
+      <b>Categoria:</b> ${d.categoria || '-'}<br>
+      <b>Cidade:</b> ${d.cidade || '-'} / ${d.estado || '-'}<br>
+      <b>Território:</b> ${d.territorio || '-'}<br>
+      <b>Contato:</b> ${d.contato || '-'}<br><br>
+      <b>Descrição:</b><br>
+      ${d.descricao || '-'}<br><br>
+      <i>${d.observacao || ''}</i>
+    `;
+
+    L.marker([d.lat,d.lng])
+      .bindPopup(popupHTML, { maxWidth: 320 })
+      .addTo(markersLayer);
+  });
+}
+
+// EVENTOS
+search.oninput = applyFilters;
+stateFilter.onchange = applyFilters;
+cityFilter.onchange = applyFilters;
+categoryFilter.onchange = applyFilters;
+
+// TOGGLE
+togglePanel.onclick=()=>{
+  sidebar.classList.toggle('compact');
+  map.classList.toggle('compact');
+  document.documentElement.style.setProperty(
+    '--sidebar-width',
+    sidebar.classList.contains('compact')?'60vw':'90vw'
+  );
+  setTimeout(()=>map.invalidateSize(),350);
+};
+
+const listDiv = document.getElementById('list');
+</script>
+
+</body>
+</html>
