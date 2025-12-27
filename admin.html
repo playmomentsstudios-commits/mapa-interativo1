@@ -2,199 +2,143 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<title>Painel Admin – Mapa Interativo</title>
+<title>Painel Admin – Mapeamento</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-body{
-  font-family:Arial,sans-serif;
-  background:#eef1f4;
-  margin:0;
-  padding:20px;
-}
+body{font-family:Arial,sans-serif;background:#eef1f4;margin:0;padding:20px}
 .hidden{display:none}
-
-.login-box{
-  max-width:360px;
-  margin:120px auto;
-  background:#fff;
-  padding:30px;
-  border-radius:10px;
-  box-shadow:0 4px 12px rgba(0,0,0,.15);
+.login{
+  max-width:360px;margin:120px auto;background:#fff;padding:30px;
+  border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,.15)
 }
-.login-box h2{text-align:center}
-.login-box input{
-  width:100%;
-  padding:10px;
-  margin-top:10px;
-}
-.login-box button{
-  width:100%;
-  padding:12px;
-  margin-top:20px;
-  background:#111;
-  color:#fff;
-  border:none;
-  cursor:pointer;
-  border-radius:6px;
-}
-
-.container{max-width:1000px;margin:auto}
-.card{
-  background:#fff;
-  border-radius:10px;
-  padding:20px;
-  margin-bottom:20px;
-  box-shadow:0 4px 10px rgba(0,0,0,.08);
-}
-.topbar{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-.logout{
-  background:#c0392b;
-  color:#fff;
-  padding:8px 14px;
-  border:none;
-  border-radius:6px;
-  cursor:pointer;
-}
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-  gap:15px;
-}
-label{font-weight:bold}
-input,select{width:100%;padding:8px}
-button.save{
-  padding:12px 20px;
-  background:#111;
-  color:#fff;
-  border:none;
-  border-radius:6px;
-  cursor:pointer;
-}
-.status{margin-top:10px;color:green;font-weight:bold}
+.login input,button{width:100%;padding:12px;margin-top:10px}
+button{background:#111;color:#fff;border:none;border-radius:6px;cursor:pointer}
+.container{max-width:1200px;margin:auto}
+table{width:100%;border-collapse:collapse;background:#fff}
+th,td{border:1px solid #ddd;padding:8px;font-size:13px}
+th{background:#111;color:#fff}
+.actions button{margin-right:5px;padding:6px 10px;font-size:12px}
+.toolbar{margin-bottom:15px}
+.toolbar button{margin-right:10px}
 </style>
 </head>
 
 <body>
 
-<!-- LOGIN (VISÍVEL POR PADRÃO) -->
-<div id="login" class="login-box">
+<!-- LOGIN -->
+<div id="login" class="login">
   <h2>🔐 Acesso Restrito</h2>
   <input id="user" placeholder="Usuário">
   <input id="pass" type="password" placeholder="Senha">
   <button onclick="login()">Entrar</button>
-  <div id="loginError" style="color:red;margin-top:10px"></div>
+  <div id="error" style="color:red;margin-top:10px"></div>
 </div>
 
 <!-- PAINEL -->
-<div id="panel" class="hidden">
-  <div class="container">
+<div id="panel" class="container hidden">
+  <h1>📊 Painel – Mapeamento Mestre</h1>
 
-    <div class="topbar">
-      <h1>⚙️ Painel Administrativo</h1>
-      <button class="logout" onclick="logout()">Sair</button>
-    </div>
-
-    <div class="card">
-      <h2>🎨 Identidade</h2>
-      <div class="grid">
-        <div><label>Título</label><input id="title"></div>
-        <div><label>Subtítulo</label><input id="subtitle"></div>
-        <div><label>Logo (URL)</label><input id="logo"></div>
-        <div><label>Cor primária</label><input id="primaryColor"></div>
-      </div>
-    </div>
-
-    <div class="card">
-      <h2>🗺️ Mapa</h2>
-      <div class="grid">
-        <div><label>Latitude inicial</label><input id="lat"></div>
-        <div><label>Longitude inicial</label><input id="lng"></div>
-        <div><label>Zoom inicial</label><input id="zoom"></div>
-        <div>
-          <label>Popups</label>
-          <select id="popup">
-            <option value="true">Ativo</option>
-            <option value="false">Desativado</option>
-          </select>
-        </div>
-      </div>
-    </div>
-
-    <button class="save" onclick="save()">💾 Salvar Configurações</button>
-    <div class="status" id="status"></div>
-
+  <div class="toolbar">
+    <button onclick="addRow()">➕ Adicionar registro</button>
+    <button onclick="downloadCSV()">💾 Baixar CSV atualizado</button>
+    <button onclick="logout()">Sair</button>
   </div>
+
+  <table id="table"></table>
 </div>
 
 <script>
-// ===== CREDENCIAIS =====
-const ADMIN_USER = "admin";
-const ADMIN_PASS = "sumauma2025";
+/* ===== LOGIN ===== */
+const ADMIN_USER = "adm";
+const ADMIN_PASS = "6202";
 
-// ===== ELEMENTOS =====
-const loginBox = document.getElementById("login");
-const panelBox = document.getElementById("panel");
-const userInput = document.getElementById("user");
-const passInput = document.getElementById("pass");
-const errorBox = document.getElementById("loginError");
-
-// ===== LOGIN =====
 function login(){
-  const user = userInput.value.trim();
-  const pass = passInput.value.trim();
-
-  if(user === ADMIN_USER && pass === ADMIN_PASS){
+  if(user.value === ADMIN_USER && pass.value === ADMIN_PASS){
     localStorage.setItem("adminAuth","true");
-    showPanel();
+    init();
   }else{
-    errorBox.innerText = "Usuário ou senha inválidos";
+    error.innerText="Credenciais inválidas";
   }
 }
-
 function logout(){
   localStorage.removeItem("adminAuth");
   location.reload();
 }
 
-function showPanel(){
-  loginBox.classList.add("hidden");
-  panelBox.classList.remove("hidden");
+/* ===== CSV ===== */
+let data = [];
+const headers = [
+  "id","nome","categoria","cidade","estado",
+  "latitude","longitude","territorio",
+  "contato","descricao","observacao"
+];
+
+function init(){
+  login.classList.add("hidden");
+  panel.classList.remove("hidden");
+  fetch("Mapeamento_mestre.csv")
+    .then(r=>r.text())
+    .then(parseCSV)
+    .then(renderTable);
 }
 
-// ===== INIT =====
-if(localStorage.getItem("adminAuth") === "true"){
-  showPanel();
-}else{
-  loginBox.classList.remove("hidden");
-  panelBox.classList.add("hidden");
-}
-
-// ===== SAVE CONFIG =====
-function save(){
-  const cfg = {};
-  document.querySelectorAll('#panel input, #panel select')
-    .forEach(el => cfg[el.id] = el.value);
-
-  localStorage.setItem("mapConfig", JSON.stringify(cfg));
-  document.getElementById("status").innerText = "Configurações salvas com sucesso!";
-}
-
-// ===== LOAD CONFIG =====
-const saved = localStorage.getItem("mapConfig");
-if(saved){
-  const c = JSON.parse(saved);
-  Object.keys(c).forEach(k=>{
-    const el = document.getElementById(k);
-    if(el) el.value = c[k];
+function parseCSV(text){
+  const lines = text.trim().split("\n");
+  data = lines.slice(1).map(l=>{
+    const cols = l.split(",");
+    let obj={};
+    headers.forEach((h,i)=>obj[h]=cols[i]||"");
+    return obj;
   });
 }
-</script>
 
+function renderTable(){
+  let html="<tr>"+headers.map(h=>`<th>${h}</th>`).join("")+"<th>Ações</th></tr>";
+  data.forEach((row,i)=>{
+    html+="<tr>";
+    headers.forEach(h=>{
+      html+=`<td contenteditable oninput="edit(${i},'${h}',this.innerText)">${row[h]}</td>`;
+    });
+    html+=`<td class="actions">
+      <button onclick="removeRow(${i})">🗑️</button>
+    </td></tr>`;
+  });
+  table.innerHTML=html;
+}
+
+function edit(i,field,val){ data[i][field]=val; }
+
+function addRow(){
+  let obj={}; headers.forEach(h=>obj[h]="");
+  data.push(obj);
+  renderTable();
+}
+
+function removeRow(i){
+  if(confirm("Excluir este registro?")){
+    data.splice(i,1);
+    renderTable();
+  }
+}
+
+function downloadCSV(){
+  let csv=headers.join(",")+"\n";
+  data.forEach(r=>{
+    csv+=headers.map(h=>`"${(r[h]||"").replace(/"/g,'""')}"`).join(",")+"\n";
+  });
+  const blob=new Blob([csv],{type:"text/csv"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="Mapeamento_mestre.csv";
+  a.click();
+}
+
+/* ===== INIT ===== */
+if(localStorage.getItem("adminAuth")==="true"){
+  init();
+}
+</script>
 
 </body>
 </html>
