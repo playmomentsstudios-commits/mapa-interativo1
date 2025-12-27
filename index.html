@@ -5,7 +5,6 @@
 <title>Mapeamento Cultural</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<!-- Leaflet -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 
 <style>
@@ -14,7 +13,6 @@ html,body{
   margin:0;
   font-family:Arial,sans-serif;
 }
-
 #app{
   position:relative;
   width:100%;
@@ -38,9 +36,7 @@ html,body{
 /* MAPA */
 #map{
   position:absolute;
-  top:0;
-  bottom:0;
-  right:0;
+  top:0;bottom:0;right:0;
   left:calc(min(90vw,900px));
 }
 #map.compact{left:60vw}
@@ -56,16 +52,9 @@ html,body{
   font-weight:bold;
 }
 
-.item{border-bottom:1px solid #ddd;padding:8px;cursor:pointer}
-.item:hover{background:#f2f2f2}
-.item.invalid{background:#fff3f3;opacity:.7}
-
-.badge{
-  background:#d9534f;
-  color:#fff;
-  padding:2px 6px;
-  font-size:11px;
-  border-radius:4px;
+.item{
+  border-bottom:1px solid #ddd;
+  padding:8px;
 }
 
 input,select{
@@ -87,8 +76,25 @@ input,select{
 
 <div id="sidebar">
   <h3>Mapeamento Cultural</h3>
+
   <div id="togglePanel">⇆ Ajustar painel</div>
 
-  <input id="search" placeholder="Buscar por nome">
-  <select id="categoryFilter"><option value="">Categoria</option></select>
-  <select id="stateFilter"><option value="">Estado</op
+  <!-- ORDEM CORRETA -->
+  <input id="searchName" placeholder="Buscar por nome">
+  <input id="searchCity" placeholder="Buscar por cidade">
+
+  <select id="stateFilter">
+    <option value="">Estado</option>
+    <option value="GO">GO</option>
+    <option value="MA">MA</option>
+    <option value="BA">BA</option>
+    <option value="DF">DF</option>
+  </select>
+
+  <select id="categoryFilter">
+    <option value="">Categoria</option>
+    <option value="Prática Cultural">Prática Cultural</option>
+    <option value="Prática Comunicacional">Prática Comunicacional</option>
+  </select>
+
+  <div id="list">
