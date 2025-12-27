@@ -1,0 +1,294 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Mapa Interativo Avançado</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
+  <style>
+    html,body,#map{height:100%;margin:0;padding:0}
+    /* map left offset must match sidebar width */
+    #map{position:absolute;top:0;left:300px;right:0;bottom:0}
+    #sidebar{position:absolute;left:0;top:0;bottom:0;width:300px;overflow:auto;background:#fff;padding:12px;box-shadow:2px 0 6px rgba(0,0,0,0.15);z-index:400}
+    .item{padding:8px;border-bottom:1px solid #eee;cursor:pointer}
+    .filters{margin-bottom:12px}
+    .legend {display:flex;flex-wrap:wrap;gap:6px}
+    .legend .chip{padding:6px 8px;border-radius:6px;color:#fff;font-size:13px}
+    #searchInput{width:100%;padding:8px;margin-bottom:8px}
+    .btn{display:inline-block;padding:6px 10px;background:#2b7cff;color:#fff;border-radius:6px;text-decoration:none}
+    .muted{color:#666;font-size:13px}
+    .small{font-size:12px;color:#666}
+  </style>
+</head>
+<body>
+  <div id="sidebar">
+    <h3>Mapeamento Cultural</h3>
+    <input id="searchInput" placeholder="Pesquisar por nome, cidade, atividade..." />
+    <div class="filters">
+      <div><strong>Filtros</strong></div>
+      <div id="filterTipo"></div>
+      <div style="margin-top:8px"><strong>Legenda (Tipo de atividade)</strong></div>
+      <div id="legend" class="legend"></div>
+    </div>
+    <div style="margin-top:8px">
+      <a id="geocodeAll" class="btn">Geocodificar todos (Risco: lento)</a>
+      <a id="resetView" class="btn" style="background:#444;margin-left:8px">Resetar</a>
+    </div>
+    <hr/>
+    <div id="list"></div>
+  </div>
+  <div id="map"></div>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+  <script>
+    const map = L.map('map').setView([-15.8, -47.9], 4);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Globals
+    let geoData;
+    let markers = L.markerClusterGroup();
+    const typeColors = {}; // will map tipo->color
+    const activeFilters = new Set();
+
+    // Utility: random pastel color by string
+    function colorByString(s){
+      // deterministic hash
+      let h=0; for(let i=0;i<s.length;i++) h = s.charCodeAt(i) + ((h<<5)-h);
+      const c = (h & 0x00FFFFFF).toString(16).toUpperCase();
+      return '#'+('00000'.substring(0,6-c.length)+c);
+    }
+
+    // Load GeoJSON
+    fetch('mapeamento.geojson').then(r=>r.json()).then(data=>{
+      geoData = data;
+      prepareTypes();
+      populateSidebar();
+      addAllMarkers();
+    }).catch(e=>{
+      console.error('Erro ao carregar mapeamento.geojson', e);
+      alert('Erro ao carregar dados do mapa. Verifique o console.');
+    });
+
+    function prepareTypes(){
+      if(!geoData || !geoData.features) return;
+      const types = new Set();
+      geoData.features.forEach(f=>{
+        const t = (f.properties && f.properties['TIPO DE ATIVIDADE']) || 'Sem Tipo';
+        types.add(t);
+      });
+      // build legend and filter checkboxes
+      const legend = document.getElementById('legend');
+      const filterDiv = document.getElementById('filterTipo');
+      legend.innerHTML = '';
+      filterDiv.innerHTML = '';
+      Array.from(types).sort().forEach(t=>{
+        const color = colorByString(t);
+        typeColors[t]=color;
+        const chip = document.createElement('div');
+        chip.className='chip';
+        chip.style.background = color;
+        chip.textContent = t;
+        legend.appendChild(chip);
+
+        const id = 'chk_'+t.replace(/\W/g,'_');
+        const label = document.createElement('label');
+        label.style.display='block';
+        label.innerHTML = `<input type="checkbox" id="${id}" checked /> ${t}`;
+        filterDiv.appendChild(label);
+        document.getElementById(id).addEventListener('change', (e)=>{
+          if(e.target.checked) activeFilters.delete(t); else activeFilters.add(t);
+          refreshMarkers();
+        });
+      });
+    }
+
+    function createMarker(feature){
+      const p = feature.properties || {};
+      if(!feature.geometry || feature.geometry.type !== 'Point' || !feature.geometry.coordinates){
+        return null;
+      }
+      const [lng,lat]=feature.geometry.coordinates;
+      const tipo = p['TIPO DE ATIVIDADE'] || 'Sem Tipo';
+      const color = typeColors[tipo] || '#333';
+      const icon = L.divIcon({
+        html: `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="36"><path d="M14 0C8 0 4 4.8 4 9.8 4 17.6 14 36 14 36s10-18.4 10-26.2C24 4.8 20 0 14 0z" fill="${color}"/></svg>`,
+        className:'',
+        iconSize:[28,36],
+        iconAnchor:[14,36],
+      });
+      const m = L.marker([lat,lng], {icon: icon});
+      const html = `<strong>${p['COLETIVO/NOME'] || p['PESSOA/COLETIVO'] || 'Sem nome'}</strong><br/>
+                    <small>${tipo} — ${p['TERRITÓRIO'] || ''}</small><hr/>
+                    <div><b>Cidade:</b> ${p['CIDADE']||''} - ${p['ESTADO']||''}</div>
+                    <div><b>Contato:</b> ${p['WHATSAPP']||p['TELEFONE']||''}</div>
+                    <div><b>Redes:</b> ${p['INSTAGRAM']||p['FACEBOOK']||''}</div>`;
+      m.bindPopup(html);
+      m.feature = feature; // attach ref
+      return m;
+    }
+
+    function addAllMarkers(){
+      markers.clearLayers();
+      if(!geoData || !geoData.features) return;
+      geoData.features.forEach(f=>{
+        const m = createMarker(f);
+        if(m) markers.addLayer(m);
+      });
+      map.addLayer(markers);
+      if(markers.getLayers().length) map.fitBounds(markers.getBounds(), {maxZoom:12});
+    }
+
+    function refreshMarkers(){
+      markers.clearLayers();
+      if(!geoData || !geoData.features) return;
+      geoData.features.forEach(f=>{
+        const tipo = (f.properties && f.properties['TIPO DE ATIVIDADE']) || 'Sem Tipo';
+        if(activeFilters.has(tipo)) return; // filtered out
+        const m = createMarker(f);
+        if(m) markers.addLayer(m);
+      });
+      if(markers.getLayers().length) map.fitBounds(markers.getBounds(), {maxZoom:12});
+    }
+
+    // Sidebar listing and click-to-zoom
+    function populateSidebar(){
+      const list = document.getElementById('list');
+      list.innerHTML='';
+      if(!geoData || !geoData.features) return;
+      geoData.features.forEach((f, idx)=>{
+        const p = f.properties || {};
+        const name = p['COLETIVO/NOME'] || p['PESSOA/COLETIVO'] || 'Sem nome';
+        const city = p['CIDADE']||'';
+        const state = p['ESTADO']||'';
+        const tipo = p['TIPO DE ATIVIDADE'] || 'Sem Tipo';
+        const contato = p['WHATSAPP']||p['TELEFONE']||'';
+        const redes = [p['INSTAGRAM'], p['FACEBOOK']].filter(Boolean).join(' • ');
+
+        const div = document.createElement('div');
+        div.className='item';
+        div.innerHTML = `
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <strong>${escapeHtml(name)}</strong>
+              <div class="muted">${escapeHtml(city)}${city && state? ' - ' : ''}${escapeHtml(state)}</div>
+            </div>
+            <div class="small" style="text-align:right">${escapeHtml(tipo)}</div>
+          </div>
+          <div class="small" style="margin-top:6px">
+            ${contato ? `<div><b>Contato:</b> ${escapeHtml(contato)}</div>` : ''}
+            ${redes ? `<div><b>Redes:</b> ${escapeHtml(redes)}</div>` : ''}
+          </div>
+        `;
+
+        div.addEventListener('click', ()=>{
+          if(f.geometry && f.geometry.coordinates){
+            const [lng,lat]=f.geometry.coordinates;
+            map.setView([lat,lng], 14);
+            // open popup: find marker
+            markers.eachLayer(layer=>{
+              if(layer.feature === f){ layer.openPopup(); }
+            });
+          } else {
+            // try to geocode on demand
+            geocodeFeature(f).then(success=>{
+              if(success){
+                populateSidebar(); refreshMarkers();
+                const [lng,lat]=f.geometry.coordinates;
+                map.setView([lat,lng], 14);
+                markers.eachLayer(layer=>{ if(layer.feature===f) layer.openPopup(); });
+              } else {
+                alert('Localização não encontrada para este registro.');
+              }
+            });
+          }
+        });
+        list.appendChild(div);
+      });
+    }
+
+    // simple escape to avoid injecting HTML from data
+    function escapeHtml(str){
+      if(!str && str !== 0) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    // SEARCH - substitua o handler antigo por este para geocodificar itens encontrados sem coords
+    document.getElementById('searchInput').addEventListener('keyup', async (e) => {
+      const q = e.target.value.trim().toLowerCase();
+      const list = document.getElementById('list');
+      const items = Array.from(list.querySelectorAll('.item'));
+
+      // feedback visual simples
+      const searchInput = document.getElementById('searchInput');
+      let originalPlaceholder = searchInput.placeholder;
+      if(q) {
+        searchInput.placeholder = 'Pesquisando e geocodificando (se necessário)...';
+        searchInput.disabled = true;
+      }
+
+      // encontra índices de features que batem com a query
+      const matchedIndices = [];
+      items.forEach((it, i) => {
+        const f = geoData.features[i];
+        const txt = JSON.stringify(f.properties || {}).toLowerCase();
+        if(!q || txt.includes(q)) {
+          it.style.display = 'block';
+          matchedIndices.push(i);
+        } else {
+          it.style.display = 'none';
+        }
+      });
+
+      // Para cada item que bateu e não tem geometry, tentar geocodificar (com delay)
+      if(q && matchedIndices.length) {
+        for (let idx of matchedIndices) {
+          const f = geoData.features[idx];
+          if (!f.geometry || !f.geometry.coordinates) {
+            // tenta geocodificar, com delay para respeitar limites
+            const ok = await geocodeFeature(f);
+            await new Promise(r => setTimeout(r, 1200)); // 1.2s entre chamadas
+            // se geocodificou com sucesso, atualizamos a lista item visível e os marcadores
+            if (ok) {
+              // atualizar sidebar item (para evitar re-render completo)
+              // re-criamos a lista inteira para manter consistência
+              populateSidebar();
+              refreshMarkers();
+            }
+          }
+        }
+      }
+
+      // após geocodificação, atualiza marcadores (caso novas coords apareçam)
+      refreshMarkers();
+
+      // desbloquear input e restaurar placeholder
+      searchInput.disabled = false;
+      searchInput.placeholder = originalPlaceholder;
+    });
+
+
+    // Geocoding (lazy, using Nominatim, with caching in localStorage)
+    async function geocodeFeature(f){
+      const p = f.properties || {};
+      const query = `${p['COLETIVO/NOME']||''}, ${p['CIDADE']||''}, ${p['ESTADO']||''}`.replace(/(^[,\s]+|[,\s]+$)/g,'');
+      if(!query) return false;
+      const cacheKey = 'geo_cache_'+encodeURIComponent(query);
+      const cached = localStorage.getItem(cacheKey);
+      if(cached){
+        const [lat,lon] = cached.split(',');
+        f.geometry = {type:'Point', coordinates:[parseFloat(lon), parseFloat(lat)]};
+        return true;
+      }
+      // call nominatim
+      try{
+        const url = 'https://nominatim.openstreetmap.org/search?format=json
