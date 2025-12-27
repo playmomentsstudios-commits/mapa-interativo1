@@ -8,80 +8,61 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 
 <style>
-html,body{
-  height:100%;
-  margin:0;
-  font-family:Arial,sans-serif;
-}
-body{overflow:hidden}
+html,body,#map{height:100%;margin:0}
+body{overflow:hidden;font-family:Arial,sans-serif}
+
+/* VARIÁVEL GLOBAL */
+:root{ --sidebar-width:90vw; }
 
 /* SIDEBAR */
 #sidebar{
-  position:absolute;
-  left:0;top:0;bottom:0;
-  width:90vw;
-  max-width:900px;
-  background:#fff;
-  padding:12px;
-  overflow:auto;
+  position:absolute;left:0;top:0;bottom:0;
+  width:var(--sidebar-width);max-width:900px;
+  background:#fff;overflow:auto;padding:12px;
   box-shadow:2px 0 6px rgba(0,0,0,.2);
-  z-index:10;
+  transition:width .3s ease;z-index:1000
 }
-#sidebar.compact{width:60vw}
+#sidebar.compact{ width:60vw }
 
 /* MAPA */
 #map{
-  position:absolute;
-  top:0;bottom:0;right:0;
-  left:calc(min(90vw,900px));
+  position:absolute;top:0;bottom:0;
+  left:calc(min(var(--sidebar-width),900px));
+  right:0;transition:left .3s ease
 }
-#map.compact{left:60vw}
+#map.compact{ left:60vw }
 
+/* UI */
 #togglePanel{
-  background:#111;
-  color:#fff;
-  padding:10px;
-  text-align:center;
-  cursor:pointer;
-  margin-bottom:10px;
-  border-radius:6px;
-  font-weight:bold;
+  background:#111;color:#fff;padding:10px;
+  text-align:center;cursor:pointer;
+  border-radius:6px;margin-bottom:10px;font-weight:bold
 }
 
 .item{
   border-bottom:1px solid #ddd;
-  padding:8px;
-  cursor:pointer
+  padding:8px;cursor:pointer
 }
 .item:hover{background:#f2f2f2}
 
 .item.invalid{
   background:#fff3f3;
-  opacity:.7;
-  cursor:not-allowed
+  cursor:not-allowed;
+  opacity:.7
 }
 
 .badge{
+  display:inline-block;
   background:#d9534f;
   color:#fff;
   padding:2px 6px;
   font-size:11px;
   border-radius:4px;
-  margin-top:4px;
-  display:inline-block
+  margin-top:4px
 }
 
-input,select{
-  width:100%;
-  padding:8px;
-  margin-bottom:6px
-}
-
-.status{
-  font-size:13px;
-  color:#444;
-  margin-top:6px
-}
+input,select{width:100%;padding:8px;margin-bottom:6px}
+.status{font-size:13px;color:#444;margin-top:6px}
 </style>
 </head>
 
@@ -97,13 +78,12 @@ input,select{
   <select id="cityFilter"><option value="">Cidade</option></select>
 
   <div id="list"></div>
-  <div class="status" id="status">Carregando dados…</div>
+  <div class="status" id="status">Sistema carregado.</div>
 </div>
 
 <div id="map"></div>
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-<script src="https://unpkg.com/papaparse@5.4.1/papaparse.min.js"></script>
 
 <script>
 // ===============================
@@ -114,109 +94,6 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
   attribution:'© OpenStreetMap'
 }).addTo(map);
 
-const markersLayer = L.layerGroup().addTo(map);
-let data = [];
-
 // ===============================
-// NORMALIZAR CHAVES
-// ===============================
-function norm(k){
-  return k.toLowerCase()
-    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
-    .replace(/[^a-z0-9]/g,'');
-}
-
-// ===============================
-// LER CSV REAL
-// ===============================
-Papa.parse(
-  'Mapeamento práticas culturais e comunicacionais - Página1.csv',
-  {
-    download:true,
-    header:true,
-    delimiter:';',
-    skipEmptyLines:true,
-    complete:(res)=>{
-      data = res.data.map(row=>{
-        let o = {};
-        Object.keys(row).forEach(k=>{
-          o[norm(k)] = row[k]?.trim();
-        });
-
-        o.nome = o.coletivonome || o.nome || 'Sem nome';
-        o.cidade = o.cidade || '';
-        o.estado = o.estado || '';
-        o.categoria = o.tipodeatividade || '';
-
-        o.validLocation =
-          o.latitude && o.longitude &&
-          !isNaN(parseFloat(o.latitude.replace(',','.'))) &&
-          !isNaN(parseFloat(o.longitude.replace(',','.')));
-
-        if(o.validLocation){
-          o.lat = parseFloat(o.latitude.replace(',','.'));
-          o.lng = parseFloat(o.longitude.replace(',','.'));
-        }
-
-        return o;
-      });
-
-      populateFilters();
-      applyFilters();
-    },
-    error:()=>{
-      status.innerText='Erro ao carregar o CSV';
-    }
-  }
-);
-
-// ===============================
-// FILTROS
-// ===============================
-function populateFilters(){
-  const states = new Set();
-  const cities = new Set();
-
-  data.forEach(d=>{
-    if(d.estado) states.add(d.estado);
-    if(d.cidade) cities.add(d.cidade);
-  });
-
-  fillSelect(stateFilter, states);
-  fillSelect(cityFilter, cities);
-}
-
-function fillSelect(sel,set){
-  set.forEach(v=>{
-    const o=document.createElement('option');
-    o.value=v;
-    o.textContent=v;
-    sel.appendChild(o);
-  });
-}
-
-function applyFilters(){
-  const q = search.value.toLowerCase();
-  const st = stateFilter.value;
-  const ct = cityFilter.value;
-
-  const filtered = data.filter(d =>
-    (!q || d.nome.toLowerCase().includes(q)) &&
-    (!st || d.estado === st) &&
-    (!ct || d.cidade === ct)
-  );
-
-  renderList(filtered);
-  renderMap(filtered);
-}
-
-// ===============================
-// LISTA
-// ===============================
-function renderList(list){
-  listDiv.innerHTML='';
-  let pend=0;
-
-  list.forEach(d=>{
-    const div=document.createElement('div');
-    div.classNam
+// TOGGLE PAINEL
+// ======
