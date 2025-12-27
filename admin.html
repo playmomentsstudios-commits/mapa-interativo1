@@ -6,91 +6,158 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-body{font-family:Arial,sans-serif;background:#eef1f4;margin:0;padding:20px}
+body{
+  font-family:Arial,sans-serif;
+  background:#eef1f4;
+  margin:0;
+  padding:20px
+}
 .hidden{display:none}
 .login{
-  max-width:360px;margin:120px auto;background:#fff;padding:30px;
-  border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,.15)
+  max-width:360px;
+  margin:120px auto;
+  background:#fff;
+  padding:30px;
+  border-radius:10px;
+  box-shadow:0 4px 12px rgba(0,0,0,.15)
 }
-.login input,button{width:100%;padding:12px;margin-top:10px}
-button{background:#111;color:#fff;border:none;border-radius:6px;cursor:pointer}
+.login h2{text-align:center}
+.login input{
+  width:100%;
+  padding:12px;
+  margin-top:10px
+}
+.login button{
+  width:100%;
+  padding:12px;
+  margin-top:20px;
+  background:#111;
+  color:#fff;
+  border:none;
+  border-radius:6px;
+  cursor:pointer
+}
 .container{max-width:1200px;margin:auto}
-table{width:100%;border-collapse:collapse;background:#fff}
-th,td{border:1px solid #ddd;padding:8px;font-size:13px}
-th{background:#111;color:#fff}
-.actions button{margin-right:5px;padding:6px 10px;font-size:12px}
 .toolbar{margin-bottom:15px}
-.toolbar button{margin-right:10px}
+.toolbar button{
+  margin-right:10px;
+  padding:8px 14px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+  background:#111;
+  color:#fff
+}
+table{
+  width:100%;
+  border-collapse:collapse;
+  background:#fff
+}
+th,td{
+  border:1px solid #ddd;
+  padding:8px;
+  font-size:13px
+}
+th{
+  background:#111;
+  color:#fff
+}
+.actions button{
+  padding:4px 8px;
+  background:#c0392b;
+  color:#fff;
+  border:none;
+  border-radius:4px;
+  cursor:pointer
+}
+.error{color:red;margin-top:10px}
 </style>
 </head>
 
 <body>
 
 <!-- LOGIN -->
-<div id="login" class="login">
+<div id="loginBox" class="login">
   <h2>🔐 Acesso Restrito</h2>
-  <input id="user" placeholder="Usuário">
-  <input id="pass" type="password" placeholder="Senha">
-  <button onclick="login()">Entrar</button>
-  <div id="error" style="color:red;margin-top:10px"></div>
+  <input id="loginUser" placeholder="Usuário">
+  <input id="loginPass" type="password" placeholder="Senha">
+  <button id="loginBtn">Entrar</button>
+  <div id="loginError" class="error"></div>
 </div>
 
 <!-- PAINEL -->
-<div id="panel" class="container hidden">
+<div id="panelBox" class="container hidden">
   <h1>📊 Painel – Mapeamento Mestre</h1>
 
   <div class="toolbar">
-    <button onclick="addRow()">➕ Adicionar registro</button>
-    <button onclick="downloadCSV()">💾 Baixar CSV atualizado</button>
-    <button onclick="logout()">Sair</button>
+    <button id="addBtn">➕ Adicionar registro</button>
+    <button id="downloadBtn">💾 Baixar CSV atualizado</button>
+    <button id="logoutBtn">Sair</button>
   </div>
 
-  <table id="table"></table>
+  <table id="dataTable"></table>
 </div>
 
 <script>
-/* ===== LOGIN ===== */
+// ================= LOGIN =================
 const ADMIN_USER = "adm";
 const ADMIN_PASS = "6202";
 
-function login(){
-  if(user.value === ADMIN_USER && pass.value === ADMIN_PASS){
+const loginBox = document.getElementById("loginBox");
+const panelBox = document.getElementById("panelBox");
+const loginUser = document.getElementById("loginUser");
+const loginPass = document.getElementById("loginPass");
+const loginBtn  = document.getElementById("loginBtn");
+const loginError = document.getElementById("loginError");
+const logoutBtn = document.getElementById("logoutBtn");
+
+loginBtn.addEventListener("click", () => {
+  if(loginUser.value === ADMIN_USER && loginPass.value === ADMIN_PASS){
     localStorage.setItem("adminAuth","true");
-    init();
+    showPanel();
   }else{
-    error.innerText="Credenciais inválidas";
+    loginError.innerText = "Usuário ou senha inválidos";
   }
-}
-function logout(){
+});
+
+logoutBtn.addEventListener("click", () => {
   localStorage.removeItem("adminAuth");
   location.reload();
+});
+
+function showPanel(){
+  loginBox.classList.add("hidden");
+  panelBox.classList.remove("hidden");
+  loadCSV();
 }
 
-/* ===== CSV ===== */
-let data = [];
+if(localStorage.getItem("adminAuth")==="true"){
+  showPanel();
+}
+
+// ================= CSV =================
 const headers = [
   "id","nome","categoria","cidade","estado",
   "latitude","longitude","territorio",
   "contato","descricao","observacao"
 ];
 
-function init(){
-  login.classList.add("hidden");
-  panel.classList.remove("hidden");
+let data = [];
+const table = document.getElementById("dataTable");
+
+function loadCSV(){
   fetch("Mapeamento_mestre.csv")
     .then(r=>r.text())
-    .then(parseCSV)
-    .then(renderTable);
-}
-
-function parseCSV(text){
-  const lines = text.trim().split("\n");
-  data = lines.slice(1).map(l=>{
-    const cols = l.split(",");
-    let obj={};
-    headers.forEach((h,i)=>obj[h]=cols[i]||"");
-    return obj;
-  });
+    .then(text=>{
+      const lines = text.trim().split("\n");
+      data = lines.slice(1).map(l=>{
+        const cols = l.split(",");
+        let obj = {};
+        headers.forEach((h,i)=>obj[h]=cols[i]||"");
+        return obj;
+      });
+      renderTable();
+    });
 }
 
 function renderTable(){
@@ -98,21 +165,17 @@ function renderTable(){
   data.forEach((row,i)=>{
     html+="<tr>";
     headers.forEach(h=>{
-      html+=`<td contenteditable oninput="edit(${i},'${h}',this.innerText)">${row[h]}</td>`;
+      html+=`<td contenteditable="true" data-i="${i}" data-h="${h}">${row[h]}</td>`;
     });
-    html+=`<td class="actions">
-      <button onclick="removeRow(${i})">🗑️</button>
-    </td></tr>`;
+    html+=`<td class="actions"><button onclick="removeRow(${i})">🗑️</button></td></tr>`;
   });
-  table.innerHTML=html;
-}
+  table.innerHTML = html;
 
-function edit(i,field,val){ data[i][field]=val; }
-
-function addRow(){
-  let obj={}; headers.forEach(h=>obj[h]="");
-  data.push(obj);
-  renderTable();
+  table.querySelectorAll("td[contenteditable]").forEach(td=>{
+    td.addEventListener("input",()=>{
+      data[td.dataset.i][td.dataset.h] = td.innerText;
+    });
+  });
 }
 
 function removeRow(i){
@@ -122,7 +185,14 @@ function removeRow(i){
   }
 }
 
-function downloadCSV(){
+document.getElementById("addBtn").onclick = ()=>{
+  let obj={};
+  headers.forEach(h=>obj[h]="");
+  data.push(obj);
+  renderTable();
+};
+
+document.getElementById("downloadBtn").onclick = ()=>{
   let csv=headers.join(",")+"\n";
   data.forEach(r=>{
     csv+=headers.map(h=>`"${(r[h]||"").replace(/"/g,'""')}"`).join(",")+"\n";
@@ -132,12 +202,7 @@ function downloadCSV(){
   a.href=URL.createObjectURL(blob);
   a.download="Mapeamento_mestre.csv";
   a.click();
-}
-
-/* ===== INIT ===== */
-if(localStorage.getItem("adminAuth")==="true"){
-  init();
-}
+};
 </script>
 
 </body>
