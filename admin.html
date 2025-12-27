@@ -47,24 +47,6 @@ body{
   margin-bottom:20px;
   box-shadow:0 4px 10px rgba(0,0,0,.08);
 }
-h1{margin-top:0}
-h2{border-bottom:2px solid #eee;padding-bottom:6px}
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-  gap:15px;
-}
-label{font-weight:bold;font-size:14px}
-input,select{width:100%;padding:8px;margin-top:4px}
-button.save{
-  padding:12px 20px;
-  background:#111;
-  color:#fff;
-  border:none;
-  border-radius:6px;
-  cursor:pointer;
-  font-size:15px;
-}
 .topbar{
   display:flex;
   justify-content:space-between;
@@ -78,14 +60,29 @@ button.save{
   border-radius:6px;
   cursor:pointer;
 }
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:15px;
+}
+label{font-weight:bold}
+input,select{width:100%;padding:8px}
+button.save{
+  padding:12px 20px;
+  background:#111;
+  color:#fff;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+}
 .status{margin-top:10px;color:green;font-weight:bold}
 </style>
 </head>
 
 <body>
 
-<!-- LOGIN -->
-<div id="login" class="login-box hidden">
+<!-- LOGIN (VISÍVEL POR PADRÃO) -->
+<div id="login" class="login-box">
   <h2>🔐 Acesso Restrito</h2>
   <input id="user" placeholder="Usuário">
   <input id="pass" type="password" placeholder="Senha">
@@ -97,6 +94,93 @@ button.save{
 <div id="panel" class="hidden">
   <div class="container">
 
-  <div class="topbar">
-    <h1>⚙️ Painel Administrativo</h1>
-    <button class="logout" onclick="logo
+    <div class="topbar">
+      <h1>⚙️ Painel Administrativo</h1>
+      <button class="logout" onclick="logout()">Sair</button>
+    </div>
+
+    <div class="card">
+      <h2>🎨 Identidade</h2>
+      <div class="grid">
+        <div><label>Título</label><input id="title"></div>
+        <div><label>Subtítulo</label><input id="subtitle"></div>
+        <div><label>Logo (URL)</label><input id="logo"></div>
+        <div><label>Cor primária</label><input id="primaryColor"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>🗺️ Mapa</h2>
+      <div class="grid">
+        <div><label>Latitude inicial</label><input id="lat"></div>
+        <div><label>Longitude inicial</label><input id="lng"></div>
+        <div><label>Zoom inicial</label><input id="zoom"></div>
+        <div>
+          <label>Popups</label>
+          <select id="popup">
+            <option value="true">Ativo</option>
+            <option value="false">Desativado</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <button class="save" onclick="save()">💾 Salvar Configurações</button>
+    <div class="status" id="status"></div>
+
+  </div>
+</div>
+
+<script>
+// ===== CREDENCIAIS =====
+const ADMIN_USER = "admin";
+const ADMIN_PASS = "sumauma2025";
+
+// ===== LOGIN =====
+function login(){
+  if(user.value === ADMIN_USER && pass.value === ADMIN_PASS){
+    localStorage.setItem("adminAuth","true");
+    showPanel();
+  }else{
+    loginError.innerText = "Usuário ou senha inválidos";
+  }
+}
+
+function logout(){
+  localStorage.removeItem("adminAuth");
+  location.reload();
+}
+
+function showPanel(){
+  login.classList.add("hidden");
+  panel.classList.remove("hidden");
+}
+
+// ===== INIT =====
+if(localStorage.getItem("adminAuth")==="true"){
+  showPanel();
+}
+
+// ===== SAVE CONFIG =====
+function save(){
+  const cfg = {};
+  document.querySelectorAll('#panel input, #panel select')
+    .forEach(el => cfg[el.id] = el.value);
+  localStorage.setItem("mapConfig", JSON.stringify(cfg));
+  status.innerText = "Configurações salvas!";
+}
+
+// LOAD CONFIG
+const saved = localStorage.getItem("mapConfig");
+if(saved){
+  const c = JSON.parse(saved);
+  Object.keys(c).forEach(k=>{
+    if(document.getElementById(k)){
+      document.getElementById(k).value = c[k];
+    }
+  });
+}
+</script>
+
+</body>
+</html>
