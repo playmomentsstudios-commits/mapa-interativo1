@@ -136,13 +136,23 @@ button.save{
 const ADMIN_USER = "admin";
 const ADMIN_PASS = "sumauma2025";
 
+// ===== ELEMENTOS =====
+const loginBox = document.getElementById("login");
+const panelBox = document.getElementById("panel");
+const userInput = document.getElementById("user");
+const passInput = document.getElementById("pass");
+const errorBox = document.getElementById("loginError");
+
 // ===== LOGIN =====
 function login(){
-  if(user.value === ADMIN_USER && pass.value === ADMIN_PASS){
+  const user = userInput.value.trim();
+  const pass = passInput.value.trim();
+
+  if(user === ADMIN_USER && pass === ADMIN_PASS){
     localStorage.setItem("adminAuth","true");
     showPanel();
   }else{
-    loginError.innerText = "Usuário ou senha inválidos";
+    errorBox.innerText = "Usuário ou senha inválidos";
   }
 }
 
@@ -152,13 +162,16 @@ function logout(){
 }
 
 function showPanel(){
-  login.classList.add("hidden");
-  panel.classList.remove("hidden");
+  loginBox.classList.add("hidden");
+  panelBox.classList.remove("hidden");
 }
 
 // ===== INIT =====
-if(localStorage.getItem("adminAuth")==="true"){
+if(localStorage.getItem("adminAuth") === "true"){
   showPanel();
+}else{
+  loginBox.classList.remove("hidden");
+  panelBox.classList.add("hidden");
 }
 
 // ===== SAVE CONFIG =====
@@ -166,21 +179,22 @@ function save(){
   const cfg = {};
   document.querySelectorAll('#panel input, #panel select')
     .forEach(el => cfg[el.id] = el.value);
+
   localStorage.setItem("mapConfig", JSON.stringify(cfg));
-  status.innerText = "Configurações salvas!";
+  document.getElementById("status").innerText = "Configurações salvas com sucesso!";
 }
 
-// LOAD CONFIG
+// ===== LOAD CONFIG =====
 const saved = localStorage.getItem("mapConfig");
 if(saved){
   const c = JSON.parse(saved);
   Object.keys(c).forEach(k=>{
-    if(document.getElementById(k)){
-      document.getElementById(k).value = c[k];
-    }
+    const el = document.getElementById(k);
+    if(el) el.value = c[k];
   });
 }
 </script>
+
 
 </body>
 </html>
