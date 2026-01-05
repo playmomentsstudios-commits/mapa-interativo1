@@ -159,34 +159,32 @@ let data = [];
 fetch('Mapeamento_mestre.csv')
   .then(r=>r.text())
   .then(text=>{
-    const lines = text.split('\n');
-    const headers = lines[0].split(',').map(h=>h.trim().toLowerCase());
+data = lines.slice(1).map(l=>{
+  const cols = l.split(';');
+  let o = {};
+  headers.forEach((h,i)=>o[h]=cols[i]?.trim());
 
-    data = lines.slice(1).map(l=>{
-      const cols = l.split(',');
-      let o = {};
-      headers.forEach((h,i)=>o[h]=cols[i]?.trim());
+  function normalizeCoord(v){
+    if(!v) return null;
+    v = v.toString().trim();
+    const dots = (v.match(/\./g)||[]).length;
+    if(dots > 1) v = v.replace(/\./g,'');
+    v = v.replace(',','.');
+    const n = parseFloat(v);
+    return isNaN(n) ? null : n;
+  }
 
-      function normalizeCoord(v){
-        if(!v) return null;
-        v = v.toString().trim();
-        const dots = (v.match(/\./g)||[]).length;
-        if(dots > 1) v = v.replace(/\./g,'');
-        v = v.replace(',','.');
-        const n = parseFloat(v);
-        return isNaN(n) ? null : n;
-      }
+  const lat = o.latitude || o.Latitude || o.lat || o.LATITUDE;
+  const lng = o.longitude || o.Longitude || o.lng || o.LONGITUDE;
 
-      const lat = o.latitude || o.Latitude || o.lat || o.LATITUDE;
-      const lng = o.longitude || o.Longitude || o.lng || o.LONGITUDE;
+  o.latitude  = normalizeCoord(lat);
+  o.longitude = normalizeCoord(lng);
 
-      o.latitude  = normalizeCoord(lat);
-      o.longitude = normalizeCoord(lng);
-      o.valid = typeof o.latitude === 'number'
-             && typeof o.longitude === 'number';
+  o.valid = typeof o.latitude === 'number'
+         && typeof o.longitude === 'number';
 
-      return o;
-    });
+  return o;
+});
 
     populateFilters();
     applyFilters();
