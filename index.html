@@ -109,20 +109,17 @@ iframe{
 
 <body>
 
-<!-- SIDEBAR -->
 <div id="sidebar">
 
   <div class="header">
     <h3>Mapeamento Cultural</h3>
   </div>
 
-  <!-- TABS -->
   <div class="tabs">
     <div class="tab active" data-tab="mapa">Mapa Cultural</div>
     <div class="tab" data-tab="livro">Livro da Pesquisa</div>
   </div>
 
-  <!-- ABA MAPA -->
   <div id="tab-mapa" class="tab-content active">
     <input id="search" placeholder="Buscar por nome">
     <select id="stateFilter"><option value="">Estado</option></select>
@@ -131,7 +128,6 @@ iframe{
     <div id="list"></div>
   </div>
 
-  <!-- ABA LIVRO -->
   <div id="tab-livro" class="tab-content">
     <div class="pdf-actions">
       <a href="PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf" download>
@@ -144,7 +140,6 @@ iframe{
 
 </div>
 
-<!-- MAPA -->
 <div id="map"></div>
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
@@ -167,14 +162,35 @@ fetch('Mapeamento_mestre.csv')
     const lines = text.split('\n');
     const headers = lines[0].split(',').map(h=>h.trim().toLowerCase());
 
-data = lines.slice(1).map(l=>{
-  const cols = l.split(',');
-  let o = {};
-  headers.forEach((h,i)=>o[h]=cols[i].trim());
-  o.valid = o.latitude && o.longitude;
-  return o;
-});
+    data = lines.slice(1).map(l=>{
+      const cols = l.split(',');
+      let o = {};
+      headers.forEach((h,i)=>o[h]=cols[i]?.trim());
 
+      function normalizeCoord(v){
+        if(!v) return null;
+        v = v.toString().trim();
+        const dots = (v.match(/\./g)||[]).length;
+        if(dots > 1) v = v.replace(/\./g,'');
+        v = v.replace(',','.');
+        const n = parseFloat(v);
+        return isNaN(n) ? null : n;
+      }
+
+      const lat = o.latitude || o.Latitude || o.lat || o.LATITUDE;
+      const lng = o.longitude || o.Longitude || o.lng || o.LONGITUDE;
+
+      o.latitude  = normalizeCoord(lat);
+      o.longitude = normalizeCoord(lng);
+      o.valid = typeof o.latitude === 'number'
+             && typeof o.longitude === 'number';
+
+      return o;
+    });
+
+    populateFilters();
+    applyFilters();
+  });
 
 /* ================= FILTROS ================= */
 function populateFilters(){
@@ -227,7 +243,7 @@ function renderList(list){
       ${!d.valid?'<div class="badge">Localização pendente</div>':''}
     `;
     if(d.valid){
-      div.onclick=()=>map.setView([+d.latitude,+d.longitude],15);
+      div.onclick=()=>map.setView([d.latitude,d.longitude],15);
     }
     listDiv.appendChild(div);
   });
@@ -238,7 +254,7 @@ function renderMap(list){
   markersLayer.clearLayers();
   list.forEach(d=>{
     if(!d.valid) return;
-    L.marker([+d.latitude,+d.longitude])
+    L.marker([d.latitude,d.longitude])
       .bindPopup(`
         <b>${d.nome}</b><br>
         ${d.cidade} - ${d.estado}<br>
@@ -273,7 +289,6 @@ function abrirPDF(){
   iframe.style.display='block';
 }
 
-/* ================= VARS ================= */
 const listDiv=document.getElementById('list');
 </script>
 
