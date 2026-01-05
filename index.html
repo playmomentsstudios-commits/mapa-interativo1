@@ -88,16 +88,18 @@ input,select{
   gap:10px;
   margin-bottom:10px;
 }
-.pdf-actions a, .pdf-actions button{
+.pdf-actions a,
+.pdf-actions button{
   flex:1;
   padding:10px;
   border:none;
-  background:#111;
+  background:#2e7d32; /* VERDE */
   color:#fff;
   cursor:pointer;
   text-align:center;
   text-decoration:none;
   border-radius:4px;
+  font-weight:bold;
 }
 iframe{
   width:100%;
@@ -159,32 +161,35 @@ let data = [];
 fetch('Mapeamento_mestre.csv')
   .then(r=>r.text())
   .then(text=>{
-data = lines.slice(1).map(l=>{
-  const cols = l.split(';');
-  let o = {};
-  headers.forEach((h,i)=>o[h]=cols[i]?.trim());
+    const lines = text.split('\n');
+    const headers = lines[0].split(';').map(h=>h.trim().toLowerCase());
 
-  function normalizeCoord(v){
-    if(!v) return null;
-    v = v.toString().trim();
-    const dots = (v.match(/\./g)||[]).length;
-    if(dots > 1) v = v.replace(/\./g,'');
-    v = v.replace(',','.');
-    const n = parseFloat(v);
-    return isNaN(n) ? null : n;
-  }
+    data = lines.slice(1).map(l=>{
+      const cols = l.split(';');
+      let o = {};
+      headers.forEach((h,i)=>o[h]=cols[i]?.trim());
 
-  const lat = o.latitude || o.Latitude || o.lat || o.LATITUDE;
-  const lng = o.longitude || o.Longitude || o.lng || o.LONGITUDE;
+      function normalizeCoord(v){
+        if(!v) return null;
+        v = v.toString().trim();
+        const dots = (v.match(/\./g)||[]).length;
+        if(dots > 1) v = v.replace(/\./g,'');
+        v = v.replace(',','.');
+        const n = parseFloat(v);
+        return isNaN(n) ? null : n;
+      }
 
-  o.latitude  = normalizeCoord(lat);
-  o.longitude = normalizeCoord(lng);
+      const lat = o.latitude || o.Latitude || o.lat || o.LATITUDE;
+      const lng = o.longitude || o.Longitude || o.lng || o.LONGITUDE;
 
-  o.valid = typeof o.latitude === 'number'
-         && typeof o.longitude === 'number';
+      o.latitude  = normalizeCoord(lat);
+      o.longitude = normalizeCoord(lng);
 
-  return o;
-});
+      o.valid = typeof o.latitude === 'number'
+             && typeof o.longitude === 'number';
+
+      return o;
+    });
 
     populateFilters();
     applyFilters();
