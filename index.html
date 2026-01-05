@@ -167,17 +167,14 @@ fetch('Mapeamento_mestre.csv')
     const lines = text.split('\n');
     const headers = lines[0].split(',').map(h=>h.trim().toLowerCase());
 
-    data = lines.slice(1).map(l=>{
-      const cols = l.split(',');
-      let o = {};
-      headers.forEach((h,i)=>o[h]=cols[i]?.trim());
-      o.valid = o.latitude && o.longitude;
-      return o;
-    });
+data = lines.slice(1).map(l=>{
+  const cols = l.split(',');
+  let o = {};
+  headers.forEach((h,i)=>o[h]=cols[i].trim());
+  o.valid = o.latitude && o.longitude;
+  return o;
+});
 
-    populateFilters();
-    applyFilters();
-  });
 
 /* ================= FILTROS ================= */
 function populateFilters(){
