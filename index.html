@@ -11,7 +11,7 @@
 html,body{height:100%;margin:0;font-family:Arial,sans-serif}
 body{overflow:hidden}
 
-/* LAYOUT */
+/* ===== LAYOUT DESKTOP ===== */
 #sidebar{
   position:absolute;
   top:0;left:0;bottom:0;
@@ -65,6 +65,7 @@ input,select{
   margin-bottom:6px;
 }
 
+/* LISTA */
 .item{
   border-bottom:1px solid #ddd;
   padding:8px;
@@ -106,6 +107,24 @@ iframe{
   height:70vh;
   border:none;
 }
+
+/* ===== MOBILE ===== */
+@media(max-width:768px){
+  #sidebar{
+    position:relative;
+    width:100%;
+    max-width:100%;
+    height:55%;
+    box-shadow:none;
+  }
+  #map{
+    position:relative;
+    left:0;
+    width:100%;
+    height:45%;
+  }
+  body{overflow:auto}
+}
 </style>
 </head>
 
@@ -122,6 +141,7 @@ iframe{
     <div class="tab" data-tab="livro">Livro da Pesquisa</div>
   </div>
 
+  <!-- ABA MAPA -->
   <div id="tab-mapa" class="tab-content active">
     <input id="search" placeholder="Buscar por nome">
     <select id="stateFilter"><option value="">Estado</option></select>
@@ -130,6 +150,7 @@ iframe{
     <div id="list"></div>
   </div>
 
+  <!-- ABA LIVRO -->
   <div id="tab-livro" class="tab-content">
     <div class="pdf-actions">
       <a href="PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf" download>
@@ -155,19 +176,32 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
 
 const markersLayer = L.layerGroup().addTo(map);
 
-/* ================= CSV ================= */
+/* ================= CSV (ROBUSTO) ================= */
 let data = [];
 
 fetch('Mapeamento_mestre.csv')
-  .then(r=>r.text())
-  .then(text=>{
-    const lines = text.split('\n');
-    const headers = lines[0].split(';').map(h=>h.trim().toLowerCase());
+  .then(r => r.text())
+  .then(text => {
 
-    data = lines.slice(1).map(l=>{
-      const cols = l.split(';');
+    // remove BOM
+    text = text.replace(/^\uFEFF/, '').trim();
+
+    const lines = text.split('\n').filter(l => l.trim() !== '');
+
+    // detecta separador
+    const sep = lines[0].includes(';') ? ';' : ',';
+
+    const headers = lines[0]
+      .split(sep)
+      .map(h => h.trim().toLowerCase());
+
+    data = lines.slice(1).map(line => {
+      const cols = line.split(sep);
       let o = {};
-      headers.forEach((h,i)=>o[h]=cols[i]?.trim());
+
+      headers.forEach((h,i)=>{
+        o[h] = (cols[i] || '').trim();
+      });
 
       function normalizeCoord(v){
         if(!v) return null;
@@ -179,17 +213,18 @@ fetch('Mapeamento_mestre.csv')
         return isNaN(n) ? null : n;
       }
 
-      const lat = o.latitude || o.Latitude || o.lat || o.LATITUDE;
-      const lng = o.longitude || o.Longitude || o.lng || o.LONGITUDE;
-
-      o.latitude  = normalizeCoord(lat);
-      o.longitude = normalizeCoord(lng);
+      o.latitude  = normalizeCoord(o.latitude);
+      o.longitude = normalizeCoord(o.longitude);
 
       o.valid = typeof o.latitude === 'number'
              && typeof o.longitude === 'number';
 
+      o.nome = o.nome || o.titulo || o.organizacao || '';
+
       return o;
-    });
+    }).filter(o =>
+      o.nome || o.cidade || o.estado || o.categoria
+    );
 
     populateFilters();
     applyFilters();
@@ -223,7 +258,7 @@ function applyFilters(){
   const cat=categoryFilter.value;
 
   const f=data.filter(d=>
-    (!q||d.nome?.toLowerCase().includes(q)) &&
+    (!q||d.nome.toLowerCase().includes(q)) &&
     (!st||d.estado===st) &&
     (!ct||d.cidade===ct) &&
     (!cat||d.categoria===cat)
@@ -234,13 +269,14 @@ function applyFilters(){
 }
 
 /* ================= LISTA ================= */
+const listDiv=document.getElementById('list');
 function renderList(list){
   listDiv.innerHTML='';
   list.forEach(d=>{
     const div=document.createElement('div');
     div.className='item'+(!d.valid?' invalid':'');
     div.innerHTML=`
-      <strong>${d.nome||'Sem nome'}</strong><br>
+      <strong>${d.nome}</strong><br>
       ${d.cidade||''} - ${d.estado||''}<br>
       ${d.categoria||''}
       ${!d.valid?'<div class="badge">Localização pendente</div>':''}
@@ -260,8 +296,8 @@ function renderMap(list){
     L.marker([d.latitude,d.longitude])
       .bindPopup(`
         <b>${d.nome}</b><br>
-        ${d.cidade} - ${d.estado}<br>
-        ${d.categoria}<br>
+        ${d.cidade||''} - ${d.estado||''}<br>
+        ${d.categoria||''}<br>
         ${d.contato||''}
       `)
       .addTo(markersLayer);
@@ -291,8 +327,6 @@ function abrirPDF(){
   iframe.src='PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf';
   iframe.style.display='block';
 }
-
-const listDiv=document.getElementById('list');
 </script>
 
 </body>
