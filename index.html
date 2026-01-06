@@ -105,6 +105,12 @@ input,select{
 }
 .item:hover{background:#f2f2f2;}
 
+.tag-pendente{
+  color:#b45309;
+  font-size:12px;
+  margin-top:4px;
+}
+
 /* ================= MAPA ================= */
 #content{
   flex:1;
@@ -209,18 +215,19 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
   attribution:'© OpenStreetMap'
 }).addTo(map);
 
-let dados=[],markers=[];
+let dados = [];
+let markers = [];
 
-/* ================= CSV ROBUSTO ================= */
+/* ================= CSV ================= */
 fetch('Mapeamento_mestre.csv')
-.then(r=>r.text())
-.then(text=>{
-  dados=parseCSV(text);
-  popularFiltros(dados);
-  renderizar(dados);
-});
+  .then(r => r.text())
+  .then(text => {
+    dados = parseCSV(text);
+    popularFiltros(dados);
+    renderizar(dados);
+  });
 
-/* Parser CSV seguro (suporta vírgulas em texto) */
+/* ================= CSV PARSER ROBUSTO ================= */
 function parseCSV(text){
   const rows=[],headers=[];
   let cur=[],val='',q=false;
@@ -241,13 +248,14 @@ function parseCSV(text){
 }
 
 /* ================= FILTROS ================= */
-function popularFiltros(d){
-  [...new Set(d.map(i=>i.estado))].forEach(e=>{
-    if(e) filterEstado.innerHTML+=`<option>${e}</option>`;
+function popularFiltros(data){
+  const estados=new Set(), categorias=new Set();
+  data.forEach(d=>{
+    if(d.estado) estados.add(d.estado.trim());
+    if(d.categoria) categorias.add(d.categoria.trim());
   });
-  [...new Set(d.map(i=>i.categoria))].forEach(c=>{
-    if(c) filterCategoria.innerHTML+=`<option>${c}</option>`;
-  });
+  estados.forEach(e=>filterEstado.innerHTML+=`<option>${e}</option>`);
+  categorias.forEach(c=>filterCategoria.innerHTML+=`<option>${c}</option>`);
 }
 
 function aplicarFiltros(){
@@ -270,21 +278,30 @@ function renderizar(lista){
   markers=[];
 
   lista.forEach(d=>{
-    if(!d.latitude||!d.longitude)return;
-    const lat=+d.latitude,lng=+d.longitude;
+    const temLocalizacao =
+      d.latitude && d.longitude &&
+      !isNaN(d.latitude) && !isNaN(d.longitude);
 
-    const m=L.marker([lat,lng]).addTo(map);
-    markers.push(m);
-
+    /* LISTA */
     const div=document.createElement('div');
     div.className='item';
     div.innerHTML=`
       <strong>${d.nome}</strong><br>
       ${d.cidade} - ${d.estado}<br>
       ${d.categoria}
+      ${!temLocalizacao?`<div class="tag-pendente">📍 Localização pendente</div>`:''}
     `;
-    div.onclick=()=>abrirDetalhes(d,lat,lng);
+    div.onclick=()=>abrirDetalhes(
+      d,
+      temLocalizacao?Number(d.latitude):null,
+      temLocalizacao?Number(d.longitude):null
+    );
     results.appendChild(div);
+
+    /* MAPA */
+    if(!temLocalizacao) return;
+    const m=L.marker([Number(d.latitude),Number(d.longitude)]).addTo(map);
+    markers.push(m);
   });
 }
 
@@ -292,13 +309,19 @@ function renderizar(lista){
 function abrirDetalhes(d,lat,lng){
   document.body.classList.add('show-details');
   document.body.classList.remove('full-map');
+
+  const temLocalizacao = lat!==null && lng!==null;
+
   details.innerHTML=`
     <h2>${d.nome}</h2>
     <p><b>Cidade:</b> ${d.cidade} - ${d.estado}</p>
     <p><b>Categoria:</b> ${d.categoria}</p>
+    ${!temLocalizacao?`<p style="color:#b45309;"><b>Localização:</b> pendente</p>`:''}
+    ${d.contato?`<p><b>Contato:</b> ${d.contato}</p>`:''}
     <p>${d.descricao||''}</p>
-    ${d.contato?`<a class="btn btn-contact" href="${d.contato}" target="_blank">Entrar em contato</a>`:''}
-    <button class="btn btn-map" onclick="verNoMapa(${lat},${lng})">Ver no mapa</button>
+
+    ${d.link?`<a class="btn btn-contact" href="${d.link}" target="_blank">Entrar em contato</a>`:''}
+    ${temLocalizacao?`<button class="btn btn-map" onclick="verNoMapa(${lat},${lng})">Ver no mapa</button>`:''}
   `;
 }
 
@@ -319,13 +342,9 @@ function abrirLivro(){
   document.body.classList.remove('full-map');
   details.innerHTML=`
     <h2>Pesquisa – Práticas Comunicacionais e Culturais Quilombolas</h2>
-    <a class="btn btn-contact"
-       href="PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf"
-       download>📥 Baixar PDF</a>
+    <a class="btn btn-contact" href="PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf" download>📥 Baixar PDF</a>
     <br><br>
-    <a class="btn btn-map"
-       href="PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf"
-       target="_blank">📖 Ler online</a>
+    <a class="btn btn-map" href="PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf" target="_blank">📖 Ler online</a>
   `;
 }
 </script>
