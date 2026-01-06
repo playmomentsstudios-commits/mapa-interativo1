@@ -2,137 +2,142 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<title>Pesquisa Cultural – Instituto Sumaúma</title>
+<title>Mapeamento Cultural – Instituto Sumaúma</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 
 <style>
-html,body{
-  margin:0;
-  height:100%;
-  font-family:Arial, sans-serif;
+/* ===== RESET ===== */
+html, body {
+  margin: 0;
+  height: 100%;
+  font-family: Arial, sans-serif;
 }
 
 /* ===== HEADER ===== */
-header{
-  height:70px;
-  background:#0f3d2e;
-  color:#fff;
-  display:flex;
-  align-items:center;
-  padding:0 20px;
+header {
+  height: 80px;
+  background: #0f3d2e;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  color: #fff;
 }
-header img{
-  height:40px;
-  margin-right:15px;
+
+header img {
+  height: 45px;
+  margin-right: 15px;
 }
-header h1{
-  font-size:20px;
-  margin:0;
+
+header h1 {
+  font-size: 20px;
+  margin: 0;
 }
 
 /* ===== LAYOUT ===== */
-#container{
-  display:flex;
-  height:calc(100% - 70px);
+#layout {
+  display: flex;
+  height: calc(100% - 80px);
 }
 
 /* ===== SIDEBAR ===== */
-#sidebar{
-  width:50%;
-  max-width:480px;
-  background:#fff;
-  border-right:1px solid #ddd;
-  overflow:auto;
-  transition:.3s;
+#sidebar {
+  width: 420px;
+  min-width: 420px;
+  max-width: 420px;
+  background: #fff;
+  border-right: 1px solid #ddd;
+  overflow-y: auto;
 }
 
-.sidebar-inner{
-  padding:20px;
+.sidebar-inner {
+  padding: 20px;
 }
 
-input[type="text"]{
-  width:100%;
-  padding:10px;
-  margin-bottom:15px;
-  font-size:14px;
+#sidebar input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
 }
 
-.result{
-  padding:12px;
-  border:1px solid #ddd;
-  margin-bottom:10px;
-  cursor:pointer;
-}
-.result:hover{
-  background:#f2f2f2;
-}
-.result strong{
-  display:block;
+/* ===== RESULTADOS (CSV) ===== */
+#results .item {
+  border: 1px solid #ddd;
+  padding: 10px;
+  margin-bottom: 10px;
+  cursor: pointer;
 }
 
-/* ===== MAP ===== */
-#map{
-  width:50%;
-  transition:.3s;
+#results .item:hover {
+  background: #f5f5f5;
+}
+
+/* ===== MAP + DETAILS ===== */
+#content {
+  flex: 1;
+  position: relative;
+}
+
+#map {
+  width: 100%;
+  height: 100%;
 }
 
 /* ===== DETAILS PANEL ===== */
-#details{
-  display:none;
-  width:50%;
-  padding:20px;
-  overflow:auto;
+#details-panel {
+  display: none;
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 420px;
+  height: 100%;
+  background: #fff;
+  border-left: 1px solid #ddd;
+  padding: 20px;
+  overflow-y: auto;
+  z-index: 1000;
 }
 
-#details h2{
-  margin-top:0;
-}
-
-.info-item{
-  margin-bottom:8px;
+#details-panel h2 {
+  margin-top: 0;
 }
 
 /* ===== BUTTONS ===== */
-.buttons{
-  margin-top:20px;
+.btn {
+  display: inline-block;
+  padding: 10px 14px;
+  margin-right: 10px;
+  margin-top: 10px;
+  text-decoration: none;
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
 }
-.buttons a{
-  display:inline-block;
-  padding:10px 15px;
-  margin-right:10px;
-  text-decoration:none;
-  color:#fff;
-  border-radius:4px;
+
+.btn-contact {
+  background: #25D366;
 }
-.btn-contact{
-  background:#25D366;
-}
-.btn-map{
-  background:#0f3d2e;
+
+.btn-map {
+  background: #0f3d2e;
 }
 
 /* ===== STATES ===== */
+.show-details #details-panel {
+  display: block;
+}
+
 .full-map #sidebar,
-.full-map #details{
-  display:none;
-}
-.full-map #map{
-  width:100%;
+.full-map #details-panel {
+  display: none;
 }
 
-.show-details #map{
-  display:none;
-}
-.show-details #details{
-  display:block;
-}
-
-/* RESPONSIVE */
-@media(max-width:900px){
-  #sidebar,#map,#details{
-    width:100%;
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px) {
+  #sidebar {
+    width: 100%;
+    max-width: none;
   }
 }
 </style>
@@ -140,57 +145,74 @@ input[type="text"]{
 
 <body>
 
+<!-- ===== HEADER ===== -->
 <header>
-  <img src="logo-sumauma.png" alt="Instituto Sumaúma">
+  <img src="assets/logo-sumauma.png" alt="Instituto Sumaúma">
   <h1>Mapeamento Cultural</h1>
 </header>
 
-<div id="container">
+<!-- ===== MAIN LAYOUT ===== -->
+<div id="layout">
 
   <!-- SIDEBAR -->
-  <div id="sidebar">
+  <aside id="sidebar">
     <div class="sidebar-inner">
+
+      <!-- 🔹 aqui entram filtros, abas, selects etc -->
       <input type="text" id="search" placeholder="Pesquisar iniciativas culturais...">
+
+      <!-- 🔹 resultados vindos do CSV -->
       <div id="results"></div>
+
     </div>
-  </div>
+  </aside>
 
-  <!-- DETAILS -->
-  <div id="details"></div>
+  <!-- CONTENT -->
+  <section id="content">
 
-  <!-- MAP -->
-  <div id="map"></div>
+    <!-- MAP -->
+    <div id="map"></div>
+
+    <!-- DETAILS -->
+    <div id="details-panel"></div>
+
+  </section>
 
 </div>
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <script>
-/* ===== DATA (simula planilha/JSON) ===== */
-const data = [
+/* ===== MAP INIT ===== */
+const map = L.map('map').setView([-14.235, -51.9253], 4);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+  attribution: '© OpenStreetMap'
+}).addTo(map);
+
+/* ===== EXEMPLO (SUBSTITUA PELO CSV) ===== */
+const dados = [
   {
     nome: "Rede Kalunga Comunicações",
     cidade: "Cavalcante",
     estado: "GO",
     categoria: "Comunicação Comunitária",
-    descricao: "Projeto de comunicação popular voltado à valorização cultural Kalunga.",
-    contato: "https://www.instagram.com/redekalunga",
+    descricao: "Projeto de comunicação popular voltado à cultura Kalunga.",
+    contato: "https://www.instagram.com/",
     lat: -13.7975,
     lng: -47.4581
   }
 ];
 
-/* ===== MAP INIT ===== */
-const map = L.map('map').setView([-14.235, -51.9253], 4);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
-  attribution:'© OpenStreetMap'
-}).addTo(map);
-
 const markers = [];
 
-/* ===== CREATE MARKERS ===== */
-data.forEach(item=>{
-  const marker = L.marker([item.lat,item.lng]).addTo(map);
+/* ===== RENDER RESULTADOS ===== */
+const resultsEl = document.getElementById("results");
+
+dados.forEach(item => {
+
+  // marcador
+  const marker = L.marker([item.lat, item.lng]).addTo(map);
   marker.bindPopup(`
     <strong>${item.nome}</strong><br>
     ${item.cidade} - ${item.estado}<br>
@@ -198,55 +220,52 @@ data.forEach(item=>{
     ${item.descricao}<br><br>
     <a href="${item.contato}" target="_blank">Entrar em contato</a>
   `);
-  markers.push({marker,item});
+  markers.push({ marker, item });
+
+  // item lista
+  const div = document.createElement("div");
+  div.className = "item";
+  div.innerHTML = `
+    <strong>${item.nome}</strong><br>
+    ${item.cidade} - ${item.estado}<br>
+    ${item.categoria}
+  `;
+
+  div.onclick = () => abrirDetalhes(item);
+  resultsEl.appendChild(div);
 });
 
-/* ===== SEARCH ===== */
-const resultsEl = document.getElementById('results');
-document.getElementById('search').addEventListener('input',e=>{
-  const val = e.target.value.toLowerCase();
-  resultsEl.innerHTML = '';
+/* ===== DETAILS ===== */
+function abrirDetalhes(item){
+  document.body.classList.add("show-details");
+  document.body.classList.remove("full-map");
 
-  data.filter(d=>d.nome.toLowerCase().includes(val))
-      .forEach(d=>{
-        const div = document.createElement('div');
-        div.className = 'result';
-        div.innerHTML = `
-          <strong>${d.nome}</strong>
-          ${d.cidade} - ${d.estado}<br>
-          ${d.categoria}
-        `;
-        div.onclick = ()=>showDetails(d);
-        resultsEl.appendChild(div);
-      });
-});
-
-/* ===== SHOW DETAILS ===== */
-function showDetails(item){
-  document.body.classList.add('show-details');
-  document.getElementById('details').innerHTML = `
+  document.getElementById("details-panel").innerHTML = `
     <h2>${item.nome}</h2>
-    <div class="info-item"><strong>Cidade:</strong> ${item.cidade} - ${item.estado}</div>
-    <div class="info-item"><strong>Categoria:</strong> ${item.categoria}</div>
-    <div class="info-item"><strong>Descrição:</strong><br>${item.descricao}</div>
+    <p><strong>Cidade:</strong> ${item.cidade} - ${item.estado}</p>
+    <p><strong>Categoria:</strong> ${item.categoria}</p>
+    <p>${item.descricao}</p>
 
-    <div class="buttons">
-      <a class="btn-contact" href="${item.contato}" target="_blank">Entrar em contato</a>
-      <a class="btn-map" href="#" onclick="viewOnMap(${item.lat},${item.lng});return false;">Ver no mapa</a>
-    </div>
+    <a class="btn btn-contact" href="${item.contato}" target="_blank">
+      Entrar em contato
+    </a>
+
+    <button class="btn btn-map" onclick="verNoMapa(${item.lat}, ${item.lng})">
+      Ver no mapa
+    </button>
   `;
 }
 
-/* ===== VIEW ON MAP ===== */
-function viewOnMap(lat,lng){
-  document.body.classList.remove('show-details');
-  document.body.classList.add('full-map');
+/* ===== VIEW MAP ===== */
+function verNoMapa(lat, lng){
+  document.body.classList.remove("show-details");
+  document.body.classList.add("full-map");
 
   map.invalidateSize();
-  map.setView([lat,lng],15);
+  map.setView([lat, lng], 15);
 
-  markers.forEach(m=>{
-    if(m.item.lat === lat){
+  markers.forEach(m => {
+    if (m.item.lat === lat) {
       m.marker.openPopup();
     }
   });
