@@ -14,32 +14,34 @@ html,body{
   font-family:Arial,sans-serif;
 }
 
-/* ===== HEADER ===== */
-header{
-  background:#0f3d2e;
-  color:#fff;
-}
-.header-top{
-  height:80px;
-  display:flex;
-  align-items:center;
-  padding:0 20px;
-  gap:30px;
-}
-.header-top img{
-  height:45px;
-}
-.header-banner{
-  height:220px;
+/* ================= HEADER ================= */
+.header{
+  position:relative;
+  height:180px;
   background:url('banner-capa.png') center/cover no-repeat;
 }
 
-/* ===== MENU ===== */
+.header-overlay{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  gap:30px;
+  padding:0 30px;
+  background:rgba(0,0,0,.35);
+}
+
+.header-overlay img{
+  height:48px;
+}
+
+/* ================= MENU ================= */
 .menu{
   display:flex;
   gap:25px;
   align-items:center;
 }
+
 .menu a,.dropbtn{
   color:#fff;
   text-decoration:none;
@@ -48,7 +50,9 @@ header{
   font-size:16px;
   cursor:pointer;
 }
+
 .dropdown{position:relative;}
+
 .dropdown-content{
   display:none;
   position:absolute;
@@ -56,38 +60,43 @@ header{
   left:0;
   background:#fff;
   min-width:180px;
-  box-shadow:0 2px 6px rgba(0,0,0,.2);
+  box-shadow:0 2px 6px rgba(0,0,0,.25);
   z-index:1000;
 }
+
 .dropdown-content a{
   color:#000;
   padding:10px;
   display:block;
+  text-decoration:none;
 }
+
 .dropdown-content a:hover{background:#f2f2f2;}
 .dropdown:hover .dropdown-content{display:block;}
 
-/* ===== LAYOUT ===== */
+/* ================= LAYOUT ================= */
 #layout{
   display:flex;
-  height:calc(100% - 300px);
+  height:calc(100% - 180px);
 }
 
-/* ===== SIDEBAR ===== */
+/* ================= SIDEBAR ================= */
 #sidebar{
   width:420px;
   background:#fff;
   border-right:1px solid #ddd;
   overflow-y:auto;
 }
+
 .sidebar-inner{padding:20px;}
+
 input,select{
   width:100%;
   padding:8px;
   margin-bottom:10px;
 }
 
-/* ===== RESULTADOS ===== */
+/* ================= RESULTADOS ================= */
 .item{
   border:1px solid #ddd;
   padding:10px;
@@ -96,7 +105,7 @@ input,select{
 }
 .item:hover{background:#f2f2f2;}
 
-/* ===== MAPA ===== */
+/* ================= MAPA ================= */
 #content{
   flex:1;
   position:relative;
@@ -106,7 +115,7 @@ input,select{
   height:100%;
 }
 
-/* ===== DETALHES ===== */
+/* ================= DETALHES ================= */
 #details{
   display:none;
   position:absolute;
@@ -120,11 +129,12 @@ input,select{
   overflow-y:auto;
   z-index:999;
 }
+
 .show-details #details{display:block;}
 .full-map #sidebar,
 .full-map #details{display:none;}
 
-/* ===== BOTÕES ===== */
+/* ================= BOTÕES ================= */
 .btn{
   display:inline-block;
   padding:10px 14px;
@@ -135,19 +145,28 @@ input,select{
   text-decoration:none;
   cursor:pointer;
 }
+
 .btn-contact{background:#25D366;}
 .btn-map{background:#0f3d2e;}
+
+/* ================= RESPONSIVO ================= */
+@media(max-width:900px){
+  #layout{flex-direction:column;}
+  #sidebar{width:100%;}
+}
 </style>
 </head>
 
 <body>
 
-<header>
-  <div class="header-top">
+<!-- ================= HEADER ================= -->
+<header class="header">
+  <div class="header-overlay">
     <img src="instituto_sumauma.png" alt="Instituto Sumaúma">
 
     <nav class="menu">
-      <a href="https://www.sumauma.org/" target="_blank">Início</a>
+      <a href="https://www.sumauma.org/" target="_blank">Institucional</a>
+      <a href="https://pesquisa.sumauma.org/">Início</a>
 
       <div class="dropdown">
         <button class="dropbtn">Pesquisa ▾</button>
@@ -158,10 +177,9 @@ input,select{
       </div>
     </nav>
   </div>
-
-  <div class="header-banner"></div>
 </header>
 
+<!-- ================= MAIN ================= -->
 <div id="layout">
 
   <!-- SIDEBAR -->
@@ -185,6 +203,7 @@ input,select{
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <script>
+/* ================= MAPA ================= */
 const map = L.map('map').setView([-14.235, -51.9253], 4);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
   attribution:'© OpenStreetMap'
@@ -192,7 +211,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
 
 let dados=[],markers=[];
 
-/* ===== CSV ROBUSTO ===== */
+/* ================= CSV ROBUSTO ================= */
 fetch('Mapeamento_mestre.csv')
 .then(r=>r.text())
 .then(text=>{
@@ -201,7 +220,7 @@ fetch('Mapeamento_mestre.csv')
   renderizar(dados);
 });
 
-/* ===== PARSER CSV SEGURO ===== */
+/* Parser CSV seguro (suporta vírgulas em texto) */
 function parseCSV(text){
   const rows=[],headers=[];
   let cur=[],val='',q=false;
@@ -221,11 +240,30 @@ function parseCSV(text){
   });
 }
 
+/* ================= FILTROS ================= */
 function popularFiltros(d){
-  [...new Set(d.map(i=>i.estado))].forEach(e=>filterEstado.innerHTML+=`<option>${e}</option>`);
-  [...new Set(d.map(i=>i.categoria))].forEach(c=>filterCategoria.innerHTML+=`<option>${c}</option>`);
+  [...new Set(d.map(i=>i.estado))].forEach(e=>{
+    if(e) filterEstado.innerHTML+=`<option>${e}</option>`;
+  });
+  [...new Set(d.map(i=>i.categoria))].forEach(c=>{
+    if(c) filterCategoria.innerHTML+=`<option>${c}</option>`;
+  });
 }
 
+function aplicarFiltros(){
+  const s=search.value.toLowerCase();
+  renderizar(dados.filter(d=>
+    (!s||d.nome.toLowerCase().includes(s)) &&
+    (!filterEstado.value||d.estado===filterEstado.value) &&
+    (!filterCategoria.value||d.categoria===filterCategoria.value)
+  ));
+}
+
+search.oninput=aplicarFiltros;
+filterEstado.onchange=aplicarFiltros;
+filterCategoria.onchange=aplicarFiltros;
+
+/* ================= RENDER ================= */
 function renderizar(lista){
   results.innerHTML='';
   markers.forEach(m=>map.removeLayer(m));
@@ -234,17 +272,23 @@ function renderizar(lista){
   lista.forEach(d=>{
     if(!d.latitude||!d.longitude)return;
     const lat=+d.latitude,lng=+d.longitude;
+
     const m=L.marker([lat,lng]).addTo(map);
     markers.push(m);
 
     const div=document.createElement('div');
     div.className='item';
-    div.innerHTML=`<strong>${d.nome}</strong><br>${d.cidade} - ${d.estado}<br>${d.categoria}`;
+    div.innerHTML=`
+      <strong>${d.nome}</strong><br>
+      ${d.cidade} - ${d.estado}<br>
+      ${d.categoria}
+    `;
     div.onclick=()=>abrirDetalhes(d,lat,lng);
     results.appendChild(div);
   });
 }
 
+/* ================= DETALHES ================= */
 function abrirDetalhes(d,lat,lng){
   document.body.classList.add('show-details');
   document.body.classList.remove('full-map');
@@ -263,7 +307,7 @@ function verNoMapa(lat,lng){
   map.setView([lat,lng],15);
 }
 
-/* ===== MENU ===== */
+/* ================= MENU ================= */
 function mostrarMapa(){
   document.body.classList.add('full-map');
   document.body.classList.remove('show-details');
@@ -275,24 +319,14 @@ function abrirLivro(){
   document.body.classList.remove('full-map');
   details.innerHTML=`
     <h2>Pesquisa – Práticas Comunicacionais e Culturais Quilombolas</h2>
-    <a class="btn btn-contact" href="PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf" download>📥 Baixar PDF</a>
+    <a class="btn btn-contact"
+       href="PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf"
+       download>📥 Baixar PDF</a>
     <br><br>
-    <a class="btn btn-map" href="PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf" target="_blank">📖 Ler online</a>
+    <a class="btn btn-map"
+       href="PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf"
+       target="_blank">📖 Ler online</a>
   `;
-}
-
-/* ===== FILTROS ===== */
-search.oninput=aplicarFiltros;
-filterEstado.onchange=aplicarFiltros;
-filterCategoria.onchange=aplicarFiltros;
-
-function aplicarFiltros(){
-  const s=search.value.toLowerCase();
-  renderizar(dados.filter(d=>
-    (!s||d.nome.toLowerCase().includes(s)) &&
-    (!filterEstado.value||d.estado===filterEstado.value) &&
-    (!filterCategoria.value||d.categoria===filterCategoria.value)
-  ));
 }
 </script>
 
