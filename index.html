@@ -8,7 +8,6 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 
 <style>
-/* ===== RESET ===== */
 html, body {
   margin: 0;
   height: 100%;
@@ -17,35 +16,38 @@ html, body {
 
 /* ===== HEADER ===== */
 header {
-  height: 80px;
   background: #0f3d2e;
-  display: flex;
-  align-items: center;
-  padding: 0 20px;
   color: #fff;
 }
 
-header img {
+.header-top {
+  height: 80px;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+}
+
+.header-top img {
   height: 45px;
   margin-right: 15px;
 }
 
-header h1 {
-  font-size: 20px;
-  margin: 0;
+.header-banner {
+  width: 100%;
+  height: 220px;
+  background: url('banner-capa.png') center/cover no-repeat;
 }
 
 /* ===== LAYOUT ===== */
 #layout {
   display: flex;
-  height: calc(100% - 80px);
+  height: calc(100% - 300px);
 }
 
 /* ===== SIDEBAR ===== */
 #sidebar {
   width: 420px;
   min-width: 420px;
-  max-width: 420px;
   background: #fff;
   border-right: 1px solid #ddd;
   overflow-y: auto;
@@ -55,13 +57,13 @@ header h1 {
   padding: 20px;
 }
 
-#sidebar input {
+#search {
   width: 100%;
   padding: 10px;
   margin-bottom: 15px;
 }
 
-/* ===== RESULTADOS (CSV) ===== */
+/* ===== RESULTADOS CSV ===== */
 #results .item {
   border: 1px solid #ddd;
   padding: 10px;
@@ -70,10 +72,10 @@ header h1 {
 }
 
 #results .item:hover {
-  background: #f5f5f5;
+  background: #f3f3f3;
 }
 
-/* ===== MAP + DETAILS ===== */
+/* ===== MAP ===== */
 #content {
   flex: 1;
   position: relative;
@@ -84,7 +86,7 @@ header h1 {
   height: 100%;
 }
 
-/* ===== DETAILS PANEL ===== */
+/* ===== DETAILS ===== */
 #details-panel {
   display: none;
   position: absolute;
@@ -96,21 +98,26 @@ header h1 {
   border-left: 1px solid #ddd;
   padding: 20px;
   overflow-y: auto;
-  z-index: 1000;
+  z-index: 999;
 }
 
-#details-panel h2 {
-  margin-top: 0;
+.show-details #details-panel {
+  display: block;
+}
+
+.full-map #sidebar,
+.full-map #details-panel {
+  display: none;
 }
 
 /* ===== BUTTONS ===== */
 .btn {
   display: inline-block;
   padding: 10px 14px;
-  margin-right: 10px;
   margin-top: 10px;
-  text-decoration: none;
+  margin-right: 10px;
   color: #fff;
+  text-decoration: none;
   border-radius: 4px;
   cursor: pointer;
 }
@@ -123,21 +130,13 @@ header h1 {
   background: #0f3d2e;
 }
 
-/* ===== STATES ===== */
-.show-details #details-panel {
-  display: block;
-}
-
-.full-map #sidebar,
-.full-map #details-panel {
-  display: none;
-}
-
 /* ===== RESPONSIVE ===== */
 @media (max-width: 900px) {
+  #layout {
+    flex-direction: column;
+  }
   #sidebar {
     width: 100%;
-    max-width: none;
   }
 }
 </style>
@@ -147,21 +146,24 @@ header h1 {
 
 <!-- ===== HEADER ===== -->
 <header>
-  <img src="assets/logo-sumauma.png" alt="Instituto Sumaúma">
-  <h1>Mapeamento Cultural</h1>
+  <div class="header-top">
+    <img src="instituto_sumauma.png" alt="Instituto Sumaúma">
+    <h1>Mapeamento Cultural</h1>
+  </div>
+  <div class="header-banner"></div>
 </header>
 
-<!-- ===== MAIN LAYOUT ===== -->
+<!-- ===== MAIN ===== -->
 <div id="layout">
 
   <!-- SIDEBAR -->
   <aside id="sidebar">
     <div class="sidebar-inner">
 
-      <!-- 🔹 aqui entram filtros, abas, selects etc -->
+      <!-- ⚠️ mantenha seus filtros e abas aqui -->
       <input type="text" id="search" placeholder="Pesquisar iniciativas culturais...">
 
-      <!-- 🔹 resultados vindos do CSV -->
+      <!-- resultados CSV -->
       <div id="results"></div>
 
     </div>
@@ -169,13 +171,8 @@ header h1 {
 
   <!-- CONTENT -->
   <section id="content">
-
-    <!-- MAP -->
     <div id="map"></div>
-
-    <!-- DETAILS -->
     <div id="details-panel"></div>
-
   </section>
 
 </div>
@@ -183,21 +180,21 @@ header h1 {
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <script>
-/* ===== MAP INIT ===== */
+/* ===== MAP ===== */
 const map = L.map('map').setView([-14.235, -51.9253], 4);
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
   attribution: '© OpenStreetMap'
 }).addTo(map);
 
-/* ===== EXEMPLO (SUBSTITUA PELO CSV) ===== */
+/* ===== EXEMPLO (SUBSTITUIR PELO CSV REAL) ===== */
 const dados = [
   {
     nome: "Rede Kalunga Comunicações",
     cidade: "Cavalcante",
     estado: "GO",
     categoria: "Comunicação Comunitária",
-    descricao: "Projeto de comunicação popular voltado à cultura Kalunga.",
+    descricao: "Projeto de comunicação comunitária e cultural.",
     contato: "https://www.instagram.com/",
     lat: -13.7975,
     lng: -47.4581
@@ -205,24 +202,18 @@ const dados = [
 ];
 
 const markers = [];
-
-/* ===== RENDER RESULTADOS ===== */
 const resultsEl = document.getElementById("results");
 
 dados.forEach(item => {
-
-  // marcador
   const marker = L.marker([item.lat, item.lng]).addTo(map);
   marker.bindPopup(`
     <strong>${item.nome}</strong><br>
     ${item.cidade} - ${item.estado}<br>
     ${item.categoria}<br><br>
-    ${item.descricao}<br><br>
     <a href="${item.contato}" target="_blank">Entrar em contato</a>
   `);
   markers.push({ marker, item });
 
-  // item lista
   const div = document.createElement("div");
   div.className = "item";
   div.innerHTML = `
@@ -230,7 +221,6 @@ dados.forEach(item => {
     ${item.cidade} - ${item.estado}<br>
     ${item.categoria}
   `;
-
   div.onclick = () => abrirDetalhes(item);
   resultsEl.appendChild(div);
 });
@@ -246,17 +236,11 @@ function abrirDetalhes(item){
     <p><strong>Categoria:</strong> ${item.categoria}</p>
     <p>${item.descricao}</p>
 
-    <a class="btn btn-contact" href="${item.contato}" target="_blank">
-      Entrar em contato
-    </a>
-
-    <button class="btn btn-map" onclick="verNoMapa(${item.lat}, ${item.lng})">
-      Ver no mapa
-    </button>
+    <a class="btn btn-contact" href="${item.contato}" target="_blank">Entrar em contato</a>
+    <button class="btn btn-map" onclick="verNoMapa(${item.lat}, ${item.lng})">Ver no mapa</button>
   `;
 }
 
-/* ===== VIEW MAP ===== */
 function verNoMapa(lat, lng){
   document.body.classList.remove("show-details");
   document.body.classList.add("full-map");
