@@ -1,6 +1,6 @@
 id,nome,categoria,cidade,estado,latitude,longitude,territorio,contato,descricao,observacao
 1,Coletivo de Comunicação da Conaq (Coordenação Nacional de Articulação das Comunidades Negras Rurais Quilombolas),Prática Comunicacional,Brasília,Distrito Federal,,,Brasil,-,Gestão de redes e mobilização,Localização a definir
-2,Rede Kalunga Comunicações,Prática Comunicacional,Cavalcante,Goiás,-1379524,-4745326,Quilombola Kalunga (GO),-,Mídia independente de comunicação e articulação quilombola,ok
+2,Rede Kalunga Comunicações,Prática Comunicacional,Cavalcante,Goiás,-4745326,-1379524,Quilombola Kalunga (GO),-,Mídia independente de comunicação e articulação quilombola,ok
 3,Rádio e TV Quilombo Rampa,Prática Comunicacional,Vargem Grande,Maranhão,,,Quilombo Rampa (MA),-,Mídia independente de comunicação quilombola,Localização a definir
 4,"Coalizão de Mídias Periférica, Favelada, Quilombola, Indígena",Prática Comunicacional,Vargem Grande,Maranhão,,,Brasil,-,Rede de organizações jornalísticas,Localização a definir
 5,Mídia Quilombola,Prática Comunicacional,Lima Campos,Maranhão,,,Quilombo Bom Jesus dos Pretos - Lima Campos (MA),-,Site de notícias e mídia criado por Juliane Sousa,Localização a definir
@@ -201,3 +201,4 @@ id,nome,categoria,cidade,estado,latitude,longitude,territorio,contato,descricao,
 200,Museu Quilombola da Picada,Prática Comunicacional,Ipanguaçu,Rio Grande do Norte,,,Comunidade quilombola Picadas,-,Arquivo e memória,Localização a definir
 
 201,Quilombo Familia Souza,Prática Comunicacional,Belo Horizonte,Minas Gerais,,,Quilombo Urbano Famila Souza (BH),-,Comunidade Quilombola,Localização a definir
+
