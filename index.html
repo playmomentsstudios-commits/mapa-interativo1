@@ -8,10 +8,55 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 
 <style>
-html,body{height:100%;margin:0;font-family:Arial,sans-serif}
-body{overflow:hidden}
+html,body{margin:0;font-family:Arial,sans-serif}
 
-/* ===== LAYOUT DESKTOP ===== */
+/* ===== BANNER ===== */
+#banner-pesquisa{
+  width:100%;
+}
+.banner-topo{
+  background:url('banner-capa.png') center/cover no-repeat;
+  padding:60px 20px;
+  color:#fff;
+}
+.banner-topo .conteudo{
+  max-width:1100px;
+  margin:auto;
+}
+.banner-topo h1{
+  font-size:32px;
+  line-height:1.2;
+  margin-bottom:10px;
+}
+.banner-topo p{
+  font-size:16px;
+  max-width:750px;
+}
+
+.banner-rodape{
+  background:url('banner-rodape.png') center/cover no-repeat;
+  padding:30px 20px;
+  display:flex;
+  justify-content:center;
+  gap:80px;
+  flex-wrap:wrap;
+}
+.banner-rodape .bloco{
+  text-align:center;
+  color:#fff;
+  font-size:14px;
+}
+.banner-rodape img{
+  max-height:50px;
+  margin-top:8px;
+}
+
+/* ===== LAYOUT ===== */
+#container{
+  position:relative;
+  height:calc(100vh - 320px);
+}
+
 #sidebar{
   position:absolute;
   top:0;left:0;bottom:0;
@@ -34,7 +79,6 @@ body{overflow:hidden}
   padding:12px;
   border-bottom:1px solid #ddd;
 }
-.header h3{margin:0}
 
 /* TABS */
 .tabs{
@@ -94,11 +138,9 @@ input,select{
   flex:1;
   padding:10px;
   border:none;
-  background:#2e7d32; /* VERDE */
+  background:#2e7d32;
   color:#fff;
   cursor:pointer;
-  text-align:center;
-  text-decoration:none;
   border-radius:4px;
   font-weight:bold;
 }
@@ -110,222 +152,188 @@ iframe{
 
 /* ===== MOBILE ===== */
 @media(max-width:768px){
+  #container{
+    height:auto;
+  }
   #sidebar{
     position:relative;
     width:100%;
     max-width:100%;
-    height:55%;
+    height:auto;
     box-shadow:none;
   }
   #map{
     position:relative;
     left:0;
     width:100%;
-    height:45%;
+    height:50vh;
   }
-  body{overflow:auto}
 }
 </style>
 </head>
 
 <body>
 
-<div id="sidebar">
-
-  <div class="header">
-    <h3>Mapeamento Cultural</h3>
-  </div>
-
-  <div class="tabs">
-    <div class="tab active" data-tab="mapa">Mapa Cultural</div>
-    <div class="tab" data-tab="livro">Livro da Pesquisa</div>
-  </div>
-
-  <!-- ABA MAPA -->
-  <div id="tab-mapa" class="tab-content active">
-    <input id="search" placeholder="Buscar por nome">
-    <select id="stateFilter"><option value="">Estado</option></select>
-    <select id="cityFilter"><option value="">Cidade</option></select>
-    <select id="categoryFilter"><option value="">Categoria</option></select>
-    <div id="list"></div>
-  </div>
-
-  <!-- ABA LIVRO -->
-  <div id="tab-livro" class="tab-content">
-    <div class="pdf-actions">
-      <a href="PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf" download>
-        📥 Baixar PDF
-      </a>
-      <button onclick="abrirPDF()">📖 Ler aqui</button>
+<!-- ===== BANNER ===== -->
+<div id="banner-pesquisa">
+  <div class="banner-topo">
+    <div class="conteudo">
+      <h1>Corpos-territórios quilombolas<br>e o fio conectado da ancestralidade</h1>
+      <p>
+        entre as agendas de justiça climática e as práticas culturais
+        e comunicacionais
+      </p>
     </div>
-    <iframe id="pdfViewer" style="display:none"></iframe>
   </div>
 
+  <div class="banner-rodape">
+    <div class="bloco">
+      <div>Realização</div>
+      <img src="instituto_sumauma.png">
+    </div>
+    <div class="bloco">
+      <div>Financiamento</div>
+      <img src="climate_land_use_alliance.png">
+    </div>
+  </div>
 </div>
 
-<div id="map"></div>
+<!-- ===== MAPA + SIDEBAR ===== -->
+<div id="container">
+
+  <div id="sidebar">
+    <div class="header">
+      <h3>Mapeamento Cultural</h3>
+    </div>
+
+    <div class="tabs">
+      <div class="tab active" data-tab="mapa">Mapa Cultural</div>
+      <div class="tab" data-tab="livro">Livro da Pesquisa</div>
+    </div>
+
+    <div id="tab-mapa" class="tab-content active">
+      <input id="search" placeholder="Buscar por nome">
+      <select id="stateFilter"><option value="">Estado</option></select>
+      <select id="cityFilter"><option value="">Cidade</option></select>
+      <select id="categoryFilter"><option value="">Categoria</option></select>
+      <div id="list"></div>
+    </div>
+
+    <div id="tab-livro" class="tab-content">
+      <div class="pdf-actions">
+        <a href="PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf" download>📥 Baixar PDF</a>
+        <button onclick="abrirPDF()">📖 Ler aqui</button>
+      </div>
+      <iframe id="pdfViewer"></iframe>
+    </div>
+  </div>
+
+  <div id="map"></div>
+</div>
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <script>
-/* ================= MAPA ================= */
 const map = L.map('map').setView([-14.5,-52],4);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
-  attribution:'© OpenStreetMap'
-}).addTo(map);
-
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap'}).addTo(map);
 const markersLayer = L.layerGroup().addTo(map);
 
-/* ================= CSV (ROBUSTO) ================= */
-let data = [];
-
+let data=[];
 fetch('Mapeamento_mestre.csv')
-  .then(r => r.text())
-  .then(text => {
+.then(r=>r.text())
+.then(text=>{
+  text=text.replace(/^\uFEFF/,'').trim();
+  const lines=text.split('\n').filter(l=>l.trim());
+  const sep=lines[0].includes(';')?';':',';
+  const headers=lines[0].split(sep).map(h=>h.trim().toLowerCase());
 
-    // remove BOM
-    text = text.replace(/^\uFEFF/, '').trim();
+  data=lines.slice(1).map(l=>{
+    const c=l.split(sep);
+    let o={};
+    headers.forEach((h,i)=>o[h]=(c[i]||'').trim());
 
-    const lines = text.split('\n').filter(l => l.trim() !== '');
+    const norm=v=>{
+      if(!v) return null;
+      v=v.replace(/\./g,'').replace(',','.');
+      const n=parseFloat(v);
+      return isNaN(n)?null:n;
+    };
 
-    // detecta separador
-    const sep = lines[0].includes(';') ? ';' : ',';
+    o.latitude=norm(o.latitude);
+    o.longitude=norm(o.longitude);
+    o.valid=o.latitude&&o.longitude;
+    o.nome=o.nome||o.titulo||'';
 
-    const headers = lines[0]
-      .split(sep)
-      .map(h => h.trim().toLowerCase());
-
-    data = lines.slice(1).map(line => {
-      const cols = line.split(sep);
-      let o = {};
-
-      headers.forEach((h,i)=>{
-        o[h] = (cols[i] || '').trim();
-      });
-
-      function normalizeCoord(v){
-        if(!v) return null;
-        v = v.toString().trim();
-        const dots = (v.match(/\./g)||[]).length;
-        if(dots > 1) v = v.replace(/\./g,'');
-        v = v.replace(',','.');
-        const n = parseFloat(v);
-        return isNaN(n) ? null : n;
-      }
-
-      o.latitude  = normalizeCoord(o.latitude);
-      o.longitude = normalizeCoord(o.longitude);
-
-      o.valid = typeof o.latitude === 'number'
-             && typeof o.longitude === 'number';
-
-      o.nome = o.nome || o.titulo || o.organizacao || '';
-
-      return o;
-    }).filter(o =>
-      o.nome || o.cidade || o.estado || o.categoria
-    );
-
-    populateFilters();
-    applyFilters();
+    return o;
   });
 
-/* ================= FILTROS ================= */
+  populateFilters();
+  applyFilters();
+});
+
 function populateFilters(){
-  const s=new Set(), c=new Set(), k=new Set();
+  const s=new Set(),c=new Set(),k=new Set();
   data.forEach(d=>{
     if(d.estado) s.add(d.estado);
     if(d.cidade) c.add(d.cidade);
     if(d.categoria) k.add(d.categoria);
   });
-  fill('stateFilter',s);
-  fill('cityFilter',c);
-  fill('categoryFilter',k);
+  fill(stateFilter,s); fill(cityFilter,c); fill(categoryFilter,k);
 }
-function fill(id,set){
-  const el=document.getElementById(id);
+function fill(el,set){
   set.forEach(v=>{
     const o=document.createElement('option');
-    o.value=v;o.textContent=v;
-    el.appendChild(o);
+    o.value=v;o.textContent=v;el.appendChild(o);
   });
 }
 
 function applyFilters(){
-  const q=search.value.toLowerCase();
-  const st=stateFilter.value;
-  const ct=cityFilter.value;
-  const cat=categoryFilter.value;
-
   const f=data.filter(d=>
-    (!q||d.nome.toLowerCase().includes(q)) &&
-    (!st||d.estado===st) &&
-    (!ct||d.cidade===ct) &&
-    (!cat||d.categoria===cat)
+    (!search.value||d.nome.toLowerCase().includes(search.value.toLowerCase())) &&
+    (!stateFilter.value||d.estado===stateFilter.value) &&
+    (!cityFilter.value||d.cidade===cityFilter.value) &&
+    (!categoryFilter.value||d.categoria===categoryFilter.value)
   );
-
-  renderList(f);
-  renderMap(f);
+  renderList(f); renderMap(f);
 }
 
-/* ================= LISTA ================= */
-const listDiv=document.getElementById('list');
-function renderList(list){
-  listDiv.innerHTML='';
-  list.forEach(d=>{
+const list=document.getElementById('list');
+function renderList(l){
+  list.innerHTML='';
+  l.forEach(d=>{
     const div=document.createElement('div');
     div.className='item'+(!d.valid?' invalid':'');
-    div.innerHTML=`
-      <strong>${d.nome}</strong><br>
-      ${d.cidade||''} - ${d.estado||''}<br>
-      ${d.categoria||''}
-      ${!d.valid?'<div class="badge">Localização pendente</div>':''}
-    `;
-    if(d.valid){
-      div.onclick=()=>map.setView([d.latitude,d.longitude],15);
-    }
-    listDiv.appendChild(div);
+    div.innerHTML=`<strong>${d.nome}</strong><br>${d.cidade||''} - ${d.estado||''}<br>${d.categoria||''}${!d.valid?'<div class="badge">Localização pendente</div>':''}`;
+    if(d.valid) div.onclick=()=>map.setView([d.latitude,d.longitude],15);
+    list.appendChild(div);
   });
 }
 
-/* ================= MAPA ================= */
-function renderMap(list){
+function renderMap(l){
   markersLayer.clearLayers();
-  list.forEach(d=>{
+  l.forEach(d=>{
     if(!d.valid) return;
-    L.marker([d.latitude,d.longitude])
-      .bindPopup(`
-        <b>${d.nome}</b><br>
-        ${d.cidade||''} - ${d.estado||''}<br>
-        ${d.categoria||''}<br>
-        ${d.contato||''}
-      `)
-      .addTo(markersLayer);
+    L.marker([d.latitude,d.longitude]).bindPopup(`<b>${d.nome}</b><br>${d.cidade} - ${d.estado}<br>${d.categoria}`).addTo(markersLayer);
   });
 }
 
-/* ================= EVENTOS ================= */
 search.oninput=applyFilters;
 stateFilter.onchange=applyFilters;
 cityFilter.onchange=applyFilters;
 categoryFilter.onchange=applyFilters;
 
-/* ================= TABS ================= */
 document.querySelectorAll('.tab').forEach(t=>{
   t.onclick=()=>{
-    document.querySelectorAll('.tab,.tab-content')
-      .forEach(e=>e.classList.remove('active'));
+    document.querySelectorAll('.tab,.tab-content').forEach(e=>e.classList.remove('active'));
     t.classList.add('active');
     document.getElementById('tab-'+t.dataset.tab).classList.add('active');
     setTimeout(()=>map.invalidateSize(),300);
   }
 });
 
-/* ================= PDF ================= */
 function abrirPDF(){
-  const iframe=document.getElementById('pdfViewer');
-  iframe.src='PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf';
-  iframe.style.display='block';
+  const i=document.getElementById('pdfViewer');
+  i.src='PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf';
 }
 </script>
 
