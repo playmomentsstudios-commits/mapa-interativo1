@@ -48,6 +48,20 @@ body{
   background:#111;
   color:#fff
 }
+fieldset{
+  background:#fff;
+  padding:15px;
+  margin-bottom:20px;
+  border-radius:8px;
+  border:1px solid #ddd
+}
+legend{font-weight:bold}
+label{display:block;margin-top:10px}
+input[type="text"]{
+  width:100%;
+  padding:8px;
+  margin-top:4px
+}
 table{
   width:100%;
   border-collapse:collapse;
@@ -87,8 +101,35 @@ th{
 
 <!-- PAINEL -->
 <div id="panelBox" class="container hidden">
+
   <h1>📊 Painel – Mapeamento Mestre</h1>
 
+  <!-- CONFIGURAÇÕES VISUAIS -->
+  <fieldset>
+    <legend>🎨 Configurações do Banner</legend>
+
+    <label>Título da Pesquisa</label>
+    <input id="cfgTitle" type="text" placeholder="Título principal">
+
+    <label>Subtítulo</label>
+    <input id="cfgSubtitle" type="text" placeholder="Subtítulo">
+
+    <label>Imagem Banner Topo (1920x300)</label>
+    <input id="cfgBannerTop" type="text" placeholder="banner-capa.png">
+
+    <label>Imagem Banner Rodapé (1920x220)</label>
+    <input id="cfgBannerFooter" type="text" placeholder="banner-rodape.png">
+
+    <label>Logo Realização</label>
+    <input id="cfgLogoRealizacao" type="text" placeholder="instituto_sumauma.png">
+
+    <label>Logo Financiamento</label>
+    <input id="cfgLogoFinanciamento" type="text" placeholder="climate_land_use_alliance.png">
+
+    <button id="downloadConfig">💾 Baixar config.json</button>
+  </fieldset>
+
+  <!-- DADOS -->
   <div class="toolbar">
     <button id="addBtn">➕ Adicionar registro</button>
     <button id="downloadBtn">💾 Baixar CSV atualizado</button>
@@ -99,31 +140,23 @@ th{
 </div>
 
 <script>
-// ================= LOGIN =================
-const ADMIN_USER = "adm";
-const ADMIN_PASS = "6202";
+const ADMIN_USER="adm";
+const ADMIN_PASS="6202";
 
-const loginBox = document.getElementById("loginBox");
-const panelBox = document.getElementById("panelBox");
-const loginUser = document.getElementById("loginUser");
-const loginPass = document.getElementById("loginPass");
-const loginBtn  = document.getElementById("loginBtn");
-const loginError = document.getElementById("loginError");
-const logoutBtn = document.getElementById("logoutBtn");
+const loginBox=document.getElementById("loginBox");
+const panelBox=document.getElementById("panelBox");
 
-loginBtn.addEventListener("click", () => {
-  if(loginUser.value === ADMIN_USER && loginPass.value === ADMIN_PASS){
+loginBtn.onclick=()=>{
+  if(loginUser.value===ADMIN_USER && loginPass.value===ADMIN_PASS){
     localStorage.setItem("adminAuth","true");
     showPanel();
-  }else{
-    loginError.innerText = "Usuário ou senha inválidos";
-  }
-});
+  }else loginError.innerText="Usuário ou senha inválidos";
+};
 
-logoutBtn.addEventListener("click", () => {
+logoutBtn.onclick=()=>{
   localStorage.removeItem("adminAuth");
   location.reload();
-});
+};
 
 function showPanel(){
   loginBox.classList.add("hidden");
@@ -131,68 +164,80 @@ function showPanel(){
   loadCSV();
 }
 
-if(localStorage.getItem("adminAuth")==="true"){
-  showPanel();
-}
+if(localStorage.getItem("adminAuth")==="true") showPanel();
 
-// ================= CSV =================
-const headers = [
+/* ===== CONFIG JSON ===== */
+downloadConfig.onclick=()=>{
+  const cfg={
+    title:cfgTitle.value,
+    subtitle:cfgSubtitle.value,
+    bannerTop:cfgBannerTop.value,
+    bannerFooter:cfgBannerFooter.value,
+    logoRealizacao:cfgLogoRealizacao.value,
+    logoFinanciamento:cfgLogoFinanciamento.value
+  };
+  const blob=new Blob([JSON.stringify(cfg,null,2)],{type:"application/json"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="config.json";
+  a.click();
+};
+
+/* ===== CSV ===== */
+const headers=[
   "id","nome","categoria","cidade","estado",
   "latitude","longitude","territorio",
   "contato","descricao","observacao"
 ];
-
-let data = [];
-const table = document.getElementById("dataTable");
+let data=[];
+const table=document.getElementById("dataTable");
 
 function loadCSV(){
   fetch("Mapeamento_mestre.csv")
-    .then(r=>r.text())
-    .then(text=>{
-      const lines = text.trim().split("\n");
-      data = lines.slice(1).map(l=>{
-        const cols = l.split(",");
-        let obj = {};
-        headers.forEach((h,i)=>obj[h]=cols[i]||"");
-        return obj;
-      });
-      renderTable();
+  .then(r=>r.text())
+  .then(t=>{
+    const lines=t.trim().split("\n");
+    data=lines.slice(1).map(l=>{
+      const c=l.split(",");
+      let o={};
+      headers.forEach((h,i)=>o[h]=c[i]||"");
+      return o;
     });
+    renderTable();
+  });
 }
 
 function renderTable(){
   let html="<tr>"+headers.map(h=>`<th>${h}</th>`).join("")+"<th>Ações</th></tr>";
-  data.forEach((row,i)=>{
+  data.forEach((r,i)=>{
     html+="<tr>";
     headers.forEach(h=>{
-      html+=`<td contenteditable="true" data-i="${i}" data-h="${h}">${row[h]}</td>`;
+      html+=`<td contenteditable data-i="${i}" data-h="${h}">${r[h]}</td>`;
     });
     html+=`<td class="actions"><button onclick="removeRow(${i})">🗑️</button></td></tr>`;
   });
-  table.innerHTML = html;
+  table.innerHTML=html;
 
   table.querySelectorAll("td[contenteditable]").forEach(td=>{
-    td.addEventListener("input",()=>{
-      data[td.dataset.i][td.dataset.h] = td.innerText;
-    });
+    td.oninput=()=>data[td.dataset.i][td.dataset.h]=td.innerText;
   });
 }
 
 function removeRow(i){
-  if(confirm("Excluir este registro?")){
+  if(confirm("Excluir registro?")){
     data.splice(i,1);
     renderTable();
   }
 }
 
-document.getElementById("addBtn").onclick = ()=>{
-  let obj={};
-  headers.forEach(h=>obj[h]="");
-  data.push(obj);
+addBtn.onclick=()=>{
+  let o={};
+  headers.forEach(h=>o[h]="");
+  data.push(o);
   renderTable();
 };
 
-document.getElementById("downloadBtn").onclick = ()=>{
+downloadBtn.onclick=()=>{
   let csv=headers.join(",")+"\n";
   data.forEach(r=>{
     csv+=headers.map(h=>`"${(r[h]||"").replace(/"/g,'""')}"`).join(",")+"\n";
