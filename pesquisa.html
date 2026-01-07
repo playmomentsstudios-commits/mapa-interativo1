@@ -14,50 +14,71 @@ html,body{
   color:#222;
 }
 
+/* ================= MENU FIXO ================= */
+.menu-fixed{
+  position:fixed;
+  top:20px;
+  left:20px;
+  z-index:1000;
+  display:flex;
+  gap:20px;
+  align-items:center;
+}
+
+.menu-fixed img{
+  height:40px;
+  width:auto;
+}
+
+.menu-fixed a{
+  color:#fff;
+  text-decoration:none;
+  font-size:14px;
+  font-weight:bold;
+}
+
+.menu-fixed a:hover{
+  text-decoration:underline;
+}
+
 /* ================= HERO ================= */
 .hero{
   background:url('banner-capa.png') center/cover no-repeat;
-  min-height:70vh;
+  min-height:80vh;
   position:relative;
   display:flex;
   align-items:center;
 }
 
 .hero-overlay{
-  background:rgba(0,0,0,.55);
+  background:rgba(60,20,5,.75);
   position:absolute;
   inset:0;
 }
 
 .hero-content{
   position:relative;
-  max-width:900px;
-  padding:40px;
+  max-width:1000px;
+  padding:80px 60px;
   color:#fff;
 }
 
-.hero-content img{
-  height:60px;
-  width:auto;
-  margin-bottom:30px;
-}
-
 .hero-content h1{
-  font-size:34px;
+  font-size:40px;
   line-height:1.2;
-  margin-bottom:15px;
+  margin-bottom:20px;
 }
 
 .hero-content p{
   font-size:18px;
-  max-width:700px;
+  max-width:760px;
 }
 
 /* ================= SECTIONS ================= */
 .section{
-  max-width:1000px;
+  max-width:1100px;
   margin:0 auto;
-  padding:60px 30px;
+  padding:80px 40px;
 }
 
 .section h2{
@@ -67,17 +88,34 @@ html,body{
 
 .section p{
   font-size:16px;
-  line-height:1.6;
-  max-width:800px;
+  line-height:1.7;
+  max-width:900px;
 }
 
-/* ================= LIST ================= */
-.list{
-  margin-top:20px;
+/* ================= TOPICOS ================= */
+.topics{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:25px;
+  margin-top:40px;
 }
 
-.list li{
-  margin-bottom:10px;
+.topic{
+  background:#fff;
+  border-left:6px solid #0f3d2e;
+  padding:20px;
+  box-shadow:0 2px 8px rgba(0,0,0,.08);
+}
+
+.topic h3{
+  margin-top:0;
+  font-size:16px;
+  color:#0f3d2e;
+}
+
+.topic p{
+  font-size:14px;
+  line-height:1.5;
 }
 
 /* ================= CTA ================= */
@@ -85,11 +123,11 @@ html,body{
   background:#0f3d2e;
   color:#fff;
   text-align:center;
-  padding:60px 30px;
+  padding:70px 40px;
 }
 
 .cta h2{
-  margin-bottom:20px;
+  margin-bottom:25px;
 }
 
 .cta-buttons{
@@ -102,14 +140,14 @@ html,body{
 .cta a{
   background:#fff;
   color:#0f3d2e;
-  padding:14px 22px;
+  padding:14px 24px;
   border-radius:4px;
   text-decoration:none;
   font-weight:bold;
 }
 
 .cta a:hover{
-  background:#e5e5e5;
+  background:#e6e6e6;
 }
 
 /* ================= FOOTER ================= */
@@ -117,17 +155,21 @@ html,body{
   background:#111;
   color:#bbb;
   text-align:center;
-  padding:20px;
+  padding:25px;
   font-size:14px;
 }
 
 /* ================= RESPONSIVO ================= */
 @media(max-width:768px){
-  .hero-content h1{
-    font-size:26px;
+  .hero-content{
+    padding:120px 30px 60px;
   }
-  .hero-content p{
-    font-size:16px;
+  .hero-content h1{
+    font-size:28px;
+  }
+  .menu-fixed{
+    flex-wrap:wrap;
+    gap:10px;
   }
 }
 </style>
@@ -135,16 +177,25 @@ html,body{
 
 <body>
 
+<!-- ================= MENU FIXO ================= -->
+<nav class="menu-fixed">
+  <a href="https://pesquisa.sumauma.org/">
+    <img src="instituto_sumauma.png" alt="Instituto Sumaúma">
+  </a>
+  <a href="index.html">Início</a>
+  <a href="pesquisa.html">Pesquisa</a>
+  <a href="PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf" target="_blank">Livro</a>
+  <a href="https://www.sumauma.org/" target="_blank">Institucional</a>
+</nav>
+
 <!-- ================= HERO ================= -->
 <section class="hero">
   <div class="hero-overlay"></div>
   <div class="hero-content">
-    <img src="instituto_sumauma.png" alt="Instituto Sumaúma">
-
     <h1>Corpos-territórios quilombolas e o fio conectado da ancestralidade</h1>
     <p>
-      Práticas comunicacionais e culturais quilombolas que conectam
-      saberes ancestrais às lutas por justiça climática, racial e territorial.
+      Práticas comunicacionais e culturais quilombolas que conectam saberes ancestrais
+      às lutas por justiça climática, racial e territorial.
     </p>
   </div>
 </section>
@@ -154,25 +205,73 @@ html,body{
   <h2>Sobre a pesquisa</h2>
   <p>
     Esta pesquisa, realizada pelo Instituto Sumaúma, investiga como povos e comunidades
-    quilombolas utilizam a comunicação e a cultura como ferramentas de defesa do território,
-    da vida e da natureza, fortalecendo redes comunitárias e práticas ancestrais.
+    quilombolas utilizam a comunicação e a cultura como tecnologias ancestrais de defesa
+    do território, da vida e da natureza. O estudo revela como essas práticas fortalecem
+    redes comunitárias, articulam narrativas próprias e dialogam diretamente com os
+    desafios contemporâneos da justiça climática e racial.
   </p>
 </section>
 
-<!-- ================= DESTAQUES ================= -->
+<!-- ================= TOPICOS ================= -->
 <section class="section">
-  <h2>O que a pesquisa revela</h2>
-  <ul class="list">
-    <li>Comunicação como ato ancestral e político</li>
-    <li>Cultura como ferramenta de resistência e cuidado com o território</li>
-    <li>Povos quilombolas como protagonistas da justiça climática</li>
-    <li>Mais de 200 iniciativas quilombolas mapeadas</li>
-  </ul>
+  <h2>Tópicos centrais da pesquisa</h2>
+
+  <div class="topics">
+    <div class="topic">
+      <h3>1. Comunicação como ato ancestral</h3>
+      <p>A comunicação quilombola é baseada na oralidade, na memória coletiva e na transmissão intergeracional de saberes.</p>
+    </div>
+
+    <div class="topic">
+      <h3>2. Cultura como estratégia política</h3>
+      <p>Práticas culturais atuam como ferramentas de resistência, denúncia e afirmação identitária.</p>
+    </div>
+
+    <div class="topic">
+      <h3>3. Território como corpo vivo</h3>
+      <p>O território é compreendido como extensão do corpo, da espiritualidade e da ancestralidade.</p>
+    </div>
+
+    <div class="topic">
+      <h3>4. Justiça climática quilombola</h3>
+      <p>Comunidades quilombolas praticam justiça climática a partir da proteção dos biomas.</p>
+    </div>
+
+    <div class="topic">
+      <h3>5. Racismo ambiental</h3>
+      <p>A pesquisa evidencia como impactos ambientais recaem desproporcionalmente sobre territórios quilombolas.</p>
+    </div>
+
+    <div class="topic">
+      <h3>6. Comunicação comunitária</h3>
+      <p>Rádios, redes sociais, audiovisual e encontros presenciais fortalecem a comunicação local.</p>
+    </div>
+
+    <div class="topic">
+      <h3>7. Desafios de conectividade</h3>
+      <p>Falta de internet, infraestrutura e recursos limita a ampliação das práticas comunicacionais.</p>
+    </div>
+
+    <div class="topic">
+      <h3>8. Protagonismo feminino</h3>
+      <p>Mulheres quilombolas lideram práticas comunicacionais e culturais nos territórios.</p>
+    </div>
+
+    <div class="topic">
+      <h3>9. Juventudes quilombolas</h3>
+      <p>Jovens atuam na produção de conteúdo digital, audiovisual e redes sociais.</p>
+    </div>
+
+    <div class="topic">
+      <h3>10. Saberes tradicionais e futuro</h3>
+      <p>A pesquisa aponta os saberes quilombolas como fundamentais para pensar futuros sustentáveis.</p>
+    </div>
+  </div>
 </section>
 
 <!-- ================= CTA ================= -->
 <section class="cta">
-  <h2>Acesse o conteúdo</h2>
+  <h2>Acesse o conteúdo da pesquisa</h2>
   <div class="cta-buttons">
     <a href="index.html">Explorar o mapa interativo</a>
     <a href="PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf" target="_blank">
@@ -183,7 +282,7 @@ html,body{
 
 <!-- ================= FOOTER ================= -->
 <footer class="footer">
-  Instituto Sumaúma © 2026 – Pesquisa e Justiça Climática
+  Instituto Sumaúma © 2026 · Pesquisa, Comunicação e Justiça Climática
 </footer>
 
 </body>
