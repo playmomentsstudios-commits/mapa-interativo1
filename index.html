@@ -161,7 +161,7 @@ input,select{
   #sidebar{width:100%;}
 }
 
-/* ================= MOBILE HEADER AJUSTADO ================= */
+/* ================= MOBILE HEADER ================= */
 @media (max-width: 768px) {
 
   .header{
@@ -170,18 +170,16 @@ input,select{
 
   .header-overlay{
     flex-direction:column;
-    justify-content:space-between; /* logo em cima, menu embaixo */
+    justify-content:space-between;
     align-items:center;
     padding:16px 20px;
     text-align:center;
   }
 
-  /* LOGO NO TOPO */
   .header-overlay img{
     height:42px;
   }
 
-  /* MENU NA BASE */
   .menu{
     flex-direction:column;
     gap:10px;
@@ -195,6 +193,34 @@ input,select{
   .dropdown-content{
     left:50%;
     transform:translateX(-50%);
+  }
+}
+
+/* ================= MOBILE – DETALHES VISÍVEIS ================= */
+@media (max-width: 768px) {
+
+  .show-details #sidebar{
+    display:none;
+  }
+
+  .show-details #content{
+    flex:1;
+    position:relative;
+  }
+
+  .show-details #details{
+    display:block;
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    z-index:2000;
+    background:#fff;
+  }
+
+  .show-details #map{
+    filter:blur(2px);
   }
 }
 </style>
@@ -264,11 +290,10 @@ fetch('Mapeamento_mestre.csv')
     renderizar(dados);
   });
 
-/* ================= CSV PARSER ROBUSTO ================= */
+/* ================= CSV PARSER ================= */
 function parseCSV(text){
   const rows=[],headers=[];
   let cur=[],val='',q=false;
-
   for(let i=0;i<text.length;i++){
     const c=text[i],n=text[i+1];
     if(c=='"'&&q&&n=='"'){val+='"';i++;}
@@ -315,7 +340,6 @@ function renderizar(lista){
   results.innerHTML='';
   markers.forEach(m=>map.removeLayer(m));
   markers=[];
-
   lista.forEach(d=>{
     const temLocalizacao =
       d.latitude && d.longitude &&
@@ -337,8 +361,7 @@ function renderizar(lista){
     results.appendChild(div);
 
     if(!temLocalizacao) return;
-    const m=L.marker([Number(d.latitude),Number(d.longitude)]).addTo(map);
-    markers.push(m);
+    markers.push(L.marker([Number(d.latitude),Number(d.longitude)]).addTo(map));
   });
 }
 
@@ -356,7 +379,6 @@ function abrirDetalhes(d,lat,lng){
     ${!temLocalizacao?`<p style="color:#b45309;"><b>Localização:</b> pendente</p>`:''}
     ${d.contato?`<p><b>Contato:</b> ${d.contato}</p>`:''}
     <p>${d.descricao||''}</p>
-
     ${d.link?`<a class="btn btn-contact" href="${d.link}" target="_blank">Entrar em contato</a>`:''}
     ${temLocalizacao?`<button class="btn btn-map" onclick="verNoMapa(${lat},${lng})">Ver no mapa</button>`:''}
   `;
@@ -367,7 +389,6 @@ function verNoMapa(lat,lng){
   map.setView([lat,lng],15);
 }
 
-/* ================= MENU ================= */
 function mostrarMapa(){
   document.body.classList.add('full-map');
   document.body.classList.remove('show-details');
