@@ -34,6 +34,7 @@ html,body{
 .header-overlay img{
   height:100px;
   width:auto;
+  cursor:pointer;
 }
 
 /* ================= MENU ================= */
@@ -43,42 +44,21 @@ html,body{
   align-items:center;
 }
 
-.menu a,.dropbtn{
+.menu a{
   color:#fff;
   text-decoration:none;
-  background:none;
-  border:none;
   font-size:16px;
   cursor:pointer;
 }
 
-.dropdown{position:relative;}
-
-.dropdown-content{
-  display:none;
-  position:absolute;
-  top:100%;
-  left:0;
-  background:#fff;
-  min-width:180px;
-  box-shadow:0 2px 6px rgba(0,0,0,.25);
-  z-index:1000;
+.menu a:hover{
+  text-decoration:underline;
 }
-
-.dropdown-content a{
-  color:#000;
-  padding:10px;
-  display:block;
-  text-decoration:none;
-}
-
-.dropdown-content a:hover{background:#f2f2f2;}
-.dropdown:hover .dropdown-content{display:block;}
 
 /* ================= LAYOUT ================= */
 #layout{
   display:flex;
-  height:calc(100% - 140px); /* 🔥 corrigido */
+  height:calc(100% - 140px);
 }
 
 /* ================= SIDEBAR ================= */
@@ -91,7 +71,6 @@ html,body{
 
 .sidebar-inner{padding:20px;}
 
-/* 🔥 CAMPOS PADRONIZADOS */
 input,
 select{
   width:100%;
@@ -179,27 +158,27 @@ select{
 <!-- ================= HEADER ================= -->
 <header class="header">
   <div class="header-overlay">
-    <img src="instituto_sumauma.png" alt="Instituto Sumaúma">
 
+    <!-- LOGO -->
+    <a href="https://pesquisa.sumauma.org/">
+      <img src="instituto_sumauma.png" alt="Instituto Sumaúma">
+    </a>
+
+    <!-- MENU -->
     <nav class="menu">
       <a href="https://pesquisa.sumauma.org/">Início</a>
-
-      <div class="dropdown">
-        <button class="dropbtn">Material da Pesquisa ▾</button>
-        <div class="dropdown-content">
-          <a href="#" onclick="mostrarMapa()">Mapa</a>
-          <a href="#" onclick="abrirLivro()">Livro</a>
-        </div>
-      </div>
-
+      <a href="pesquisa.html">Pesquisa</a>
+      <a href="PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf" target="_blank">Livro</a>
       <a href="https://www.sumauma.org/" target="_blank">Institucional</a>
     </nav>
+
   </div>
 </header>
 
 <!-- ================= MAIN ================= -->
 <div id="layout">
 
+  <!-- SIDEBAR -->
   <aside id="sidebar">
     <div class="sidebar-inner">
       <input type="text" id="search" placeholder="Buscar por nome...">
@@ -220,6 +199,7 @@ select{
     </div>
   </aside>
 
+  <!-- MAPA -->
   <section id="content">
     <div id="map"></div>
     <div id="details"></div>
@@ -244,7 +224,7 @@ fetch('Mapeamento_mestre.csv')
   dados=parseCSV(text);
   popularFiltros(dados);
   renderizar(dados);
-  setTimeout(()=>map.invalidateSize(),300); /* 🔥 essencial */
+  setTimeout(()=>map.invalidateSize(),300);
 });
 
 function parseCSV(text){
@@ -319,7 +299,7 @@ function renderizar(lista){
   });
 }
 
-function abrirDetalhes(d,lat,lng){
+function abrirDetalhes(d){
   document.body.classList.add('show-details');
   details.innerHTML=`
     <h2>${d.nome}</h2>
@@ -328,18 +308,6 @@ function abrirDetalhes(d,lat,lng){
     ${d.contato?`<p><b>Contato:</b> ${d.contato}</p>`:''}
     <p>${d.descricao||''}</p>
     ${d.link?`<a class="btn btn-contact" href="${d.link}" target="_blank">Entrar em contato</a>`:''}
-  `;
-}
-
-function mostrarMapa(){
-  document.body.classList.add('full-map');
-}
-
-function abrirLivro(){
-  document.body.classList.add('show-details');
-  details.innerHTML=`
-    <h2>Pesquisa – Práticas Comunicacionais e Culturais Quilombolas</h2>
-    <a class="btn btn-map" href="PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf" target="_blank">📖 Ler online</a>
   `;
 }
 </script>
