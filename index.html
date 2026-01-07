@@ -155,6 +155,16 @@ input,select{
 .btn-contact{background:#25D366;}
 .btn-map{background:#0f3d2e;}
 
+.btn-back{
+  background:none;
+  border:none;
+  color:#0f3d2e;
+  font-size:14px;
+  cursor:pointer;
+  margin-bottom:10px;
+  padding:0;
+}
+
 /* ================= RESPONSIVO GERAL ================= */
 @media(max-width:900px){
   #layout{flex-direction:column;}
@@ -180,14 +190,17 @@ input,select{
     height:42px;
   }
 
+  /* MENU AGORA HORIZONTAL NO MOBILE */
   .menu{
-    flex-direction:column;
-    gap:10px;
+    flex-direction:row;
+    gap:16px;
+    flex-wrap:wrap;
+    justify-content:center;
   }
 
   .menu a,
   .dropbtn{
-    font-size:15px;
+    font-size:14px;
   }
 
   .dropdown-content{
@@ -272,25 +285,21 @@ input,select{
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <script>
-/* ================= MAPA ================= */
 const map = L.map('map').setView([-14.235, -51.9253], 4);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
   attribution:'© OpenStreetMap'
 }).addTo(map);
 
-let dados = [];
-let markers = [];
+let dados=[],markers=[];
 
-/* ================= CSV ================= */
 fetch('Mapeamento_mestre.csv')
-  .then(r => r.text())
-  .then(text => {
-    dados = parseCSV(text);
-    popularFiltros(dados);
-    renderizar(dados);
-  });
+.then(r=>r.text())
+.then(text=>{
+  dados=parseCSV(text);
+  popularFiltros(dados);
+  renderizar(dados);
+});
 
-/* ================= CSV PARSER ================= */
 function parseCSV(text){
   const rows=[],headers=[];
   let cur=[],val='',q=false;
@@ -309,7 +318,6 @@ function parseCSV(text){
   });
 }
 
-/* ================= FILTROS ================= */
 function popularFiltros(data){
   const estados=new Set(), categorias=new Set();
   data.forEach(d=>{
@@ -326,86 +334,4 @@ function aplicarFiltros(){
   const s=search.value.toLowerCase();
   renderizar(dados.filter(d=>
     (!s||d.nome.toLowerCase().includes(s)) &&
-    (!filterEstado.value||d.estado===filterEstado.value) &&
-    (!filterCategoria.value||d.categoria===filterCategoria.value)
-  ));
-}
-
-search.oninput=aplicarFiltros;
-filterEstado.onchange=aplicarFiltros;
-filterCategoria.onchange=aplicarFiltros;
-
-/* ================= RENDER ================= */
-function renderizar(lista){
-  results.innerHTML='';
-  markers.forEach(m=>map.removeLayer(m));
-  markers=[];
-  lista.forEach(d=>{
-    const temLocalizacao =
-      d.latitude && d.longitude &&
-      !isNaN(d.latitude) && !isNaN(d.longitude);
-
-    const div=document.createElement('div');
-    div.className='item';
-    div.innerHTML=`
-      <strong>${d.nome}</strong><br>
-      ${d.cidade} - ${d.estado}<br>
-      ${d.categoria}
-      ${!temLocalizacao?`<div class="tag-pendente">📍 Localização pendente</div>`:''}
-    `;
-    div.onclick=()=>abrirDetalhes(
-      d,
-      temLocalizacao?Number(d.latitude):null,
-      temLocalizacao?Number(d.longitude):null
-    );
-    results.appendChild(div);
-
-    if(!temLocalizacao) return;
-    markers.push(L.marker([Number(d.latitude),Number(d.longitude)]).addTo(map));
-  });
-}
-
-/* ================= DETALHES ================= */
-function abrirDetalhes(d,lat,lng){
-  document.body.classList.add('show-details');
-  document.body.classList.remove('full-map');
-
-  const temLocalizacao = lat!==null && lng!==null;
-
-  details.innerHTML=`
-    <h2>${d.nome}</h2>
-    <p><b>Cidade:</b> ${d.cidade} - ${d.estado}</p>
-    <p><b>Categoria:</b> ${d.categoria}</p>
-    ${!temLocalizacao?`<p style="color:#b45309;"><b>Localização:</b> pendente</p>`:''}
-    ${d.contato?`<p><b>Contato:</b> ${d.contato}</p>`:''}
-    <p>${d.descricao||''}</p>
-    ${d.link?`<a class="btn btn-contact" href="${d.link}" target="_blank">Entrar em contato</a>`:''}
-    ${temLocalizacao?`<button class="btn btn-map" onclick="verNoMapa(${lat},${lng})">Ver no mapa</button>`:''}
-  `;
-}
-
-function verNoMapa(lat,lng){
-  document.body.classList.add('full-map');
-  map.setView([lat,lng],15);
-}
-
-function mostrarMapa(){
-  document.body.classList.add('full-map');
-  document.body.classList.remove('show-details');
-  map.invalidateSize();
-}
-
-function abrirLivro(){
-  document.body.classList.add('show-details');
-  document.body.classList.remove('full-map');
-  details.innerHTML=`
-    <h2>Pesquisa – Práticas Comunicacionais e Culturais Quilombolas</h2>
-    <a class="btn btn-contact" href="PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf" download>📥 Baixar PDF</a>
-    <br><br>
-    <a class="btn btn-map" href="PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf" target="_blank">📖 Ler online</a>
-  `;
-}
-</script>
-
-</body>
-</html>
+    (!filterEstado.value||d.estado
