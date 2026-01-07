@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>A Pesquisa – Instituto Sumaúma</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+html,body{
+  margin:0;
+  padding:0;
+  font-family:Arial,sans-serif;
+  background:#f7f7f7;
+  color:#222;
+}
+
+/* ================= HERO ================= */
+.hero{
+  background:url('banner-capa.png') center/cover no-repeat;
+  min-height:70vh;
+  position:relative;
+  display:flex;
+  align-items:center;
+}
+
+.hero-overlay{
+  background:rgba(0,0,0,.55);
+  position:absolute;
+  inset:0;
+}
+
+.hero-content{
+  position:relative;
+  max-width:900px;
+  padding:40px;
+  color:#fff;
+}
+
+.hero-content img{
+  height:60px;
+  width:auto;
+  margin-bottom:30px;
+}
+
+.hero-content h1{
+  font-size:34px;
+  line-height:1.2;
+  margin-bottom:15px;
+}
+
+.hero-content p{
+  font-size:18px;
+  max-width:700px;
+}
+
+/* ================= SECTIONS ================= */
+.section{
+  max-width:1000px;
+  margin:0 auto;
+  padding:60px 30px;
+}
+
+.section h2{
+  color:#0f3d2e;
+  margin-bottom:20px;
+}
+
+.section p{
+  font-size:16px;
+  line-height:1.6;
+  max-width:800px;
+}
+
+/* ================= LIST ================= */
+.list{
+  margin-top:20px;
+}
+
+.list li{
+  margin-bottom:10px;
+}
+
+/* ================= CTA ================= */
+.cta{
+  background:#0f3d2e;
+  color:#fff;
+  text-align:center;
+  padding:60px 30px;
+}
+
+.cta h2{
+  margin-bottom:20px;
+}
+
+.cta-buttons{
+  display:flex;
+  gap:20px;
+  justify-content:center;
+  flex-wrap:wrap;
+}
+
+.cta a{
+  background:#fff;
+  color:#0f3d2e;
+  padding:14px 22px;
+  border-radius:4px;
+  text-decoration:none;
+  font-weight:bold;
+}
+
+.cta a:hover{
+  background:#e5e5e5;
+}
+
+/* ================= FOOTER ================= */
+.footer{
+  background:#111;
+  color:#bbb;
+  text-align:center;
+  padding:20px;
+  font-size:14px;
+}
+
+/* ================= RESPONSIVO ================= */
+@media(max-width:768px){
+  .hero-content h1{
+    font-size:26px;
+  }
+  .hero-content p{
+    font-size:16px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- ================= HERO ================= -->
+<section class="hero">
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <img src="instituto_sumauma.png" alt="Instituto Sumaúma">
+
+    <h1>Corpos-territórios quilombolas e o fio conectado da ancestralidade</h1>
+    <p>
+      Práticas comunicacionais e culturais quilombolas que conectam
+      saberes ancestrais às lutas por justiça climática, racial e territorial.
+    </p>
+  </div>
+</section>
+
+<!-- ================= SOBRE ================= -->
+<section class="section">
+  <h2>Sobre a pesquisa</h2>
+  <p>
+    Esta pesquisa, realizada pelo Instituto Sumaúma, investiga como povos e comunidades
+    quilombolas utilizam a comunicação e a cultura como ferramentas de defesa do território,
+    da vida e da natureza, fortalecendo redes comunitárias e práticas ancestrais.
+  </p>
+</section>
+
+<!-- ================= DESTAQUES ================= -->
+<section class="section">
+  <h2>O que a pesquisa revela</h2>
+  <ul class="list">
+    <li>Comunicação como ato ancestral e político</li>
+    <li>Cultura como ferramenta de resistência e cuidado com o território</li>
+    <li>Povos quilombolas como protagonistas da justiça climática</li>
+    <li>Mais de 200 iniciativas quilombolas mapeadas</li>
+  </ul>
+</section>
+
+<!-- ================= CTA ================= -->
+<section class="cta">
+  <h2>Acesse o conteúdo</h2>
+  <div class="cta-buttons">
+    <a href="index.html">Explorar o mapa interativo</a>
+    <a href="PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf" target="_blank">
+      Ler a pesquisa completa
+    </a>
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer class="footer">
+  Instituto Sumaúma © 2026 – Pesquisa e Justiça Climática
+</footer>
+
+</body>
+</html>
