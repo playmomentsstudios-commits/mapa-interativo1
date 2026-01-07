@@ -155,10 +155,47 @@ input,select{
 .btn-contact{background:#25D366;}
 .btn-map{background:#0f3d2e;}
 
-/* ================= RESPONSIVO ================= */
+/* ================= RESPONSIVO GERAL ================= */
 @media(max-width:900px){
   #layout{flex-direction:column;}
   #sidebar{width:100%;}
+}
+
+/* ================= MOBILE HEADER AJUSTADO ================= */
+@media (max-width: 768px) {
+
+  .header{
+    height:180px;
+  }
+
+  .header-overlay{
+    flex-direction:column;
+    justify-content:space-between; /* logo em cima, menu embaixo */
+    align-items:center;
+    padding:16px 20px;
+    text-align:center;
+  }
+
+  /* LOGO NO TOPO */
+  .header-overlay img{
+    height:42px;
+  }
+
+  /* MENU NA BASE */
+  .menu{
+    flex-direction:column;
+    gap:10px;
+  }
+
+  .menu a,
+  .dropbtn{
+    font-size:15px;
+  }
+
+  .dropdown-content{
+    left:50%;
+    transform:translateX(-50%);
+  }
 }
 </style>
 </head>
@@ -254,6 +291,8 @@ function popularFiltros(data){
     if(d.estado) estados.add(d.estado.trim());
     if(d.categoria) categorias.add(d.categoria.trim());
   });
+  filterEstado.innerHTML='<option value="">Todos os estados</option>';
+  filterCategoria.innerHTML='<option value="">Todas as categorias</option>';
   estados.forEach(e=>filterEstado.innerHTML+=`<option>${e}</option>`);
   categorias.forEach(c=>filterCategoria.innerHTML+=`<option>${c}</option>`);
 }
@@ -282,7 +321,6 @@ function renderizar(lista){
       d.latitude && d.longitude &&
       !isNaN(d.latitude) && !isNaN(d.longitude);
 
-    /* LISTA */
     const div=document.createElement('div');
     div.className='item';
     div.innerHTML=`
@@ -298,7 +336,6 @@ function renderizar(lista){
     );
     results.appendChild(div);
 
-    /* MAPA */
     if(!temLocalizacao) return;
     const m=L.marker([Number(d.latitude),Number(d.longitude)]).addTo(map);
     markers.push(m);
