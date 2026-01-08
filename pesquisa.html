@@ -10,17 +10,16 @@ html,body{
   margin:0;
   padding:0;
   font-family:Arial,sans-serif;
-  background:#fff;
   color:#222;
+  background:#fff;
 }
 
-/* ================= HEADER ================= */
+/* ================= HEADER (PADRÃO) ================= */
 .header{
   position:relative;
   height:160px;
   background:url('banner-capa.png') center/cover no-repeat;
 }
-
 .header-overlay{
   position:absolute;
   inset:0;
@@ -30,41 +29,32 @@ html,body{
   padding:0 30px;
   background:rgba(0,0,0,.35);
 }
-
-/* LOGO */
 .header-left img{
   height:100px;
   width:auto;
 }
-
-/* MENU DESKTOP */
 .menu{
   display:flex;
   gap:30px;
 }
-
 .menu a{
   color:#fff;
   text-decoration:none;
   font-size:16px;
-  cursor:pointer;
 }
-
-/* MENU MOBILE */
 .menu-toggle{
   display:none;
   font-size:28px;
   color:#fff;
   cursor:pointer;
 }
-
 @media(max-width:768px){
   .menu{display:none;}
   .menu-toggle{display:block;}
   .header{height:200px;}
 }
 
-/* MOBILE MENU OVERLAY */
+/* MOBILE MENU */
 .mobile-menu{
   display:none;
   position:fixed;
@@ -73,7 +63,6 @@ html,body{
   z-index:5000;
   padding:40px 30px;
 }
-
 .mobile-menu a{
   display:block;
   color:#fff;
@@ -81,7 +70,6 @@ html,body{
   margin-bottom:25px;
   text-decoration:none;
 }
-
 .mobile-menu .close{
   font-size:28px;
   color:#fff;
@@ -89,27 +77,24 @@ html,body{
   margin-bottom:40px;
 }
 
-/* ================= SEÇÕES ================= */
+/* ================= CONTEÚDO ================= */
 .section{
   max-width:1000px;
   margin:0 auto;
   padding:70px 30px;
 }
-
 .section h1{
   color:#0f3d2e;
   font-size:32px;
   margin-bottom:20px;
 }
-
 .section h2{
   color:#0f3d2e;
   margin-bottom:15px;
 }
-
 .section p{
   font-size:16px;
-  line-height:1.6;
+  line-height:1.7;
 }
 
 /* ================= CITAÇÃO ================= */
@@ -117,7 +102,6 @@ html,body{
   background:#f4f4f4;
   padding:60px 30px;
 }
-
 .quote blockquote{
   max-width:900px;
   margin:0 auto;
@@ -125,11 +109,9 @@ html,body{
   line-height:1.6;
   font-style:italic;
 }
-
 .quote footer{
   margin-top:20px;
   font-size:14px;
-  font-style:normal;
   font-weight:bold;
 }
 
@@ -151,7 +133,6 @@ html,body{
   align-items:center;
   justify-content:center;
 }
-
 .modal-content{
   background:#fff;
   width:90%;
@@ -161,12 +142,10 @@ html,body{
   text-align:center;
   position:relative;
 }
-
 .modal-content img{
   width:200px;
   margin-bottom:20px;
 }
-
 .modal-content a{
   display:inline-block;
   margin:10px;
@@ -175,10 +154,8 @@ html,body{
   text-decoration:none;
   border-radius:4px;
 }
-
 .btn-read{background:#0f3d2e;}
 .btn-download{background:#25D366;}
-
 .close{
   position:absolute;
   top:10px;
@@ -203,10 +180,9 @@ html,body{
 <!-- ================= HEADER ================= -->
 <header class="header">
   <div class="header-overlay">
-
     <div class="header-left">
       <a href="index.html">
-        <img src="instituto_sumauma.png" alt="Instituto Sumaúma">
+        <img src="instituto_sumauma.png">
       </a>
     </div>
 
@@ -219,11 +195,9 @@ html,body{
       <a href="ficha-tecnica.html">Ficha Técnica</a>
       <a href="https://www.sumauma.org/" target="_blank">Institucional</a>
     </nav>
-
   </div>
 </header>
 
-<!-- MENU MOBILE -->
 <div class="mobile-menu" id="mobileMenu">
   <div class="close" onclick="fecharMenu()">✕</div>
   <a href="index.html">Início</a>
@@ -233,13 +207,13 @@ html,body{
   <a href="https://www.sumauma.org/" target="_blank">Institucional</a>
 </div>
 
-<!-- ================= CONTEÚDO ================= -->
+<!-- ================= INTRO ================= -->
 <section class="section">
   <h1>A Pesquisa</h1>
   <p>
-    Esta pesquisa investiga práticas culturais e comunicacionais quilombolas
-    nos meios digitais, compreendendo a comunicação como um ato político,
-    ancestral e estratégico na defesa do território, da identidade e da vida.
+    Esta pesquisa investiga práticas comunicacionais e culturais quilombolas
+    nos meios digitais, compreendendo a comunicação como ato político,
+    ancestral e estratégico na luta por justiça climática, racial e territorial.
   </p>
 </section>
 
@@ -249,15 +223,113 @@ html,body{
     reconhecimento da identidade negra brasileira para uma maior
     autoafirmação étnica e nacional…”
     <footer>
-      Maria Beatriz Nascimento<br>
-      Historiadora, professora e ativista afro-brasileira
+      Maria Beatriz Nascimento — Historiadora, professora e ativista afro-brasileira
     </footer>
   </blockquote>
 </section>
 
-<div class="full-image" style="background-image:url('images/img-intro.jpg')"></div>
+<div class="full-image" style="background-image:url('images/pesquisa/img-1.jpg')"></div>
 
-<!-- (demais blocos editoriais seguem iguais aos que você já aprovou) -->
+<!-- ================= TÓPICOS DO SUMÁRIO ================= -->
+
+<section class="section">
+  <h2>Mapeando práticas culturais e comunicacionais nos meios digitais</h2>
+  <p>
+    O mapeamento identifica como coletivos quilombolas utilizam ferramentas
+    digitais para fortalecer suas narrativas, articular redes e disputar
+    sentidos no espaço público.
+  </p>
+</section>
+
+<div class="full-image" style="background-image:url('images/pesquisa/img-2.jpg')"></div>
+
+<section class="section">
+  <h2>A cultura e a comunicação como ato político e ancestral</h2>
+  <p>
+    A comunicação é compreendida como extensão da ancestralidade, da oralidade
+    e da memória coletiva, atuando como instrumento de resistência política.
+  </p>
+</section>
+
+<div class="full-image" style="background-image:url('images/pesquisa/img-3.jpg')"></div>
+
+<section class="section">
+  <h2>Perfil sociodemográfico</h2>
+  <p>
+    A pesquisa apresenta o perfil dos sujeitos e coletivos envolvidos,
+    evidenciando gênero, território, faixa etária e formas de organização.
+  </p>
+</section>
+
+<div class="full-image" style="background-image:url('images/pesquisa/img-4.jpg')"></div>
+
+<section class="section">
+  <h2>Trajetórias pessoais em práticas comunicacionais e culturais</h2>
+  <p>
+    São analisadas as trajetórias individuais que constroem práticas
+    comunicacionais alinhadas à identidade quilombola.
+  </p>
+</section>
+
+<div class="full-image" style="background-image:url('images/pesquisa/img-5.jpg')"></div>
+
+<section class="section">
+  <h2>Trajetórias comunitárias em práticas comunicacionais e culturais</h2>
+  <p>
+    A comunicação comunitária aparece como eixo estruturante na organização
+    política, cultural e territorial dos quilombos.
+  </p>
+</section>
+
+<div class="full-image" style="background-image:url('images/pesquisa/img-6.jpg')"></div>
+
+<section class="section">
+  <h2>Aspectos organizacionais e redes colaborativas</h2>
+  <p>
+    Redes colaborativas ampliam o alcance das práticas comunicacionais,
+    fortalecendo alianças e estratégias de incidência política.
+  </p>
+</section>
+
+<div class="full-image" style="background-image:url('images/pesquisa/img-7.jpg')"></div>
+
+<section class="section">
+  <h2>Quilombo enquanto sinônimo de futuro</h2>
+  <p>
+    O quilombo é apresentado como projeto político de futuro,
+    articulando comunicação ancestral, território e justiça climática.
+  </p>
+</section>
+
+<div class="full-image" style="background-image:url('images/pesquisa/img-8.jpg')"></div>
+
+<section class="section">
+  <h2>Considerações finais</h2>
+  <p>
+    A pesquisa reafirma a centralidade da comunicação quilombola
+    na construção de narrativas de resistência e transformação social.
+  </p>
+</section>
+
+<div class="full-image" style="background-image:url('images/pesquisa/img-9.jpg')"></div>
+
+<section class="section">
+  <h2>Sugestões e recomendações</h2>
+  <p>
+    São apresentadas recomendações para políticas públicas,
+    fortalecimento institucional e ampliação das práticas comunicacionais.
+  </p>
+</section>
+
+<div class="full-image" style="background-image:url('images/pesquisa/img-10.jpg')"></div>
+
+<section class="section">
+  <h2>Referências bibliográficas</h2>
+  <p>
+    O estudo dialoga com autores e autoras negras, quilombolas
+    e referências fundamentais da comunicação comunitária.
+  </p>
+</section>
 
 <!-- ================= MODAL LIVRO ================= -->
 <div class="modal" id="modalLivro">
@@ -266,7 +338,8 @@ html,body{
     <img src="images/capa-livro.jpg">
     <p>
       Panorama das práticas comunicacionais quilombolas no Brasil,
-      compreendendo a comunicação como ato político, ancestral e de justiça climática.
+      compreendendo a comunicação como ato político, ancestral
+      e de justiça climática.
     </p>
     <a class="btn-read" href="PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf" target="_blank">
       📖 Ler online
