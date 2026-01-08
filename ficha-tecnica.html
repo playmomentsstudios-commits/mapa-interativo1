@@ -4,23 +4,141 @@
 <meta charset="utf-8">
 <title>Ficha Técnica – Pesquisa Quilombola</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
 <style>
-html,body{margin:0;padding:0;font-family:Arial,sans-serif;background:#f4f4f4;color:#222;}
-.header{position:relative;height:160px;background:url('/banner-capa.png') center/cover no-repeat;}
-.header-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:space-between;padding:0 30px;background:rgba(0,0,0,.35);}
+html,body{
+  margin:0;
+  padding:0;
+  font-family:Arial,sans-serif;
+  background:#f4f4f4;
+  color:#222;
+}
+
+/* ================= HEADER (ATUALIZADO) ================= */
+.header{
+  position:relative;
+  height:160px;
+  background:url('/banner-capa.png') center/cover no-repeat;
+}
+.header-overlay{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 30px;
+  background:rgba(0,0,0,.35);
+}
+
 .header-left a {text-decoration: none;}
-.brand-title {color: #ffffff; font-size: 28px; font-weight: 800; line-height: 1.1; text-transform: uppercase; letter-spacing: 1px; text-shadow: 2px 2px 4px rgba(0,0,0,0.6); margin: 0;}
-.brand-subtitle {display: block; color: #ffdd9a; font-size: 14px; font-weight: normal; letter-spacing: 2px; margin-top: 5px;}
-.menu{display:flex;gap:30px;align-items:center;}
-.menu a{color:#fff;text-decoration:none;font-size:16px;}
-.section{max-width:1100px;margin:60px auto;padding:50px 30px;background:#fff;border-radius:6px;}
-.people-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:30px;}
-.person-card{background:#0f3d2e;border-radius:6px;padding:25px 20px;text-align:center;color:#fff;}
-.person-card img{width:120px;height:120px;border-radius:50%;object-fit:cover;margin-bottom:15px;}
-.footer{background:#111;color:#bbb;text-align:center;padding:25px;font-size:14px;}
+.brand-title {
+    color: #ffffff;
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.6);
+    margin: 0;
+}
+.brand-subtitle {
+    display: block;
+    color: #ffdd9a;
+    font-size: 14px;
+    font-weight: normal;
+    letter-spacing: 2px;
+    margin-top: 5px;
+}
+
+.menu{ display:flex; gap:30px; align-items:center; }
+.menu a{ color:#fff; text-decoration:none; font-size:16px; }
+.menu-logo{ height:50px; width:auto; }
+
+/* ================= CONTEÚDO ORIGINAL ================= */
+.section{
+  max-width:1100px;
+  margin:60px auto;
+  padding:50px 30px;
+  background:#fff;
+  border-radius:6px;
+  box-shadow:0 4px 15px rgba(0,0,0,0.05);
+}
+.section h2{
+  color:#0f3d2e;
+  margin-top:0;
+  margin-bottom:40px;
+  border-bottom:2px solid #eee;
+  padding-bottom:10px;
+}
+
+.people-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+  gap:30px;
+}
+.person-card{
+  background:#0f3d2e;
+  border-radius:6px;
+  padding:25px 20px;
+  text-align:center;
+  color:#fff;
+  transition:transform 0.2s;
+}
+.person-card:hover{ transform:translateY(-5px); }
+.person-card img{
+  width:120px;
+  height:120px;
+  border-radius:50%;
+  object-fit:cover;
+  margin-bottom:15px;
+  border:3px solid rgba(255,255,255,0.2);
+}
+.person-card h3{ margin:10px 0 5px; font-size:18px; }
+.person-card p{ margin:0; font-size:14px; color:#ffdd9a; }
+
+/* ================= LOGOS (REALIZAÇÃO E FINANCIAMENTO) ================= */
+.logos-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 50px;
+  margin-top: 50px;
+  padding-top: 30px;
+  border-top: 1px solid #eee;
+}
+.logos-container img {
+  height: 60px;
+  width: auto;
+}
+
+/* AJUSTE MOBILE */
+@media(max-width:768px){
+  .brand-title { font-size: 22px; }
+  .menu { display:none; }
+  .section { margin:20px; padding:30px 20px; }
+  
+  /* Logos menores e lado a lado no mobile */
+  .logos-container {
+    gap: 20px; 
+    flex-direction: row; /* Garante sentido horizontal */
+  }
+  .logos-container img {
+    height: 40px; /* Reduz tamanho no celular */
+  }
+}
+
+.footer{
+  background:#111;
+  color:#bbb;
+  text-align:center;
+  padding:25px;
+  font-size:14px;
+}
 </style>
 </head>
+
 <body>
+
 <header class="header">
   <div class="header-overlay">
     <div class="header-left">
@@ -29,12 +147,14 @@ html,body{margin:0;padding:0;font-family:Arial,sans-serif;background:#f4f4f4;col
       </a>
     </div>
     <nav class="menu">
+      <img src="/instituto_sumauma.png" class="menu-logo" alt="Logo Sumaúma">
       <a href="/">Início</a>
       <a href="/pesquisa.html">Pesquisa</a>
       <a href="/ficha-tecnica.html">Ficha Técnica</a>
     </nav>
   </div>
 </header>
+
 <section class="section">
   <h2>Equipe da Pesquisa</h2>
   <div class="people-grid">
@@ -43,8 +163,32 @@ html,body{margin:0;padding:0;font-family:Arial,sans-serif;background:#f4f4f4;col
       <h3>Taís Oliveira</h3>
       <p>Coordenação Geral</p>
     </div>
+    <div class="person-card">
+      <img src="/images/equipe/vanessa-silva.jpg">
+      <h3>Vanessa Silva</h3>
+      <p>Analista de Pesquisa</p>
+    </div>
+    <div class="person-card">
+      <img src="/images/equipe/anicely-santos.jpg">
+      <h3>Anicely Santos</h3>
+      <p>Analista de Dados</p>
+    </div>
+    <div class="person-card">
+      <img src="/images/equipe/maria-fernanda-ruas.jpg">
+      <h3>Maria Fernanda Ruas</h3>
+      <p>Analista de Comunicação</p>
+    </div>
+    </div>
+
+  <div class="logos-container">
+    <img src="/instituto_sumauma_preto.png" alt="Realização: Instituto Sumaúma">
+    <img src="/logo-financiador.png" alt="Financiamento">
   </div>
 </section>
-<footer class="footer">Instituto Sumaúma © 2026</footer>
+
+<footer class="footer">
+  Instituto Sumaúma © 2026 · Pesquisa Quilombola
+</footer>
+
 </body>
 </html>
