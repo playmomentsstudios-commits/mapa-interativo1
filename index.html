@@ -41,6 +41,7 @@ html,body{
   color:#fff;
   text-decoration:none;
   font-size:16px;
+  cursor:pointer;
 }
 .menu-toggle{
   display:none;
@@ -136,7 +137,6 @@ input,select{
 .full-map #sidebar,
 .full-map #details{display:none;}
 
-/* ================= DETALHES MODERNOS ================= */
 #details h2{color:#0f3d2e;}
 .info-line{margin-bottom:10px;font-size:15px;}
 .info-line b{color:#0f3d2e;}
@@ -153,7 +153,7 @@ input,select{
 .whatsapp{background:#25D366;}
 .site{background:#0f3d2e;}
 .instagram{background:#C13584;}
-.map{background:#1e88e5;}
+.map-icon{background:#1e88e5;}
 .btn-map-view{
   display:inline-block;
   padding:12px 18px;
@@ -163,7 +163,7 @@ input,select{
   cursor:pointer;
 }
 
-/* ================= MODAL MOBILE ================= */
+/* ================= MODAL RESULTADO MOBILE ================= */
 .result-modal{
   display:none;
   position:fixed;
@@ -182,6 +182,47 @@ input,select{
   position:relative;
 }
 .result-box .close{
+  position:absolute;
+  top:10px;
+  right:15px;
+  font-size:22px;
+  cursor:pointer;
+}
+
+/* ================= MODAL LIVRO ================= */
+.modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.65);
+  z-index:4000;
+  align-items:center;
+  justify-content:center;
+}
+.modal-content{
+  background:#fff;
+  width:90%;
+  max-width:500px;
+  padding:30px;
+  border-radius:6px;
+  text-align:center;
+  position:relative;
+}
+.modal-content img{
+  width:200px;
+  margin-bottom:20px;
+}
+.modal-content a{
+  display:inline-block;
+  margin:10px;
+  padding:12px 18px;
+  color:#fff;
+  text-decoration:none;
+  border-radius:4px;
+}
+.btn-read{background:#0f3d2e;}
+.btn-download{background:#25D366;}
+.close{
   position:absolute;
   top:10px;
   right:15px;
@@ -239,10 +280,31 @@ input,select{
   </section>
 </div>
 
+<!-- MODAL RESULTADO MOBILE -->
 <div class="result-modal" id="resultModal">
   <div class="result-box">
     <span class="close" onclick="fecharResultado()">×</span>
     <div id="resultContent"></div>
+  </div>
+</div>
+
+<!-- MODAL LIVRO -->
+<div class="modal" id="modalLivro">
+  <div class="modal-content">
+    <span class="close" onclick="fecharLivro()">×</span>
+    <img src="images/capa-livro.jpg">
+    <h2>Práticas Comunicacionais e Culturais Quilombolas</h2>
+    <p>
+      Panorama das práticas comunicacionais quilombolas no Brasil,
+      compreendendo a comunicação como ato político, ancestral
+      e de justiça climática.
+    </p>
+    <a class="btn-read"
+       href="docs/PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf"
+       target="_blank">📖 Ler online</a>
+    <a class="btn-download"
+       href="docs/PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf"
+       download>📥 Baixar PDF</a>
   </div>
 </div>
 
@@ -338,11 +400,15 @@ function abrirDetalhes(d){
   const temLoc=d.latitude&&d.longitude&&!isNaN(d.latitude);
   let icons='';
   if(d.link){
-    if(d.link.includes('wa.me')||d.link.includes('whatsapp')) icons+=`<a class="whatsapp" href="${d.link}" target="_blank">💬</a>`;
-    else if(d.link.includes('instagram')) icons+=`<a class="instagram" href="${d.link}" target="_blank">📸</a>`;
-    else icons+=`<a class="site" href="${d.link}" target="_blank">🔗</a>`;
+    if(d.link.includes('wa.me')||d.link.includes('whatsapp'))
+      icons+=`<a class="whatsapp" href="${d.link}" target="_blank">💬</a>`;
+    else if(d.link.includes('instagram'))
+      icons+=`<a class="instagram" href="${d.link}" target="_blank">📸</a>`;
+    else
+      icons+=`<a class="site" href="${d.link}" target="_blank">🔗</a>`;
   }
-  if(temLoc) icons+=`<a class="map" onclick="verNoMapa(${d.latitude},${d.longitude})">📍</a>`;
+  if(temLoc)
+    icons+=`<a class="map-icon" onclick="verNoMapa(${d.latitude},${d.longitude})">📍</a>`;
 
   const html=`
     <h2>${d.nome}</h2>
@@ -371,39 +437,9 @@ function verNoMapa(lat,lng){
 function abrirMenu(){mobileMenu.style.display='block';}
 function fecharMenu(){mobileMenu.style.display='none';}
 function fecharResultado(){resultModal.style.display='none';}
-function abrirLivro(){
-  window.open('PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf','_blank');
-}
+function abrirLivro(){modalLivro.style.display='flex';}
+function fecharLivro(){modalLivro.style.display='none';}
 </script>
-
-  <!-- ================= MODAL LIVRO ================= -->
-<div class="modal" id="modalLivro">
-  <div class="modal-content">
-    <span class="close" onclick="fecharLivro()">×</span>
-
-    <img src="images/capa-livro.jpg" alt="Capa do livro">
-
-    <h2>Práticas Comunicacionais e Culturais Quilombolas</h2>
-
-    <p>
-      Panorama das práticas comunicacionais quilombolas no Brasil,
-      compreendendo a comunicação como ato político, ancestral e
-      de justiça climática.
-    </p>
-
-    <a class="btn-read"
-       href="docs/PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf"
-       target="_blank">
-      📖 Ler online
-    </a>
-
-    <a class="btn-download"
-       href="docs/PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf"
-       download>
-      📥 Baixar PDF
-    </a>
-  </div>
-</div>
 
 </body>
 </html>
