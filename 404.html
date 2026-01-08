@@ -95,7 +95,7 @@ input,select{width:100%;height:44px;padding:10px;margin-bottom:10px;box-sizing:b
       <img src="/instituto_sumauma.png" class="menu-logo" alt="Logo Instituto Sumaúma">
       <a href="/">Início</a>
       <a href="/pesquisa.html">Pesquisa</a>
-      <a onclick="abrirLivro()">Livro</a>
+      <a onclick="abrirRelatório()">Relatório</a>
       <a href="/ficha-tecnica.html">Ficha Técnica</a>
       <a href="https://www.sumauma.org/" target="_blank">Institucional</a>
     </nav>
@@ -106,7 +106,7 @@ input,select{width:100%;height:44px;padding:10px;margin-bottom:10px;box-sizing:b
   <div class="close" onclick="fecharMenu()">✕</div>
   <a href="/">Início</a>
   <a href="/pesquisa.html">Pesquisa</a>
-  <a onclick="abrirLivro();fecharMenu()">Livro</a>
+  <a onclick="abrirRelatório();fecharMenu()">Relatório</a>
   <a href="/ficha-tecnica.html">Ficha Técnica</a>
   <a href="https://www.sumauma.org/" target="_blank">Institucional</a>
 </div>
@@ -124,9 +124,9 @@ input,select{width:100%;height:44px;padding:10px;margin-bottom:10px;box-sizing:b
   <section id="content"><div id="map"></div><div id="details"></div></section>
 </div>
 
-<div class="modal" id="modalLivro">
+<div class="modal" id="modalRelatório">
   <div class="modal-content">
-    <span class="close" onclick="fecharLivro()">×</span>
+    <span class="close" onclick="fecharRelatório()">×</span>
     <img src="/capa-livro.jpg">
     <h2>Práticas Comunicacionais e Culturais Quilombolas</h2>
     <p>Panorama das práticas comunicacionais quilombolas no Brasil.</p>
