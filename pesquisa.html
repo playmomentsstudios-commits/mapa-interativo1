@@ -10,144 +10,98 @@ html,body{
   margin:0;
   padding:0;
   font-family:Arial,sans-serif;
-  background:#f7f7f7;
+  background:#fff;
   color:#222;
 }
 
-/* ================= MENU FIXO ================= */
-.menu-fixed{
-  position:fixed;
-  top:20px;
-  left:20px;
-  z-index:1000;
-  display:flex;
-  gap:20px;
-  align-items:center;
-}
-
-.menu-fixed img{
-  height:40px;
-  width:auto;
-}
-
-.menu-fixed a{
-  color:#fff;
-  text-decoration:none;
-  font-size:14px;
-  font-weight:bold;
-}
-
-.menu-fixed a:hover{
-  text-decoration:underline;
-}
-
-/* ================= HERO ================= */
-.hero{
-  background:url('banner-capa.png') center/cover no-repeat;
-  min-height:80vh;
+/* ================= HEADER ================= */
+.header{
   position:relative;
-  display:flex;
-  align-items:center;
+  height:140px;
+  background:url('banner-capa.png') center/cover no-repeat;
 }
 
-.hero-overlay{
-  background:rgba(60,20,5,.75);
+.header-overlay{
   position:absolute;
   inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 30px;
+  background:rgba(0,0,0,.35);
 }
 
-.hero-content{
-  position:relative;
-  max-width:1000px;
-  padding:80px 60px;
+.header-left{
+  display:flex;
+  align-items:center;
+  gap:20px;
+}
+
+.header-left img{
+  height:60px;
+}
+
+.menu{
+  display:flex;
+  gap:30px;
+}
+
+.menu a{
   color:#fff;
+  text-decoration:none;
+  font-size:16px;
 }
 
-.hero-content h1{
-  font-size:40px;
-  line-height:1.2;
-  margin-bottom:20px;
-}
-
-.hero-content p{
-  font-size:18px;
-  max-width:760px;
-}
-
-/* ================= SECTIONS ================= */
+/* ================= SEÇÕES ================= */
 .section{
-  max-width:1100px;
+  max-width:1000px;
   margin:0 auto;
-  padding:80px 40px;
+  padding:70px 30px;
+}
+
+.section h1{
+  color:#0f3d2e;
+  font-size:32px;
+  margin-bottom:20px;
 }
 
 .section h2{
   color:#0f3d2e;
-  margin-bottom:20px;
+  margin-bottom:15px;
 }
 
 .section p{
   font-size:16px;
-  line-height:1.7;
+  line-height:1.6;
+}
+
+/* ================= CITAÇÃO ================= */
+.quote{
+  background:#f4f4f4;
+  padding:60px 30px;
+}
+
+.quote blockquote{
   max-width:900px;
+  margin:0 auto;
+  font-size:20px;
+  line-height:1.6;
+  font-style:italic;
 }
 
-/* ================= TOPICOS ================= */
-.topics{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-  gap:25px;
-  margin-top:40px;
-}
-
-.topic{
-  background:#fff;
-  border-left:6px solid #0f3d2e;
-  padding:20px;
-  box-shadow:0 2px 8px rgba(0,0,0,.08);
-}
-
-.topic h3{
-  margin-top:0;
-  font-size:16px;
-  color:#0f3d2e;
-}
-
-.topic p{
+.quote footer{
+  margin-top:20px;
   font-size:14px;
-  line-height:1.5;
-}
-
-/* ================= CTA ================= */
-.cta{
-  background:#0f3d2e;
-  color:#fff;
-  text-align:center;
-  padding:70px 40px;
-}
-
-.cta h2{
-  margin-bottom:25px;
-}
-
-.cta-buttons{
-  display:flex;
-  gap:20px;
-  justify-content:center;
-  flex-wrap:wrap;
-}
-
-.cta a{
-  background:#fff;
-  color:#0f3d2e;
-  padding:14px 24px;
-  border-radius:4px;
-  text-decoration:none;
+  font-style:normal;
   font-weight:bold;
 }
 
-.cta a:hover{
-  background:#e6e6e6;
+/* ================= IMAGEM FULL ================= */
+.full-image{
+  width:100%;
+  height:350px;
+  background-size:cover;
+  background-position:center;
 }
 
 /* ================= FOOTER ================= */
@@ -158,131 +112,141 @@ html,body{
   padding:25px;
   font-size:14px;
 }
-
-/* ================= RESPONSIVO ================= */
-@media(max-width:768px){
-  .hero-content{
-    padding:120px 30px 60px;
-  }
-  .hero-content h1{
-    font-size:28px;
-  }
-  .menu-fixed{
-    flex-wrap:wrap;
-    gap:10px;
-  }
-}
 </style>
 </head>
 
 <body>
 
-<!-- ================= MENU FIXO ================= -->
-<nav class="menu-fixed">
-  <a href="https://pesquisa.sumauma.org/">
-    <img src="instituto_sumauma.png" alt="Instituto Sumaúma">
-  </a>
-  <a href="index.html">Início</a>
-  <a href="pesquisa.html">Pesquisa</a>
-  <a href="PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf" target="_blank">Livro</a>
-  <a href="https://www.sumauma.org/" target="_blank">Institucional</a>
-</nav>
-
-<!-- ================= HERO ================= -->
-<section class="hero">
-  <div class="hero-overlay"></div>
-  <div class="hero-content">
-    <h1>Corpos-territórios quilombolas e o fio conectado da ancestralidade</h1>
-    <p>
-      Práticas comunicacionais e culturais quilombolas que conectam saberes ancestrais
-      às lutas por justiça climática, racial e territorial.
-    </p>
+<!-- ================= HEADER ================= -->
+<header class="header">
+  <div class="header-overlay">
+    <div class="header-left">
+      <a href="index.html"><img src="instituto_sumauma.png"></a>
+    </div>
+    <nav class="menu">
+      <a href="index.html">Início</a>
+      <a href="pesquisa.html">Pesquisa</a>
+      <a href="PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf" target="_blank">Livro</a>
+      <a href="ficha-tecnica.html">Ficha Técnica</a>
+      <a href="https://www.sumauma.org/" target="_blank">Institucional</a>
+    </nav>
   </div>
-</section>
+</header>
 
-<!-- ================= SOBRE ================= -->
+<!-- ================= INTRO ================= -->
 <section class="section">
-  <h2>Sobre a pesquisa</h2>
+  <h1>A Pesquisa</h1>
   <p>
-    Esta pesquisa, realizada pelo Instituto Sumaúma, investiga como povos e comunidades
-    quilombolas utilizam a comunicação e a cultura como tecnologias ancestrais de defesa
-    do território, da vida e da natureza. O estudo revela como essas práticas fortalecem
-    redes comunitárias, articulam narrativas próprias e dialogam diretamente com os
-    desafios contemporâneos da justiça climática e racial.
+    Esta pesquisa investiga práticas culturais e comunicacionais quilombolas
+    nos meios digitais, compreendendo a comunicação como um ato político,
+    ancestral e estratégico na defesa do território, da identidade e da vida.
   </p>
 </section>
 
-<!-- ================= TOPICOS ================= -->
-<section class="section">
-  <h2>Tópicos centrais da pesquisa</h2>
-
-  <div class="topics">
-    <div class="topic">
-      <h3>1. Comunicação como ato ancestral</h3>
-      <p>A comunicação quilombola é baseada na oralidade, na memória coletiva e na transmissão intergeracional de saberes.</p>
-    </div>
-
-    <div class="topic">
-      <h3>2. Cultura como estratégia política</h3>
-      <p>Práticas culturais atuam como ferramentas de resistência, denúncia e afirmação identitária.</p>
-    </div>
-
-    <div class="topic">
-      <h3>3. Território como corpo vivo</h3>
-      <p>O território é compreendido como extensão do corpo, da espiritualidade e da ancestralidade.</p>
-    </div>
-
-    <div class="topic">
-      <h3>4. Justiça climática quilombola</h3>
-      <p>Comunidades quilombolas praticam justiça climática a partir da proteção dos biomas.</p>
-    </div>
-
-    <div class="topic">
-      <h3>5. Racismo ambiental</h3>
-      <p>A pesquisa evidencia como impactos ambientais recaem desproporcionalmente sobre territórios quilombolas.</p>
-    </div>
-
-    <div class="topic">
-      <h3>6. Comunicação comunitária</h3>
-      <p>Rádios, redes sociais, audiovisual e encontros presenciais fortalecem a comunicação local.</p>
-    </div>
-
-    <div class="topic">
-      <h3>7. Desafios de conectividade</h3>
-      <p>Falta de internet, infraestrutura e recursos limita a ampliação das práticas comunicacionais.</p>
-    </div>
-
-    <div class="topic">
-      <h3>8. Protagonismo feminino</h3>
-      <p>Mulheres quilombolas lideram práticas comunicacionais e culturais nos territórios.</p>
-    </div>
-
-    <div class="topic">
-      <h3>9. Juventudes quilombolas</h3>
-      <p>Jovens atuam na produção de conteúdo digital, audiovisual e redes sociais.</p>
-    </div>
-
-    <div class="topic">
-      <h3>10. Saberes tradicionais e futuro</h3>
-      <p>A pesquisa aponta os saberes quilombolas como fundamentais para pensar futuros sustentáveis.</p>
-    </div>
-  </div>
+<!-- ================= CITAÇÃO ================= -->
+<section class="quote">
+  <blockquote>
+    “O quilombo representa um instrumento vigoroso no processo de
+    reconhecimento da identidade negra brasileira para uma maior
+    autoafirmação étnica e nacional. O fato de ter existido como brecha no
+    sistema a que os negros estavam moralmente submetidos projeta a esperança
+    de que instituições semelhantes possam atuar no presente ao lado de várias
+    outras manifestações de reforço à identidade cultural.”
+    <footer>
+      Maria Beatriz Nascimento<br>
+      Historiadora, professora e ativista afro-brasileira
+    </footer>
+  </blockquote>
 </section>
 
-<!-- ================= CTA ================= -->
-<section class="cta">
-  <h2>Acesse o conteúdo da pesquisa</h2>
-  <div class="cta-buttons">
-    <a href="index.html">Explorar o mapa interativo</a>
-    <a href="PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf" target="_blank">
-      Ler a pesquisa completa
-    </a>
-  </div>
+<!-- ================= IMAGEM ================= -->
+<div class="full-image" style="background-image:url('images/img-intro.jpg')"></div>
+
+<!-- ================= TÓPICOS ================= -->
+
+<section class="section">
+  <h2>Mapeando práticas culturais e comunicacionais nos meios digitais</h2>
+  <p>
+    O mapeamento identifica iniciativas quilombolas que utilizam plataformas
+    digitais como ferramentas de visibilidade, articulação política e
+    fortalecimento comunitário.
+  </p>
+</section>
+
+<div class="full-image" style="background-image:url('images/img-topico-1.jpg')"></div>
+
+<section class="section">
+  <h2>A cultura e a comunicação como ato político e ancestral</h2>
+  <p>
+    A pesquisa compreende a comunicação como herança ancestral, atravessada
+    por saberes, oralidades e práticas coletivas que resistem às estruturas
+    coloniais.
+  </p>
+</section>
+
+<div class="full-image" style="background-image:url('images/img-topico-2.jpg')"></div>
+
+<section class="section">
+  <h2>Perfil sociodemográfico</h2>
+  <p>
+    O levantamento revela a diversidade de territórios, idades, gêneros e
+    trajetórias que compõem as práticas comunicacionais quilombolas.
+  </p>
+</section>
+
+<div class="full-image" style="background-image:url('images/img-topico-3.jpg')"></div>
+
+<section class="section">
+  <h2>Trajetórias pessoais e comunitárias</h2>
+  <p>
+    As histórias individuais e coletivas demonstram como a comunicação
+    fortalece identidades, redes de apoio e processos de autoafirmação.
+  </p>
+</section>
+
+<div class="full-image" style="background-image:url('images/img-topico-4.jpg')"></div>
+
+<section class="section">
+  <h2>Aspectos organizacionais e redes colaborativas</h2>
+  <p>
+    O estudo destaca a importância das articulações em rede para a
+    sustentabilidade das iniciativas e o fortalecimento da luta coletiva.
+  </p>
+</section>
+
+<div class="full-image" style="background-image:url('images/img-topico-5.jpg')"></div>
+
+<section class="section">
+  <h2>Quilombo enquanto sinônimo de futuro</h2>
+  <p>
+    O quilombo é apresentado como horizonte político, cultural e ambiental,
+    articulando ancestralidade, território e justiça climática.
+  </p>
+</section>
+
+<div class="full-image" style="background-image:url('images/img-topico-6.jpg')"></div>
+
+<section class="section">
+  <h2>Considerações finais</h2>
+  <p>
+    A pesquisa reafirma o papel central das práticas comunicacionais
+    quilombolas na construção de futuros sustentáveis e justos.
+  </p>
+</section>
+
+<div class="full-image" style="background-image:url('images/img-topico-7.jpg')"></div>
+
+<section class="section">
+  <h2>Sugestões e recomendações</h2>
+  <p>
+    São apresentadas recomendações para políticas públicas, organizações
+    parceiras e iniciativas comunitárias.
+  </p>
 </section>
 
 <!-- ================= FOOTER ================= -->
 <footer class="footer">
-  Instituto Sumaúma © 2026 · Pesquisa, Comunicação e Justiça Climática
+  Instituto Sumaúma © 2026 · Pesquisa Quilombola
 </footer>
 
 </body>
