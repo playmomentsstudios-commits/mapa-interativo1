@@ -26,13 +26,20 @@ html,body{
   inset:0;
   display:flex;
   align-items:center;
-  gap:40px;
+  justify-content:space-between;
   padding:0 30px;
   background:rgba(0,0,0,.35);
 }
 
-.header-overlay img{
-  height:100px;
+/* ================= LOGOS ================= */
+.header-left{
+  display:flex;
+  align-items:center;
+  gap:20px;
+}
+
+.header-left img{
+  height:60px;
   width:auto;
   cursor:pointer;
 }
@@ -40,7 +47,7 @@ html,body{
 /* ================= MENU ================= */
 .menu{
   display:flex;
-  gap:35px;
+  gap:30px;
   align-items:center;
 }
 
@@ -106,6 +113,7 @@ select{
   flex:1;
   position:relative;
 }
+
 #map{
   width:100%;
   height:100%;
@@ -149,6 +157,7 @@ select{
 @media(max-width:900px){
   #layout{flex-direction:column;}
   #sidebar{width:100%;}
+  .menu{flex-wrap:wrap; gap:15px;}
 }
 </style>
 </head>
@@ -159,16 +168,20 @@ select{
 <header class="header">
   <div class="header-overlay">
 
-    <!-- LOGO -->
-    <a href="https://pesquisa.sumauma.org/">
-      <img src="instituto_sumauma.png" alt="Instituto Sumaúma">
-    </a>
+    <!-- LOGOS À ESQUERDA -->
+    <div class="header-left">
+      <a href="https://pesquisa.sumauma.org/">
+        <img src="instituto_sumauma.png" alt="Instituto Sumaúma">
+      </a>
+      <img src="clua_logo.png" alt="Climate and Land Use Alliance">
+    </div>
 
-    <!-- MENU -->
+    <!-- MENU À DIREITA -->
     <nav class="menu">
       <a href="https://pesquisa.sumauma.org/">Início</a>
       <a href="pesquisa.html">Pesquisa</a>
       <a href="PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf" target="_blank">Livro</a>
+      <a href="ficha-tecnica.html">Ficha Técnica</a>
       <a href="https://www.sumauma.org/" target="_blank">Institucional</a>
     </nav>
 
@@ -293,7 +306,7 @@ function renderizar(lista){
       ${d.categoria}
       ${!temLoc?`<div class="tag-pendente">📍 Localização pendente</div>`:''}
     `;
-    div.onclick=()=>abrirDetalhes(d,temLoc?+d.latitude:null,temLoc?+d.longitude:null);
+    div.onclick=()=>abrirDetalhes(d);
     results.appendChild(div);
     if(temLoc) markers.push(L.marker([+d.latitude,+d.longitude]).addTo(map));
   });
