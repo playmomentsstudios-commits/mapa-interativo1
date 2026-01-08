@@ -14,13 +14,12 @@ html,body{
   color:#222;
 }
 
-/* ================= HEADER ================= */
+/* ================= HEADER PADRÃO ================= */
 .header{
   position:relative;
   height:160px;
   background:url('banner-capa.png') center/cover no-repeat;
 }
-
 .header-overlay{
   position:absolute;
   inset:0;
@@ -30,41 +29,32 @@ html,body{
   padding:0 30px;
   background:rgba(0,0,0,.35);
 }
-
-/* LOGO */
 .header-left img{
   height:100px;
   width:auto;
 }
-
-/* MENU DESKTOP */
 .menu{
   display:flex;
   gap:30px;
 }
-
 .menu a{
   color:#fff;
   text-decoration:none;
   font-size:16px;
-  cursor:pointer;
 }
-
-/* MENU MOBILE */
 .menu-toggle{
   display:none;
   font-size:28px;
   color:#fff;
   cursor:pointer;
 }
-
 @media(max-width:768px){
   .menu{display:none;}
   .menu-toggle{display:block;}
   .header{height:200px;}
 }
 
-/* MOBILE MENU OVERLAY */
+/* MOBILE MENU */
 .mobile-menu{
   display:none;
   position:fixed;
@@ -73,7 +63,6 @@ html,body{
   z-index:5000;
   padding:40px 30px;
 }
-
 .mobile-menu a{
   display:block;
   color:#fff;
@@ -81,7 +70,6 @@ html,body{
   margin-bottom:25px;
   text-decoration:none;
 }
-
 .mobile-menu .close{
   font-size:28px;
   color:#fff;
@@ -91,23 +79,45 @@ html,body{
 
 /* ================= CONTENT ================= */
 .section{
-  max-width:1200px;
+  max-width:1100px;
   margin:0 auto;
-  padding:70px 40px;
-}
-
-.section h1{
-  color:#0f3d2e;
+  padding:70px 30px;
+  background:#fff;
   margin-bottom:40px;
 }
-
-.people-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-  gap:30px;
+.section h1,.section h2{
+  color:#0f3d2e;
+  margin-bottom:20px;
+}
+.section p{
+  font-size:16px;
+  line-height:1.7;
 }
 
-/* ================= CARD ================= */
+/* ================= FINANCIADOR ================= */
+.financiador{
+  display:flex;
+  align-items:center;
+  gap:30px;
+}
+.financiador img{
+  width:200px;
+}
+
+/* ================= CITAÇÃO ================= */
+.citacao{
+  background:#f1f1f1;
+  padding:25px;
+  border-left:6px solid #0f3d2e;
+  font-size:15px;
+}
+
+/* ================= EQUIPE ================= */
+.people-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:30px;
+}
 .person-card{
   background:#fff;
   border-radius:6px;
@@ -115,24 +125,62 @@ html,body{
   text-align:center;
   padding:25px 20px;
 }
-
 .person-card img{
   width:120px;
   height:120px;
   border-radius:50%;
   object-fit:cover;
-  margin-bottom:15px;
   background:#ddd;
+  margin-bottom:15px;
 }
-
 .person-card h3{
   margin:10px 0 6px;
   font-size:16px;
 }
-
 .person-card p{
   font-size:14px;
   color:#555;
+}
+
+/* ================= MODAL LIVRO ================= */
+.modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.65);
+  z-index:4000;
+  align-items:center;
+  justify-content:center;
+}
+.modal-content{
+  background:#fff;
+  width:90%;
+  max-width:500px;
+  padding:30px;
+  border-radius:6px;
+  text-align:center;
+  position:relative;
+}
+.modal-content img{
+  width:200px;
+  margin-bottom:20px;
+}
+.modal-content a{
+  display:inline-block;
+  margin:10px;
+  padding:12px 18px;
+  color:#fff;
+  text-decoration:none;
+  border-radius:4px;
+}
+.btn-read{background:#0f3d2e;}
+.btn-download{background:#25D366;}
+.close{
+  position:absolute;
+  top:10px;
+  right:15px;
+  font-size:22px;
+  cursor:pointer;
 }
 
 /* ================= FOOTER ================= */
@@ -142,13 +190,6 @@ html,body{
   text-align:center;
   padding:25px;
   font-size:14px;
-}
-
-/* ================= RESPONSIVO ================= */
-@media(max-width:768px){
-  .section{
-    padding:50px 25px;
-  }
 }
 </style>
 </head>
@@ -161,7 +202,7 @@ html,body{
 
     <div class="header-left">
       <a href="index.html">
-        <img src="instituto_sumauma.png" alt="Instituto Sumaúma">
+        <img src="instituto_sumauma.png">
       </a>
     </div>
 
@@ -174,11 +215,9 @@ html,body{
       <a href="ficha-tecnica.html">Ficha Técnica</a>
       <a href="https://www.sumauma.org/" target="_blank">Institucional</a>
     </nav>
-
   </div>
 </header>
 
-<!-- MENU MOBILE -->
 <div class="mobile-menu" id="mobileMenu">
   <div class="close" onclick="fecharMenu()">✕</div>
   <a href="index.html">Início</a>
@@ -188,62 +227,100 @@ html,body{
   <a href="https://www.sumauma.org/" target="_blank">Institucional</a>
 </div>
 
-<!-- ================= CONTENT ================= -->
+<!-- ================= INSTITUTO ================= -->
 <section class="section">
-  <h1>Ficha Técnica</h1>
+  <h1>Instituto Sumaúma</h1>
+  <p>
+    O Instituto Sumaúma é uma organização da sociedade civil sem fins lucrativos
+    que trabalha na produção e promoção de pesquisa de impacto social.
+  </p>
+  <p>
+    Somos um centro de formação, documentação e pesquisa e nossa atuação tem como
+    objetivo preparar, formar e possibilitar geração de renda para pessoas negras,
+    indígenas e/ou periféricas.
+  </p>
+  <p>
+    Esta pesquisa foi desenvolvida no âmbito do Programa Sumaúma Lab – Laboratório
+    Interdisciplinar de Ciência, Tecnologia e Sociedade, que tem como objetivo
+    realizar investigações nos temas da Comunicação, Tecnologia, Arte e Educação.
+  </p>
+</section>
+
+<!-- ================= FINANCIADOR ================= -->
+<section class="section">
+  <h2>Financiador</h2>
+  <div class="financiador">
+    <img src="images/clua_logo.png" alt="Climate and Land Use Alliance">
+    <p>Climate and Land Use Alliance</p>
+  </div>
+</section>
+
+<!-- ================= COMO CITAR ================= -->
+<section class="section">
+  <h2>Como citar</h2>
+  <div class="citacao">
+    Instituto Sumaúma. <b>Corpos-territórios quilombolas e o fio conectado da ancestralidade</b>:
+    entre as agendas de justiça climática e as práticas culturais e comunicacionais.
+    São Paulo, 2025.
+  </div>
+</section>
+
+<!-- ================= EQUIPE ================= -->
+<section class="section">
+  <h2>Equipe da Pesquisa</h2>
 
   <div class="people-grid">
 
     <div class="person-card">
-      <img src="images/tais-oliveira.jpg" alt="Taís Oliveira">
+      <img src="images/equipe/tais-oliveira.jpg">
       <h3>Taís Oliveira</h3>
       <p>Coordenação Geral</p>
     </div>
 
     <div class="person-card">
-      <img src="images/juliane-sousa.jpg" alt="Juliane Sousa">
+      <img src="images/equipe/juliane-sousa.jpg">
       <h3>Juliane Sousa</h3>
       <p>Consultora convidada</p>
     </div>
 
     <div class="person-card">
-      <img src="images/vanessa-silva.jpg" alt="Vanessa Silva">
+      <img src="images/equipe/vanessa-silva.jpg">
       <h3>Vanessa Silva</h3>
       <p>Analista de Pesquisa</p>
     </div>
 
     <div class="person-card">
-      <img src="images/anicely-santos.jpg" alt="Anicely Santos">
+      <img src="images/equipe/anicely-santos.jpg">
       <h3>Anicely Santos</h3>
       <p>Analista de Dados</p>
     </div>
 
     <div class="person-card">
-      <img src="images/maria-fernanda-ruas.jpg" alt="Maria Fernanda Ruas">
+      <img src="images/equipe/maria-fernanda-ruas.jpg">
       <h3>Maria Fernanda Ruas</h3>
       <p>Analista de Comunicação</p>
     </div>
 
     <div class="person-card">
-      <img src="images/abraao-felipe-oliveira.jpg" alt="Abraão Felipe Oliveira">
+      <img src="images/equipe/abraao-felipe-oliveira.jpg">
       <h3>Abraão Felipe Oliveira</h3>
       <p>Assistente de Comunicação</p>
     </div>
 
     <div class="person-card">
-      <img src="images/diego-galofero.jpg" alt="Diego Galofero">
+      <img src="images/equipe/diego-galofero.jpg">
       <h3>Diego Galofero</h3>
       <p>Assistente Administrativo</p>
     </div>
 
     <div class="person-card">
-      <img src="images/higor-torres.jpg" alt="Hígor Torres">
+      <img src="images/equipe/higor-torres.jpg">
       <h3>Hígor Torres</h3>
       <p>Revisão</p>
     </div>
 
     <div class="person-card">
-      <img src="images/felipe-da-costa-souza.jpg" alt="Felipe da Costa Souza">
+      <img src="images/equipe/felipe-da-costa-souza.jpg">
       <h3>Felipe da Costa Souza</h3>
       <p>Design e Diagramação</p>
     </div>
@@ -251,19 +328,41 @@ html,body{
   </div>
 </section>
 
+<!-- ================= MODAL LIVRO ================= -->
+<div class="modal" id="modalLivro">
+  <div class="modal-content">
+    <span class="close" onclick="fecharLivro()">×</span>
+    <img src="images/capa-livro.jpg">
+    <p>
+      Panorama das práticas comunicacionais quilombolas no Brasil,
+      compreendendo a comunicação como ato político, ancestral
+      e de justiça climática.
+    </p>
+    <a class="btn-read" href="PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf" target="_blank">
+      📖 Ler online
+    </a>
+    <a class="btn-download" href="PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf" download>
+      📥 Baixar PDF
+    </a>
+  </div>
+</div>
+
 <footer class="footer">
   Instituto Sumaúma © 2026 · Ficha Técnica da Pesquisa
 </footer>
 
 <script>
+function abrirLivro(){
+  document.getElementById('modalLivro').style.display='flex';
+}
+function fecharLivro(){
+  document.getElementById('modalLivro').style.display='none';
+}
 function abrirMenu(){
   document.getElementById('mobileMenu').style.display='block';
 }
 function fecharMenu(){
   document.getElementById('mobileMenu').style.display='none';
-}
-function abrirLivro(){
-  window.open('PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf','_blank');
 }
 </script>
 
