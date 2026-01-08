@@ -8,19 +8,48 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 
 <style>
-/* ====== SEU CSS (INTACTO) ====== */
+/* ====== SEU CSS (COM ALTERAÇÃO NO HEADER) ====== */
 html,body{margin:0;height:100%;font-family:Arial,sans-serif;}
 .header{position:relative;height:160px;background:url('banner-capa.png') center/cover no-repeat;}
 .header-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:space-between;padding:0 30px;background:rgba(0,0,0,.35);}
-.header-left img{height:130px;width:auto;}
+
+/* NOVO ESTILO PARA O TEXTO DO TÍTULO */
+.header-left a {text-decoration: none;}
+.brand-title {
+    color: #ffffff;
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.6);
+    margin: 0;
+}
+.brand-subtitle {
+    display: block;
+    color: #ffdd9a;
+    font-size: 14px;
+    font-weight: normal;
+    letter-spacing: 2px;
+    margin-top: 5px;
+}
+
 .menu{display:flex;gap:30px;align-items:center;}
 .menu a{color:#fff;text-decoration:none;font-size:16px;}
 .menu-logo{height:50px;width:auto;}
 .menu-toggle{display:none;font-size:28px;color:#fff;cursor:pointer;}
-@media(max-width:768px){.menu{display:none}.menu-toggle{display:block}.header{height:200px}}
+
+@media(max-width:768px){
+    .menu{display:none}
+    .menu-toggle{display:block}
+    .header{height:180px}
+    .brand-title {font-size: 22px;}
+}
+
 .mobile-menu{display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:5000;padding:40px 30px;}
 .mobile-menu a{display:block;color:#fff;font-size:22px;margin-bottom:25px;text-decoration:none;}
 .mobile-menu .close{font-size:28px;color:#fff;cursor:pointer;margin-bottom:40px;}
+
 #layout{display:flex;height:calc(100% - 160px);}
 #sidebar{width:420px;background:#fff;border-right:1px solid #ddd;overflow-y:auto;}
 .sidebar-inner{padding:20px;}
@@ -58,13 +87,18 @@ input,select{width:100%;height:44px;padding:10px;margin-bottom:10px;box-sizing:b
 <header class="header">
   <div class="header-overlay">
     <div class="header-left">
-      <a href="index.html"><img src="img-topo.png"></a>
+      <a href="index.html">
+        <h1 class="brand-title">
+          MAPEAMENTO<br>CULTURAL
+          <span class="brand-subtitle">INSTITUTO SUMAÚMA</span>
+        </h1>
+      </a>
     </div>
 
     <div class="menu-toggle" onclick="abrirMenu()">☰</div>
 
     <nav class="menu">
-      <img src="instituto_sumauma.png" class="menu-logo">
+      <img src="instituto_sumauma.png" class="menu-logo" alt="Logo Instituto Sumaúma">
       <a href="index.html">Início</a>
       <a href="pesquisa.html">Pesquisa</a>
       <a onclick="abrirLivro()">Livro</a>
@@ -100,7 +134,6 @@ input,select{width:100%;height:44px;padding:10px;margin-bottom:10px;box-sizing:b
   </section>
 </div>
 
-<!-- MODAL LIVRO -->
 <div class="modal" id="modalLivro">
   <div class="modal-content">
     <span class="close" onclick="fecharLivro()">×</span>
@@ -152,10 +185,13 @@ function parseCSV(text){
     else{val+=c;}
   }
   if(val){cur.push(val);rows.push(cur);}
-  headers.push(...rows.shift().map(h=>h.toLowerCase()));
-  return rows.map(r=>{
-    let o={};headers.forEach((h,i)=>o[h]=r[i]||'');return o;
-  });
+  if(rows.length > 0) {
+    headers.push(...rows.shift().map(h=>h.toLowerCase()));
+    return rows.map(r=>{
+      let o={};headers.forEach((h,i)=>o[h]=r[i]||'');return o;
+    });
+  }
+  return [];
 }
 
 /* ====== FILTROS ====== */
@@ -165,11 +201,15 @@ function popularFiltros(data){
     if(d.estado) estados.add(d.estado);
     if(d.categoria) categorias.add(d.categoria);
   });
+  const filterEstado = document.getElementById('filterEstado');
+  const filterCategoria = document.getElementById('filterCategoria');
   estados.forEach(e=>filterEstado.innerHTML+=`<option>${e}</option>`);
   categorias.forEach(c=>filterCategoria.innerHTML+=`<option>${c}</option>`);
 }
 
 function atualizarCidades(){
+  const filterEstado = document.getElementById('filterEstado');
+  const filterCidade = document.getElementById('filterCidade');
   filterCidade.innerHTML='<option value="">Todas as cidades</option>';
   dados.filter(d=>!filterEstado.value||d.estado===filterEstado.value)
        .map(d=>d.cidade)
@@ -178,22 +218,27 @@ function atualizarCidades(){
 }
 
 function aplicarFiltros(){
-  const s=search.value.toLowerCase();
+  const s=document.getElementById('search').value.toLowerCase();
+  const fEstado = document.getElementById('filterEstado').value;
+  const fCidade = document.getElementById('filterCidade').value;
+  const fCat = document.getElementById('filterCategoria').value;
+
   renderizar(dados.filter(d=>
     (!s||d.nome.toLowerCase().includes(s)) &&
-    (!filterEstado.value||d.estado===filterEstado.value) &&
-    (!filterCidade.value||d.cidade===filterCidade.value) &&
-    (!filterCategoria.value||d.categoria===filterCategoria.value)
+    (!fEstado||d.estado===fEstado) &&
+    (!fCidade||d.cidade===fCidade) &&
+    (!fCat||d.categoria===fCat)
   ));
 }
 
-search.oninput=aplicarFiltros;
-filterEstado.onchange=()=>{atualizarCidades();aplicarFiltros();};
-filterCidade.onchange=aplicarFiltros;
-filterCategoria.onchange=aplicarFiltros;
+document.getElementById('search').oninput=aplicarFiltros;
+document.getElementById('filterEstado').onchange=()=>{atualizarCidades();aplicarFiltros();};
+document.getElementById('filterCidade').onchange=aplicarFiltros;
+document.getElementById('filterCategoria').onchange=aplicarFiltros;
 
 /* ====== RENDER ====== */
 function renderizar(lista){
+  const results = document.getElementById('results');
   results.innerHTML='';
   markers.forEach(m=>map.removeLayer(m));
   markers=[];
@@ -215,6 +260,7 @@ function renderizar(lista){
 
 /* ====== DETALHES ====== */
 function abrirDetalhes(d){
+  const details = document.getElementById('details');
   const temLoc=d.latitude&&d.longitude&&!isNaN(d.latitude);
   let icons='';
   if(d.link){
