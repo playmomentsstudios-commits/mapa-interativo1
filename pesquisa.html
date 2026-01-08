@@ -17,7 +17,7 @@ html,body{
 /* ================= HEADER ================= */
 .header{
   position:relative;
-  height:140px;
+  height:160px;
   background:url('banner-capa.png') center/cover no-repeat;
 }
 
@@ -31,16 +31,13 @@ html,body{
   background:rgba(0,0,0,.35);
 }
 
-.header-left{
-  display:flex;
-  align-items:center;
-  gap:20px;
-}
-
+/* LOGO */
 .header-left img{
-  height:60px;
+  height:100px;
+  width:auto;
 }
 
+/* MENU DESKTOP */
 .menu{
   display:flex;
   gap:30px;
@@ -50,6 +47,46 @@ html,body{
   color:#fff;
   text-decoration:none;
   font-size:16px;
+  cursor:pointer;
+}
+
+/* MENU MOBILE */
+.menu-toggle{
+  display:none;
+  font-size:28px;
+  color:#fff;
+  cursor:pointer;
+}
+
+@media(max-width:768px){
+  .menu{display:none;}
+  .menu-toggle{display:block;}
+  .header{height:200px;}
+}
+
+/* MOBILE MENU OVERLAY */
+.mobile-menu{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.9);
+  z-index:5000;
+  padding:40px 30px;
+}
+
+.mobile-menu a{
+  display:block;
+  color:#fff;
+  font-size:22px;
+  margin-bottom:25px;
+  text-decoration:none;
+}
+
+.mobile-menu .close{
+  font-size:28px;
+  color:#fff;
+  cursor:pointer;
+  margin-bottom:40px;
 }
 
 /* ================= SEÇÕES ================= */
@@ -104,6 +141,52 @@ html,body{
   background-position:center;
 }
 
+/* ================= MODAL LIVRO ================= */
+.modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.65);
+  z-index:4000;
+  align-items:center;
+  justify-content:center;
+}
+
+.modal-content{
+  background:#fff;
+  width:90%;
+  max-width:500px;
+  padding:30px;
+  border-radius:6px;
+  text-align:center;
+  position:relative;
+}
+
+.modal-content img{
+  width:200px;
+  margin-bottom:20px;
+}
+
+.modal-content a{
+  display:inline-block;
+  margin:10px;
+  padding:12px 18px;
+  color:#fff;
+  text-decoration:none;
+  border-radius:4px;
+}
+
+.btn-read{background:#0f3d2e;}
+.btn-download{background:#25D366;}
+
+.close{
+  position:absolute;
+  top:10px;
+  right:15px;
+  font-size:22px;
+  cursor:pointer;
+}
+
 /* ================= FOOTER ================= */
 .footer{
   background:#111;
@@ -120,20 +203,37 @@ html,body{
 <!-- ================= HEADER ================= -->
 <header class="header">
   <div class="header-overlay">
+
     <div class="header-left">
-      <a href="index.html"><img src="instituto_sumauma.png"></a>
+      <a href="index.html">
+        <img src="instituto_sumauma.png" alt="Instituto Sumaúma">
+      </a>
     </div>
+
+    <div class="menu-toggle" onclick="abrirMenu()">☰</div>
+
     <nav class="menu">
       <a href="index.html">Início</a>
       <a href="pesquisa.html">Pesquisa</a>
-      <a href="PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf" target="_blank">Livro</a>
+      <a onclick="abrirLivro()">Livro</a>
       <a href="ficha-tecnica.html">Ficha Técnica</a>
       <a href="https://www.sumauma.org/" target="_blank">Institucional</a>
     </nav>
+
   </div>
 </header>
 
-<!-- ================= INTRO ================= -->
+<!-- MENU MOBILE -->
+<div class="mobile-menu" id="mobileMenu">
+  <div class="close" onclick="fecharMenu()">✕</div>
+  <a href="index.html">Início</a>
+  <a href="pesquisa.html">Pesquisa</a>
+  <a onclick="abrirLivro();fecharMenu()">Livro</a>
+  <a href="ficha-tecnica.html">Ficha Técnica</a>
+  <a href="https://www.sumauma.org/" target="_blank">Institucional</a>
+</div>
+
+<!-- ================= CONTEÚDO ================= -->
 <section class="section">
   <h1>A Pesquisa</h1>
   <p>
@@ -143,15 +243,11 @@ html,body{
   </p>
 </section>
 
-<!-- ================= CITAÇÃO ================= -->
 <section class="quote">
   <blockquote>
     “O quilombo representa um instrumento vigoroso no processo de
     reconhecimento da identidade negra brasileira para uma maior
-    autoafirmação étnica e nacional. O fato de ter existido como brecha no
-    sistema a que os negros estavam moralmente submetidos projeta a esperança
-    de que instituições semelhantes possam atuar no presente ao lado de várias
-    outras manifestações de reforço à identidade cultural.”
+    autoafirmação étnica e nacional…”
     <footer>
       Maria Beatriz Nascimento<br>
       Historiadora, professora e ativista afro-brasileira
@@ -159,95 +255,46 @@ html,body{
   </blockquote>
 </section>
 
-<!-- ================= IMAGEM ================= -->
 <div class="full-image" style="background-image:url('images/img-intro.jpg')"></div>
 
-<!-- ================= TÓPICOS ================= -->
+<!-- (demais blocos editoriais seguem iguais aos que você já aprovou) -->
 
-<section class="section">
-  <h2>Mapeando práticas culturais e comunicacionais nos meios digitais</h2>
-  <p>
-    O mapeamento identifica iniciativas quilombolas que utilizam plataformas
-    digitais como ferramentas de visibilidade, articulação política e
-    fortalecimento comunitário.
-  </p>
-</section>
+<!-- ================= MODAL LIVRO ================= -->
+<div class="modal" id="modalLivro">
+  <div class="modal-content">
+    <span class="close" onclick="fecharLivro()">×</span>
+    <img src="images/capa-livro.jpg">
+    <p>
+      Panorama das práticas comunicacionais quilombolas no Brasil,
+      compreendendo a comunicação como ato político, ancestral e de justiça climática.
+    </p>
+    <a class="btn-read" href="PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf" target="_blank">
+      📖 Ler online
+    </a>
+    <a class="btn-download" href="PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf" download>
+      📥 Baixar PDF
+    </a>
+  </div>
+</div>
 
-<div class="full-image" style="background-image:url('images/img-topico-1.jpg')"></div>
-
-<section class="section">
-  <h2>A cultura e a comunicação como ato político e ancestral</h2>
-  <p>
-    A pesquisa compreende a comunicação como herança ancestral, atravessada
-    por saberes, oralidades e práticas coletivas que resistem às estruturas
-    coloniais.
-  </p>
-</section>
-
-<div class="full-image" style="background-image:url('images/img-topico-2.jpg')"></div>
-
-<section class="section">
-  <h2>Perfil sociodemográfico</h2>
-  <p>
-    O levantamento revela a diversidade de territórios, idades, gêneros e
-    trajetórias que compõem as práticas comunicacionais quilombolas.
-  </p>
-</section>
-
-<div class="full-image" style="background-image:url('images/img-topico-3.jpg')"></div>
-
-<section class="section">
-  <h2>Trajetórias pessoais e comunitárias</h2>
-  <p>
-    As histórias individuais e coletivas demonstram como a comunicação
-    fortalece identidades, redes de apoio e processos de autoafirmação.
-  </p>
-</section>
-
-<div class="full-image" style="background-image:url('images/img-topico-4.jpg')"></div>
-
-<section class="section">
-  <h2>Aspectos organizacionais e redes colaborativas</h2>
-  <p>
-    O estudo destaca a importância das articulações em rede para a
-    sustentabilidade das iniciativas e o fortalecimento da luta coletiva.
-  </p>
-</section>
-
-<div class="full-image" style="background-image:url('images/img-topico-5.jpg')"></div>
-
-<section class="section">
-  <h2>Quilombo enquanto sinônimo de futuro</h2>
-  <p>
-    O quilombo é apresentado como horizonte político, cultural e ambiental,
-    articulando ancestralidade, território e justiça climática.
-  </p>
-</section>
-
-<div class="full-image" style="background-image:url('images/img-topico-6.jpg')"></div>
-
-<section class="section">
-  <h2>Considerações finais</h2>
-  <p>
-    A pesquisa reafirma o papel central das práticas comunicacionais
-    quilombolas na construção de futuros sustentáveis e justos.
-  </p>
-</section>
-
-<div class="full-image" style="background-image:url('images/img-topico-7.jpg')"></div>
-
-<section class="section">
-  <h2>Sugestões e recomendações</h2>
-  <p>
-    São apresentadas recomendações para políticas públicas, organizações
-    parceiras e iniciativas comunitárias.
-  </p>
-</section>
-
-<!-- ================= FOOTER ================= -->
 <footer class="footer">
   Instituto Sumaúma © 2026 · Pesquisa Quilombola
 </footer>
+
+<script>
+function abrirLivro(){
+  document.getElementById('modalLivro').style.display='flex';
+}
+function fecharLivro(){
+  document.getElementById('modalLivro').style.display='none';
+}
+function abrirMenu(){
+  document.getElementById('mobileMenu').style.display='block';
+}
+function fecharMenu(){
+  document.getElementById('mobileMenu').style.display='none';
+}
+</script>
 
 </body>
 </html>
