@@ -1,0 +1,9 @@
+RewriteEngine On
+
+# 1. Redireciona a URL longa para o index.html principal
+RewriteRule ^corpos-territorios-quilombolas-e-o-fio-conectado-da-ancestralidade/?$ index.html [L,NC]
+
+# 2. Garante que se alguém acessar sem a barra no final, funcione também
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . index.html [L]
