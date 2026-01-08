@@ -6,17 +6,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 <style>
-/* ====== CSS AJUSTADO ====== */
+/* ====== CSS INTEGRADO E AJUSTADO ====== */
 html,body{margin:0;height:100%;font-family:Arial,sans-serif;}
 .header{position:relative;height:160px;background:url('/banner-capa.png') center/cover no-repeat;}
 .header-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:space-between;padding:0 30px;background:rgba(0,0,0,.35);}
 
+/* ESTILO DO NOVO TÍTULO EM TEXTO */
 .header-left a {text-decoration: none;}
 .brand-title {
     color: #ffffff;
     font-size: 28px;
     font-weight: 800;
-    line-height: 1;
+    line-height: 1.1;
     text-transform: uppercase;
     letter-spacing: 1px;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.6);
@@ -126,7 +127,7 @@ input,select{width:100%;height:44px;padding:10px;margin-bottom:10px;box-sizing:b
 <div class="modal" id="modalLivro">
   <div class="modal-content">
     <span class="close" onclick="fecharLivro()">×</span>
-    <img src="/images/capa-livro.jpg">
+    <img src="/capa-livro.jpg">
     <h2>Práticas Comunicacionais e Culturais Quilombolas</h2>
     <p>Panorama das práticas comunicacionais quilombolas no Brasil.</p>
     <a class="btn-read" href="/PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf" target="_blank">📖 Ler online</a>
@@ -146,7 +147,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'�
 
 let dados = [], markers = [];
 
-/* CARREGAMENTO DO CSV PELA RAIZ */
+/* CAMINHO ABSOLUTO PARA O CSV NA RAIZ DO SUBDOMÍNIO */
 fetch('/Mapeamento_mestre.csv')
 .then(r=>r.text())
 .then(text=>{
