@@ -14,11 +14,11 @@ html,body{
   color:#222;
 }
 
-/* ================= HEADER (ATUALIZADO) ================= */
+/* ================= HEADER ================= */
 .header{
   position:relative;
   height:160px;
-  background:url('/banner-capa.png') center/cover no-repeat;
+  background:url('banner-capa.png') center/cover no-repeat;
 }
 .header-overlay{
   position:absolute;
@@ -30,31 +30,38 @@ html,body{
   background:rgba(0,0,0,.35);
 }
 
-.header-left a {text-decoration: none;}
-.brand-title {
-    color: #ffffff;
-    font-size: 28px;
-    font-weight: 800;
-    line-height: 1;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.6);
-    margin: 0;
+.brand-title{
+  color:#fff;
+  font-size:26px;
+  font-weight:800;
+  line-height:1.1;
+  text-transform:uppercase;
+  letter-spacing:1px;
+  margin:0;
 }
-.brand-subtitle {
-    display: block;
-    color: #ffdd9a;
-    font-size: 14px;
-    font-weight: normal;
-    letter-spacing: 2px;
-    margin-top: 5px;
+.brand-subtitle{
+  display:block;
+  color:#ffdd9a;
+  font-size:13px;
+  letter-spacing:2px;
+  margin-top:6px;
 }
 
-.menu{ display:flex; gap:30px; align-items:center; }
-.menu a{ color:#fff; text-decoration:none; font-size:16px; }
-.menu-logo{ height:50px; width:auto; }
+.menu{
+  display:flex;
+  gap:30px;
+  align-items:center;
+}
+.menu a{
+  color:#fff;
+  text-decoration:none;
+  font-size:16px;
+}
+.menu-logo{
+  height:50px;
+}
 
-/* ================= CONTEÚDO ORIGINAL ================= */
+/* ================= SECTIONS ================= */
 .section{
   max-width:1100px;
   margin:60px auto;
@@ -66,11 +73,28 @@ html,body{
 .section h2{
   color:#0f3d2e;
   margin-top:0;
-  margin-bottom:40px;
+  margin-bottom:35px;
   border-bottom:2px solid #eee;
   padding-bottom:10px;
 }
 
+/* ================= REALIZAÇÃO / FINANCIADOR ================= */
+.logos-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:40px;
+  align-items:center;
+  text-align:center;
+}
+.logo-box h3{
+  color:#0f3d2e;
+  margin-bottom:15px;
+}
+.logo-box img{
+  max-width:240px;
+}
+
+/* ================= EQUIPE ================= */
 .people-grid{
   display:grid;
   grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
@@ -82,51 +106,31 @@ html,body{
   padding:25px 20px;
   text-align:center;
   color:#fff;
-  transition:transform 0.2s;
+  transition:transform .25s, box-shadow .25s;
 }
-.person-card:hover{ transform:translateY(-5px); }
+.person-card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 10px 25px rgba(0,0,0,0.25);
+}
 .person-card img{
   width:120px;
   height:120px;
   border-radius:50%;
   object-fit:cover;
   margin-bottom:15px;
-  border:3px solid rgba(255,255,255,0.2);
+  border:3px solid rgba(255,255,255,0.25);
 }
-.person-card h3{ margin:10px 0 5px; font-size:18px; }
-.person-card p{ margin:0; font-size:14px; color:#ffdd9a; }
-
-/* ================= LOGOS (REALIZAÇÃO E FINANCIAMENTO) ================= */
-.logos-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 50px;
-  margin-top: 50px;
-  padding-top: 30px;
-  border-top: 1px solid #eee;
+.person-card h3{
+  margin:10px 0 5px;
+  font-size:18px;
 }
-.logos-container img {
-  height: 60px;
-  width: auto;
+.person-card p{
+  margin:0;
+  font-size:14px;
+  color:#ffdd9a;
 }
 
-/* AJUSTE MOBILE */
-@media(max-width:768px){
-  .brand-title { font-size: 22px; }
-  .menu { display:none; }
-  .section { margin:20px; padding:30px 20px; }
-  
-  /* Logos menores e lado a lado no mobile */
-  .logos-container {
-    gap: 20px; 
-    flex-direction: row; /* Garante sentido horizontal */
-  }
-  .logos-container img {
-    height: 40px; /* Reduz tamanho no celular */
-  }
-}
-
+/* ================= FOOTER ================= */
 .footer{
   background:#111;
   color:#bbb;
@@ -134,60 +138,120 @@ html,body{
   padding:25px;
   font-size:14px;
 }
+
+/* ================= MOBILE ================= */
+@media(max-width:768px){
+  .menu{display:none;}
+  .section{margin:20px; padding:30px 20px;}
+  .logos-grid{grid-template-columns:1fr;}
+}
 </style>
 </head>
 
 <body>
 
+<!-- HEADER -->
 <header class="header">
   <div class="header-overlay">
-    <div class="header-left">
-      <a href="/">
-        <h1 class="brand-title">MAPEAMENTO<br>CULTURAL<span class="brand-subtitle">INSTITUTO SUMAÚMA</span></h1>
-      </a>
+    <div>
+      <h1 class="brand-title">
+        Mapeamento Cultural
+        <span class="brand-subtitle">Instituto Sumaúma</span>
+      </h1>
     </div>
+
     <nav class="menu">
-      <img src="/instituto_sumauma.png" class="menu-logo" alt="Logo Sumaúma">
-      <a href="/">Início</a>
-      <a href="/pesquisa.html">Pesquisa</a>
-      <a href="/ficha-tecnica.html">Ficha Técnica</a>
+      <img src="instituto_sumauma.png" class="menu-logo">
+      <a href="index.html">Início</a>
+      <a href="pesquisa.html">Pesquisa</a>
+      <a href="ficha-tecnica.html">Ficha Técnica</a>
+      <a href="https://www.sumauma.org/" target="_blank">Institucional</a>
     </nav>
   </div>
 </header>
 
+<!-- REALIZAÇÃO / FINANCIADOR -->
+<section class="section">
+  <div class="logos-grid">
+
+    <div class="logo-box">
+      <h3>Realização</h3>
+      <img src="logo-sumauma-2.png" alt="Instituto Sumaúma">
+    </div>
+
+    <div class="logo-box">
+      <h3>Financiador</h3>
+      <img src="images/clua_logo.png" alt="Climate and Land Use Alliance">
+    </div>
+
+  </div>
+</section>
+
+<!-- EQUIPE -->
 <section class="section">
   <h2>Equipe da Pesquisa</h2>
+
   <div class="people-grid">
+
     <div class="person-card">
-      <img src="/images/equipe/tais-oliveira.jpg">
+      <img src="images/equipe/tais-oliveira.jpg">
       <h3>Taís Oliveira</h3>
       <p>Coordenação Geral</p>
     </div>
+
     <div class="person-card">
-      <img src="/images/equipe/vanessa-silva.jpg">
+      <img src="images/equipe/juliane-sousa.jpg">
+      <h3>Juliane Sousa</h3>
+      <p>Consultora Convidada</p>
+    </div>
+
+    <div class="person-card">
+      <img src="images/equipe/vanessa-silva.jpg">
       <h3>Vanessa Silva</h3>
       <p>Analista de Pesquisa</p>
     </div>
+
     <div class="person-card">
-      <img src="/images/equipe/anicely-santos.jpg">
+      <img src="images/equipe/anicely-santos.jpg">
       <h3>Anicely Santos</h3>
       <p>Analista de Dados</p>
     </div>
+
     <div class="person-card">
-      <img src="/images/equipe/maria-fernanda-ruas.jpg">
+      <img src="images/equipe/maria-fernanda-ruas.jpg">
       <h3>Maria Fernanda Ruas</h3>
       <p>Analista de Comunicação</p>
     </div>
+
+    <div class="person-card">
+      <img src="images/equipe/abraao-felipe-oliveira.jpg">
+      <h3>Abraão Felipe Oliveira</h3>
+      <p>Assistente de Comunicação</p>
     </div>
 
-  <div class="logos-container">
-    <img src="/instituto_sumauma_preto.png" alt="Realização: Instituto Sumaúma">
-    <img src="/logo-financiador.png" alt="Financiamento">
+    <div class="person-card">
+      <img src="images/equipe/diego-galofero.jpg">
+      <h3>Diego Galofero</h3>
+      <p>Assistente Administrativo</p>
+    </div>
+
+    <div class="person-card">
+      <img src="images/equipe/higor-torres.jpg">
+      <h3>Hígor Torres</h3>
+      <p>Revisão</p>
+    </div>
+
+    <div class="person-card">
+      <img src="images/equipe/felipe-da-costa-souza.jpg">
+      <h3>Felipe da Costa Souza</h3>
+      <p>Design e Diagramação</p>
+    </div>
+
   </div>
 </section>
 
 <footer class="footer">
-  Instituto Sumaúma © 2026 · Pesquisa Quilombola
+  Instituto Sumaúma © 2026 · Ficha Técnica da Pesquisa
 </footer>
 
 </body>
