@@ -31,15 +31,9 @@ html,body{
   background:rgba(0,0,0,.35);
 }
 
-/* LOGOS */
-.header-left{
-  display:flex;
-  align-items:center;
-  gap:20px;
-}
-
+/* LOGO */
 .header-left img{
-  height:60px;
+  height:100px;
   width:auto;
 }
 
@@ -58,10 +52,7 @@ html,body{
 
 /* ================= MOBILE HEADER ================= */
 @media(max-width:768px){
-
-  .header{
-    height:220px;
-  }
+  .header{height:220px;}
 
   .header-overlay{
     flex-direction:column;
@@ -70,19 +61,13 @@ html,body{
     text-align:center;
   }
 
-  .header-left{
-    justify-content:center;
-  }
-
   .menu{
     flex-direction:column;
-    gap:18px;
+    gap:16px;
     margin-bottom:10px;
   }
 
-  .menu a{
-    font-size:18px;
-  }
+  .menu a{font-size:18px;}
 }
 
 /* ================= LAYOUT ================= */
@@ -106,6 +91,8 @@ input,select{
   height:44px;
   padding:10px;
   margin-bottom:10px;
+  box-sizing:border-box;
+  font-size:14px;
 }
 
 /* ================= RESULTADOS ================= */
@@ -174,25 +161,6 @@ input,select{
   margin-bottom:20px;
 }
 
-.modal-content h2{color:#0f3d2e;}
-
-.modal-content p{
-  font-size:15px;
-  line-height:1.6;
-}
-
-.modal-buttons a{
-  display:inline-block;
-  margin:10px;
-  padding:12px 18px;
-  border-radius:4px;
-  text-decoration:none;
-  color:#fff;
-}
-
-.btn-read{background:#0f3d2e;}
-.btn-download{background:#25D366;}
-
 .close{
   position:absolute;
   top:10px;
@@ -211,17 +179,17 @@ input,select{
 
 <body>
 
-<!-- ================= HEADER ================= -->
 <header class="header">
   <div class="header-overlay">
 
+    <!-- LOGO -->
     <div class="header-left">
       <a href="https://pesquisa.sumauma.org/">
-        <img src="instituto_sumauma.png">
+        <img src="instituto_sumauma.png" alt="Instituto Sumaúma">
       </a>
-      <img src="clua_logo.png">
     </div>
 
+    <!-- MENU -->
     <nav class="menu">
       <a href="https://pesquisa.sumauma.org/">Início</a>
       <a href="pesquisa.html">Pesquisa</a>
@@ -233,17 +201,14 @@ input,select{
   </div>
 </header>
 
-<!-- ================= MAIN ================= -->
 <div id="layout">
 
   <aside id="sidebar">
     <div class="sidebar-inner">
       <input type="text" id="search" placeholder="Buscar por nome...">
-
       <select id="filterEstado"><option value="">Todos os estados</option></select>
       <select id="filterCidade"><option value="">Todas as cidades</option></select>
       <select id="filterCategoria"><option value="">Todas as categorias</option></select>
-
       <div id="results"></div>
     </div>
   </aside>
@@ -255,21 +220,17 @@ input,select{
 
 </div>
 
-<!-- ================= MODAL LIVRO ================= -->
+<!-- MODAL LIVRO -->
 <div class="modal" id="modalLivro">
   <div class="modal-content">
     <span class="close" onclick="fecharLivro()">×</span>
     <img src="images/capa-livro.jpg">
-    <h2>Práticas Comunicacionais e Culturais Quilombolas</h2>
     <p>
-      A pesquisa apresenta um panorama das práticas comunicacionais
-      quilombolas no Brasil, destacando a comunicação como instrumento
-      ancestral, político e de justiça climática.
+      Panorama das práticas comunicacionais quilombolas no Brasil,
+      compreendendo a comunicação como ato político, ancestral e de justiça climática.
     </p>
-    <div class="modal-buttons">
-      <a class="btn-read" href="PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf" target="_blank">📖 Ler online</a>
-      <a class="btn-download" href="PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf" download>📥 Baixar PDF</a>
-    </div>
+    <a href="PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf" target="_blank">📖 Ler online</a><br><br>
+    <a href="PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf" download>📥 Baixar PDF</a>
   </div>
 </div>
 
@@ -277,15 +238,87 @@ input,select{
 
 <script>
 const map=L.map('map').setView([-14.235,-51.9253],4);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap'}).addTo(map);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
 let dados=[],markers=[];
+
 fetch('Mapeamento_mestre.csv').then(r=>r.text()).then(t=>{
-  dados=parseCSV(t);popularFiltros(dados);renderizar(dados);
+  dados=parseCSV(t);
+  popularFiltros(dados);
+  renderizar(dados);
   setTimeout(()=>map.invalidateSize(),300);
 });
 
-/* CSV + filtros + render (mantidos como antes) */
+function parseCSV(text){
+  const rows=[],headers=[];
+  let cur=[],val='',q=false;
+  for(let i=0;i<text.length;i++){
+    const c=text[i],n=text[i+1];
+    if(c=='"'&&q&&n=='"'){val+='"';i++;}
+    else if(c=='"'){q=!q;}
+    else if(c==','&&!q){cur.push(val);val='';}
+    else if(c=='\n'&&!q){cur.push(val);rows.push(cur);cur=[];val='';}
+    else{val+=c;}
+  }
+  if(val){cur.push(val);rows.push(cur);}
+  headers.push(...rows.shift().map(h=>h.toLowerCase()));
+  return rows.map(r=>{
+    let o={};headers.forEach((h,i)=>o[h]=r[i]||'');return o;
+  });
+}
+
+function popularFiltros(data){
+  const estados=new Set(), categorias=new Set();
+  data.forEach(d=>{
+    if(d.estado) estados.add(d.estado);
+    if(d.categoria) categorias.add(d.categoria);
+  });
+  estados.forEach(e=>filterEstado.innerHTML+=`<option>${e}</option>`);
+  categorias.forEach(c=>filterCategoria.innerHTML+=`<option>${c}</option>`);
+}
+
+function atualizarCidades(){
+  filterCidade.innerHTML='<option value="">Todas as cidades</option>';
+  dados.filter(d=>!filterEstado.value||d.estado===filterEstado.value)
+       .map(d=>d.cidade)
+       .filter((v,i,a)=>v&&a.indexOf(v)===i)
+       .forEach(c=>filterCidade.innerHTML+=`<option>${c}</option>`);
+}
+
+function aplicarFiltros(){
+  const s=search.value.toLowerCase();
+  renderizar(dados.filter(d=>
+    (!s||d.nome.toLowerCase().includes(s)) &&
+    (!filterEstado.value||d.estado===filterEstado.value) &&
+    (!filterCidade.value||d.cidade===filterCidade.value) &&
+    (!filterCategoria.value||d.categoria===filterCategoria.value)
+  ));
+}
+
+search.oninput=aplicarFiltros;
+filterEstado.onchange=()=>{atualizarCidades();aplicarFiltros();};
+filterCidade.onchange=aplicarFiltros;
+filterCategoria.onchange=aplicarFiltros;
+
+function renderizar(lista){
+  results.innerHTML='';
+  markers.forEach(m=>map.removeLayer(m));
+  markers=[];
+  lista.forEach(d=>{
+    const temLoc=d.latitude&&d.longitude&&!isNaN(d.latitude);
+    const div=document.createElement('div');
+    div.className='item';
+    div.innerHTML=`<strong>${d.nome}</strong><br>${d.cidade} - ${d.estado}<br>${d.categoria}${!temLoc?'<div class="tag-pendente">📍 Localização pendente</div>':''}`;
+    div.onclick=()=>abrirDetalhes(d);
+    results.appendChild(div);
+    if(temLoc) markers.push(L.marker([+d.latitude,+d.longitude]).addTo(map));
+  });
+}
+
+function abrirDetalhes(d){
+  document.body.classList.add('show-details');
+  details.innerHTML=`<h2>${d.nome}</h2><p>${d.cidade} - ${d.estado}</p><p>${d.categoria}</p>`;
+}
 
 function abrirLivro(){document.getElementById('modalLivro').style.display='flex';}
 function fecharLivro(){document.getElementById('modalLivro').style.display='none';}
