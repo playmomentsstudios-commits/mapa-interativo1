@@ -6,13 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-html,body{
-  margin:0;
-  padding:0;
-  font-family:Arial,sans-serif;
-  color:#222;
-  background:#fff;
-}
+html,body{ margin:0; padding:0; font-family:Arial,sans-serif; color:#222; background:#fff; }
 
 /* ================= HEADER (ATUALIZADO) ================= */
 .header{
@@ -30,7 +24,6 @@ html,body{
   background:rgba(0,0,0,.35);
 }
 
-/* ESTILO DO TÍTULO EM TEXTO */
 .header-left a {text-decoration: none;}
 .brand-title {
     color: #ffffff;
@@ -51,126 +44,54 @@ html,body{
     margin-top: 5px;
 }
 
-.menu{
-  display:flex;
-  gap:30px;
-}
-.menu a{
-  color:#fff;
-  text-decoration:none;
-  font-size:16px;
-  cursor: pointer;
-}
-.menu-logo{
-  height:50px;
-  width:auto;
-}
+.menu{ display:flex; gap:30px; align-items:center; }
+.menu a{ color:#fff; text-decoration:none; font-size:16px; cursor:pointer; }
+.menu-logo{ height:50px; width:auto; }
 
 @media(max-width:768px){
-  .brand-title { font-size: 22px; }
-  .menu { display:none; }
+  .menu{display:none;}
+  .header{height:200px;}
 }
 
 /* ================= CONTEÚDO ORIGINAL ================= */
-.section{
-  max-width:1000px;
-  margin:0 auto;
-  padding:70px 30px;
-  line-height:1.8;
-  font-size:18px;
-}
-.section h1, .section h2{
-  color:#0f3d2e;
-  margin-top:0;
-}
-.quote{
-  background:#f4f4f4;
-  padding:60px 30px;
-  text-align:center;
-}
-.quote blockquote{
-  max-width:900px;
-  margin:0 auto;
-  font-size:24px;
-  line-height:1.6;
-  font-style:italic;
-  color:#444;
-}
-.full-image{
-  width:100%;
-  height:450px;
-  background-size:cover;
-  background-position:center;
-  background-attachment:fixed;
-}
-.footer{
-  background:#111;
-  color:#bbb;
-  text-align:center;
-  padding:40px 20px;
-  font-size:14px;
-}
+.section{ max-width:1000px; margin:0 auto; padding:70px 30px; }
+.section h1{ color:#0f3d2e; font-size:32px; margin-bottom:20px; }
+.section h2{ color:#0f3d2e; margin-bottom:15px; }
+.section p{ font-size:16px; line-height:1.7; }
 
-/* MODAL */
-.modal{
-  display:none;
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.8);
-  z-index:4000;
-  align-items:center;
-  justify-content:center;
-}
-.modal-content{
-  background:#fff;
-  padding:30px;
-  max-width:500px;
-  width:90%;
-  text-align:center;
-  border-radius:8px;
-  position:relative;
-}
-.modal-content img{
-  width:200px;
-  margin-bottom:20px;
-}
-.close{
-  position:absolute;
-  top:10px;
-  right:15px;
-  font-size:24px;
-  cursor:pointer;
-}
-.btn-read, .btn-download{
-  display:inline-block;
-  margin:10px;
-  padding:12px 20px;
-  color:#fff;
-  text-decoration:none;
-  border-radius:4px;
-  font-weight:bold;
-}
-.btn-read{background:#0f3d2e;}
-.btn-download{background:#25D366;}
+.quote{ background:#f4f4f4; padding:60px 30px; }
+.quote blockquote{ max-width:900px; margin:0 auto; font-size:20px; line-height:1.6; font-style:italic; }
+.quote footer{ margin-top:20px; font-size:14px; font-weight:bold; }
+
+.full-image{ width:100%; height:350px; background-size:cover; background-position:center; }
+
+.modal{ display:none; position:fixed; inset:0; background:rgba(0,0,0,.65); z-index:4000; align-items:center; justify-content:center; }
+.modal-content{ background:#fff; width:90%; max-width:500px; padding:30px; border-radius:6px; text-align:center; position:relative; }
+.modal-content img{ width:200px; margin-bottom:20px; }
+.btn-read{background:#0f3d2e; display:inline-block; margin:10px; padding:12px 18px; color:#fff; text-decoration:none; border-radius:4px;}
+.btn-download{background:#25D366; display:inline-block; margin:10px; padding:12px 18px; color:#fff; text-decoration:none; border-radius:4px;}
+.close{ position:absolute; top:10px; right:15px; font-size:22px; cursor:pointer; }
+
+.footer{ background:#111; color:#bbb; text-align:center; padding:25px; font-size:14px; }
 </style>
 </head>
+
 <body>
 
 <header class="header">
   <div class="header-overlay">
     <div class="header-left">
       <a href="/">
-        <h1 class="brand-title">MAPEAMENTO<br>CULTURAL
-          <span class="brand-subtitle">INSTITUTO SUMAÚMA</span>
-        </h1>
+        <h1 class="brand-title">MAPEAMENTO<br>CULTURAL<span class="brand-subtitle">INSTITUTO SUMAÚMA</span></h1>
       </a>
     </div>
     <nav class="menu">
-      <img src="/instituto_sumauma.png" class="menu-logo" alt="Logo Sumaúma">
+      <img src="/instituto_sumauma.png" class="menu-logo">
       <a href="/">Início</a>
       <a href="/pesquisa.html">Pesquisa</a>
       <a onclick="abrirLivro()">Livro</a>
       <a href="/ficha-tecnica.html">Ficha Técnica</a>
+      <a href="https://www.sumauma.org/" target="_blank">Institucional</a>
     </nav>
   </div>
 </header>
@@ -178,62 +99,64 @@ html,body{
 <section class="section">
   <h1>A Pesquisa</h1>
   <p>
-    Esta pesquisa é fruto do desejo de visibilizar as potências comunicacionais e culturais 
-    dos territórios quilombolas brasileiros no ecossistema digital.
+    Esta pesquisa investiga práticas comunicacionais e culturais quilombolas
+    nos meios digitais, compreendendo a comunicação como ato político,
+    ancestral e estratégico na luta por justiça climática, racial e territorial.
   </p>
+</section>
+
+<section class="quote">
+  <blockquote>
+    “O quilombo representa um instrumento vigoroso no processo de
+    reconhecimento da identidade negra brasileira para uma maior
+    autoafirmação étnica e nacional…”
+    <footer>Maria Beatriz Nascimento — Historiadora, professora e ativista afro-brasileira</footer>
+  </blockquote>
 </section>
 
 <div class="full-image" style="background-image:url('/images/pesquisa/img-1.jpg')"></div>
 
 <section class="section">
-  <h2>Contexto e Motivação</h2>
-  <p>
-    Diante de um cenário de crescente digitalização, como as comunidades tradicionais 
-    têm se apropriado das ferramentas tecnológicas para narrar suas próprias histórias?
-  </p>
+  <h2>Mapeando práticas culturais e comunicacionais nos meios digitais</h2>
+  <p>O mapeamento identifica como coletivos quilombolas utilizam ferramentas digitais para fortalecer suas narrativas.</p>
 </section>
 
-<div class="quote">
-  <blockquote>
-    "Comunicar é um ato de existência e resistência para os nossos territórios."
-  </blockquote>
-</div>
+<div class="full-image" style="background-image:url('/images/pesquisa/img-2.jpg')"></div>
 
 <section class="section">
-  <h2>Metodologia</h2>
-  <p>
-    O estudo combinou levantamento de dados quantitativos com escuta qualitativa, 
-    focando em coletivos de comunicação e produtores culturais.
-  </p>
+  <h2>A cultura e a comunicação como ato político e ancestral</h2>
+  <p>A comunicação é compreendida como extensão da ancestralidade, da oralidade e da memória coletiva.</p>
 </section>
 
-<div class="full-image" style="background-image:url('/images/pesquisa/img-10.jpg')"></div>
+<div class="full-image" style="background-image:url('/images/pesquisa/img-3.jpg')"></div>
 
 <section class="section">
-  <h2>Referências bibliográficas</h2>
-  <p>
-    O estudo dialoga com autores e autoras negras, quilombolas e referências fundamentais da comunicação comunitária.
-  </p>
+  <h2>Perfil sociodemográfico</h2>
+  <p>A pesquisa apresenta o perfil dos sujeitos e coletivos envolvidos, evidenciando território e formas de organização.</p>
 </section>
 
-<div class="modal" id="modalLivro">
-  <div class="modal-content">
-    <span class="close" onclick="fecharLivro()">×</span>
-    <img src="/images/capa-livro.jpg" alt="Capa do Livro">
-    <p>Panorama das práticas comunicacionais quilombolas no Brasil.</p>
-    <a class="btn-read" href="/PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf" target="_blank">📖 Ler online</a>
-    <a class="btn-download" href="/PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf" download>📥 Baixar PDF</a>
-  </div>
-</div>
+<div class="full-image" style="background-image:url('/images/pesquisa/img-4.jpg')"></div>
 
-<footer class="footer">
-  Instituto Sumaúma © 2026 · Pesquisa Quilombola
-</footer>
+<section class="section">
+  <h2>Trajetórias pessoais em práticas comunicacionais e culturais</h2>
+  <p>São analisadas as trajetórias individuais que constroem práticas alinhadas à identidade quilombola.</p>
+</section>
 
-<script>
-function abrirLivro(){ document.getElementById('modalLivro').style.display='flex'; }
-function fecharLivro(){ document.getElementById('modalLivro').style.display='none'; }
-</script>
+<div class="full-image" style="background-image:url('/images/pesquisa/img-5.jpg')"></div>
 
-</body>
-</html>
+<section class="section">
+  <h2>Trajetórias comunitárias em práticas comunicacionais e culturais</h2>
+  <p>A comunicação comunitária aparece como eixo estruturante na organização política e territorial.</p>
+</section>
+
+<div class="full-image" style="background-image:url('/images/pesquisa/img-6.jpg')"></div>
+
+<section class="section">
+  <h2>Aspectos organizacionais e redes colaborativas</h2>
+  <p>Redes colaborativas ampliam o alcance das práticas, fortalecendo alianças e incidência política.</p>
+</section>
+
+<div class="full-image" style="background-image:url('/images/pesquisa/img-7.jpg')"></div>
+
+<section class="section">
+  <h2>Quilombo enquanto sinônimo
