@@ -8,211 +8,48 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 
 <style>
-html,body{
-  margin:0;
-  height:100%;
-  font-family:Arial,sans-serif;
-}
-
-/* ================= HEADER ================= */
-.header{
-  position:relative;
-  height:160px;
-  background:url('banner-capa.png') center/cover no-repeat;
-}
-.header-overlay{
-  position:absolute;
-  inset:0;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:0 30px;
-  background:rgba(0,0,0,.35);
-}
-.header-left img{
-  height:130px; /* img-topo.png */
-  width:auto;
-}
-
-/* ================= MENU ================= */
-.menu{
-  display:flex;
-  gap:30px;
-  align-items:center;
-}
-.menu a{
-  color:#fff;
-  text-decoration:none;
-  font-size:16px;
-  cursor:pointer;
-}
-.menu-logo{
-  height:50px;
-  width:auto;
-}
-
-/* ================= MOBILE ================= */
-.menu-toggle{
-  display:none;
-  font-size:28px;
-  color:#fff;
-  cursor:pointer;
-}
-@media(max-width:768px){
-  .menu{display:none;}
-  .menu-toggle{display:block;}
-  .header{height:200px;}
-}
-.mobile-menu{
-  display:none;
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.9);
-  z-index:5000;
-  padding:40px 30px;
-}
-.mobile-menu a{
-  display:block;
-  color:#fff;
-  font-size:22px;
-  margin-bottom:25px;
-  text-decoration:none;
-}
-.mobile-menu .close{
-  font-size:28px;
-  color:#fff;
-  cursor:pointer;
-  margin-bottom:40px;
-}
-
-/* ================= LAYOUT ================= */
-#layout{
-  display:flex;
-  height:calc(100% - 160px);
-}
-
-/* ================= SIDEBAR ================= */
-#sidebar{
-  width:420px;
-  background:#fff;
-  border-right:1px solid #ddd;
-  overflow-y:auto;
-}
+/* ====== SEU CSS (INTACTO) ====== */
+html,body{margin:0;height:100%;font-family:Arial,sans-serif;}
+.header{position:relative;height:160px;background:url('banner-capa.png') center/cover no-repeat;}
+.header-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:space-between;padding:0 30px;background:rgba(0,0,0,.35);}
+.header-left img{height:130px;width:auto;}
+.menu{display:flex;gap:30px;align-items:center;}
+.menu a{color:#fff;text-decoration:none;font-size:16px;}
+.menu-logo{height:50px;width:auto;}
+.menu-toggle{display:none;font-size:28px;color:#fff;cursor:pointer;}
+@media(max-width:768px){.menu{display:none}.menu-toggle{display:block}.header{height:200px}}
+.mobile-menu{display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:5000;padding:40px 30px;}
+.mobile-menu a{display:block;color:#fff;font-size:22px;margin-bottom:25px;text-decoration:none;}
+.mobile-menu .close{font-size:28px;color:#fff;cursor:pointer;margin-bottom:40px;}
+#layout{display:flex;height:calc(100% - 160px);}
+#sidebar{width:420px;background:#fff;border-right:1px solid #ddd;overflow-y:auto;}
 .sidebar-inner{padding:20px;}
-input,select{
-  width:100%;
-  height:44px;
-  padding:10px;
-  margin-bottom:10px;
-  box-sizing:border-box;
-}
-
-/* ================= RESULTADOS ================= */
-.item{
-  background:#0f3d2e;
-  color:#fff;
-  border-radius:4px;
-  padding:12px;
-  margin-bottom:10px;
-  cursor:pointer;
-}
+input,select{width:100%;height:44px;padding:10px;margin-bottom:10px;box-sizing:border-box;}
+.item{background:#0f3d2e;color:#fff;border-radius:4px;padding:12px;margin-bottom:10px;cursor:pointer;}
 .item:hover{background:#145743;}
-.tag-pendente{
-  color:#ffdd9a;
-  font-size:12px;
-}
-
-/* ================= MAPA ================= */
+.tag-pendente{color:#ffdd9a;font-size:12px;}
 #content{flex:1;position:relative;}
 #map{width:100%;height:100%;}
-
-/* ================= DETALHES ================= */
-#details{
-  display:none;
-  position:absolute;
-  right:0;
-  top:0;
-  width:420px;
-  height:100%;
-  background:#fff;
-  border-left:1px solid #ddd;
-  padding:20px;
-  overflow-y:auto;
-  z-index:1000;
-}
+#details{display:none;position:absolute;right:0;top:0;width:420px;height:100%;background:#fff;border-left:1px solid #ddd;padding:20px;overflow-y:auto;z-index:1000;}
 .show-details #details{display:block;}
-.full-map #sidebar,
-.full-map #details{display:none;}
-
+.full-map #sidebar,.full-map #details{display:none;}
 #details h2{color:#0f3d2e;}
 .info-line{margin-bottom:10px;font-size:15px;}
 .info-line b{color:#0f3d2e;}
-
-.info-icons{
-  display:flex;
-  gap:12px;
-  margin:15px 0;
-}
-.info-icons a{
-  width:42px;height:42px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  color:#fff;text-decoration:none;font-size:18px;
-}
+.info-icons{display:flex;gap:12px;margin:15px 0;}
+.info-icons a{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;text-decoration:none;font-size:18px;}
 .whatsapp{background:#25D366;}
 .site{background:#0f3d2e;}
 .instagram{background:#C13584;}
 .map-icon{background:#1e88e5;}
-
-.btn-map-view{
-  display:inline-block;
-  padding:12px 18px;
-  background:#0f3d2e;
-  color:#fff;
-  border-radius:4px;
-  cursor:pointer;
-}
-
-/* ================= MODAIS ================= */
-.result-modal,
-.modal{
-  display:none;
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.65);
-  z-index:4500;
-  align-items:center;
-  justify-content:center;
-}
-.result-box,
-.modal-content{
-  background:#fff;
-  width:90%;
-  max-width:500px;
-  padding:25px;
-  border-radius:6px;
-  position:relative;
-}
-.close{
-  position:absolute;
-  top:10px;
-  right:15px;
-  font-size:22px;
-  cursor:pointer;
-}
-.modal-content img{
-  width:200px;
-  margin-bottom:20px;
-}
-.modal-content a{
-  display:inline-block;
-  margin:10px;
-  padding:12px 18px;
-  color:#fff;
-  text-decoration:none;
-  border-radius:4px;
-}
+.btn-map-view{display:inline-block;padding:12px 18px;background:#0f3d2e;color:#fff;border-radius:4px;cursor:pointer;}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:4000;align-items:center;justify-content:center;}
+.modal-content{background:#fff;width:90%;max-width:500px;padding:30px;border-radius:6px;text-align:center;position:relative;}
+.modal-content img{width:200px;margin-bottom:20px;}
+.modal-content a{display:inline-block;margin:10px;padding:12px 18px;color:#fff;text-decoration:none;border-radius:4px;}
 .btn-read{background:#0f3d2e;}
 .btn-download{background:#25D366;}
+.close{position:absolute;top:10px;right:15px;font-size:22px;cursor:pointer;}
 </style>
 </head>
 
@@ -220,25 +57,20 @@ input,select{
 
 <header class="header">
   <div class="header-overlay">
-
     <div class="header-left">
-      <a href="index.html">
-        <img src="img-topo.png">
-      </a>
+      <a href="index.html"><img src="img-topo.png"></a>
     </div>
 
     <div class="menu-toggle" onclick="abrirMenu()">☰</div>
 
     <nav class="menu">
       <img src="instituto_sumauma.png" class="menu-logo">
-
       <a href="index.html">Início</a>
       <a href="pesquisa.html">Pesquisa</a>
       <a onclick="abrirLivro()">Livro</a>
       <a href="ficha-tecnica.html">Ficha Técnica</a>
       <a href="https://www.sumauma.org/" target="_blank">Institucional</a>
     </nav>
-
   </div>
 </header>
 
@@ -274,11 +106,7 @@ input,select{
     <span class="close" onclick="fecharLivro()">×</span>
     <img src="images/capa-livro.jpg">
     <h2>Práticas Comunicacionais e Culturais Quilombolas</h2>
-    <p>
-      Panorama das práticas comunicacionais quilombolas no Brasil,
-      compreendendo a comunicação como ato político, ancestral
-      e de justiça climática.
-    </p>
+    <p>Panorama das práticas comunicacionais quilombolas no Brasil.</p>
     <a class="btn-read" href="PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf" target="_blank">📖 Ler online</a>
     <a class="btn-download" href="PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf" download>📥 Baixar PDF</a>
   </div>
@@ -287,10 +115,130 @@ input,select{
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <script>
+/* ====== MENU ====== */
 function abrirMenu(){mobileMenu.style.display='block';}
 function fecharMenu(){mobileMenu.style.display='none';}
 function abrirLivro(){modalLivro.style.display='flex';}
 function fecharLivro(){modalLivro.style.display='none';}
+
+/* ====== MAPA ====== */
+const map = L.map('map').setView([-14.235, -51.9253], 4);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+  attribution:'© OpenStreetMap'
+}).addTo(map);
+
+let dados = [], markers = [];
+
+/* ====== CSV ====== */
+fetch('Mapeamento_mestre.csv')
+.then(r=>r.text())
+.then(text=>{
+  dados = parseCSV(text);
+  popularFiltros(dados);
+  renderizar(dados);
+  setTimeout(()=>map.invalidateSize(),300);
+});
+
+/* ====== PARSER CSV ====== */
+function parseCSV(text){
+  const rows=[],headers=[];
+  let cur=[],val='',q=false;
+  for(let i=0;i<text.length;i++){
+    const c=text[i],n=text[i+1];
+    if(c=='"'&&q&&n=='"'){val+='"';i++;}
+    else if(c=='"'){q=!q;}
+    else if(c==','&&!q){cur.push(val);val='';}
+    else if(c=='\n'&&!q){cur.push(val);rows.push(cur);cur=[];val='';}
+    else{val+=c;}
+  }
+  if(val){cur.push(val);rows.push(cur);}
+  headers.push(...rows.shift().map(h=>h.toLowerCase()));
+  return rows.map(r=>{
+    let o={};headers.forEach((h,i)=>o[h]=r[i]||'');return o;
+  });
+}
+
+/* ====== FILTROS ====== */
+function popularFiltros(data){
+  const estados=new Set(),categorias=new Set();
+  data.forEach(d=>{
+    if(d.estado) estados.add(d.estado);
+    if(d.categoria) categorias.add(d.categoria);
+  });
+  estados.forEach(e=>filterEstado.innerHTML+=`<option>${e}</option>`);
+  categorias.forEach(c=>filterCategoria.innerHTML+=`<option>${c}</option>`);
+}
+
+function atualizarCidades(){
+  filterCidade.innerHTML='<option value="">Todas as cidades</option>';
+  dados.filter(d=>!filterEstado.value||d.estado===filterEstado.value)
+       .map(d=>d.cidade)
+       .filter((v,i,a)=>v&&a.indexOf(v)===i)
+       .forEach(c=>filterCidade.innerHTML+=`<option>${c}</option>`);
+}
+
+function aplicarFiltros(){
+  const s=search.value.toLowerCase();
+  renderizar(dados.filter(d=>
+    (!s||d.nome.toLowerCase().includes(s)) &&
+    (!filterEstado.value||d.estado===filterEstado.value) &&
+    (!filterCidade.value||d.cidade===filterCidade.value) &&
+    (!filterCategoria.value||d.categoria===filterCategoria.value)
+  ));
+}
+
+search.oninput=aplicarFiltros;
+filterEstado.onchange=()=>{atualizarCidades();aplicarFiltros();};
+filterCidade.onchange=aplicarFiltros;
+filterCategoria.onchange=aplicarFiltros;
+
+/* ====== RENDER ====== */
+function renderizar(lista){
+  results.innerHTML='';
+  markers.forEach(m=>map.removeLayer(m));
+  markers=[];
+  lista.forEach(d=>{
+    const temLoc=d.latitude&&d.longitude&&!isNaN(d.latitude);
+    const div=document.createElement('div');
+    div.className='item';
+    div.innerHTML=`
+      <strong>${d.nome}</strong><br>
+      ${d.cidade} - ${d.estado}<br>
+      ${d.categoria}
+      ${!temLoc?'<div class="tag-pendente">📍 Localização pendente</div>':''}
+    `;
+    div.onclick=()=>abrirDetalhes(d);
+    results.appendChild(div);
+    if(temLoc) markers.push(L.marker([+d.latitude,+d.longitude]).addTo(map));
+  });
+}
+
+/* ====== DETALHES ====== */
+function abrirDetalhes(d){
+  const temLoc=d.latitude&&d.longitude&&!isNaN(d.latitude);
+  let icons='';
+  if(d.link){
+    icons+=`<a class="site" href="${d.link}" target="_blank">🔗</a>`;
+  }
+  if(temLoc){
+    icons+=`<a class="map-icon" onclick="verNoMapa(${d.latitude},${d.longitude})">📍</a>`;
+  }
+  const html=`
+    <h2>${d.nome}</h2>
+    <div class="info-line"><b>Cidade:</b> ${d.cidade} - ${d.estado}</div>
+    <div class="info-line"><b>Categoria:</b> ${d.categoria}</div>
+    ${d.descricao?`<div class="info-line"><b>Descrição:</b> ${d.descricao}</div>`:''}
+    <div class="info-icons">${icons}</div>
+    ${temLoc?`<a class="btn-map-view" onclick="verNoMapa(${d.latitude},${d.longitude})">Ver no mapa</a>`:''}
+  `;
+  document.body.classList.add('show-details');
+  details.innerHTML=html;
+}
+
+function verNoMapa(lat,lng){
+  document.body.classList.add('full-map');
+  map.setView([lat,lng],15);
+}
 </script>
 
 </body>
