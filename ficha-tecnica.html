@@ -17,7 +17,7 @@ html,body{
 /* ================= HEADER ================= */
 .header{
   position:relative;
-  height:140px;
+  height:160px;
   background:url('banner-capa.png') center/cover no-repeat;
 }
 
@@ -31,33 +31,62 @@ html,body{
   background:rgba(0,0,0,.35);
 }
 
-/* ================= LOGOS ================= */
-.header-left{
-  display:flex;
-  align-items:center;
-  gap:20px;
-}
-
+/* LOGO */
 .header-left img{
-  height:60px;
+  height:100px;
   width:auto;
 }
 
-/* ================= MENU ================= */
+/* MENU DESKTOP */
 .menu{
   display:flex;
   gap:30px;
-  align-items:center;
 }
 
 .menu a{
   color:#fff;
   text-decoration:none;
   font-size:16px;
+  cursor:pointer;
 }
 
-.menu a:hover{
-  text-decoration:underline;
+/* MENU MOBILE */
+.menu-toggle{
+  display:none;
+  font-size:28px;
+  color:#fff;
+  cursor:pointer;
+}
+
+@media(max-width:768px){
+  .menu{display:none;}
+  .menu-toggle{display:block;}
+  .header{height:200px;}
+}
+
+/* MOBILE MENU OVERLAY */
+.mobile-menu{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.9);
+  z-index:5000;
+  padding:40px 30px;
+}
+
+.mobile-menu a{
+  display:block;
+  color:#fff;
+  font-size:22px;
+  margin-bottom:25px;
+  text-decoration:none;
+}
+
+.mobile-menu .close{
+  font-size:28px;
+  color:#fff;
+  cursor:pointer;
+  margin-bottom:40px;
 }
 
 /* ================= CONTENT ================= */
@@ -69,16 +98,9 @@ html,body{
 
 .section h1{
   color:#0f3d2e;
-  margin-bottom:30px;
+  margin-bottom:40px;
 }
 
-.section h2{
-  color:#0f3d2e;
-  margin-top:50px;
-  margin-bottom:25px;
-}
-
-/* ================= GRID ================= */
 .people-grid{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
@@ -100,7 +122,7 @@ html,body{
   border-radius:50%;
   object-fit:cover;
   margin-bottom:15px;
-  background:#ddd; /* placeholder */
+  background:#ddd;
 }
 
 .person-card h3{
@@ -127,10 +149,6 @@ html,body{
   .section{
     padding:50px 25px;
   }
-  .menu{
-    flex-wrap:wrap;
-    gap:15px;
-  }
 }
 </style>
 </head>
@@ -141,25 +159,34 @@ html,body{
 <header class="header">
   <div class="header-overlay">
 
-    <!-- LOGOS -->
     <div class="header-left">
-      <a href="https://pesquisa.sumauma.org/">
+      <a href="index.html">
         <img src="instituto_sumauma.png" alt="Instituto Sumaúma">
       </a>
-      <img src="clua_logo.png" alt="Climate and Land Use Alliance">
     </div>
 
-    <!-- MENU -->
+    <div class="menu-toggle" onclick="abrirMenu()">☰</div>
+
     <nav class="menu">
       <a href="index.html">Início</a>
       <a href="pesquisa.html">Pesquisa</a>
-      <a href="PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf" target="_blank">Livro</a>
+      <a onclick="abrirLivro()">Livro</a>
       <a href="ficha-tecnica.html">Ficha Técnica</a>
       <a href="https://www.sumauma.org/" target="_blank">Institucional</a>
     </nav>
 
   </div>
 </header>
+
+<!-- MENU MOBILE -->
+<div class="mobile-menu" id="mobileMenu">
+  <div class="close" onclick="fecharMenu()">✕</div>
+  <a href="index.html">Início</a>
+  <a href="pesquisa.html">Pesquisa</a>
+  <a onclick="abrirLivro();fecharMenu()">Livro</a>
+  <a href="ficha-tecnica.html">Ficha Técnica</a>
+  <a href="https://www.sumauma.org/" target="_blank">Institucional</a>
+</div>
 
 <!-- ================= CONTENT ================= -->
 <section class="section">
@@ -224,10 +251,21 @@ html,body{
   </div>
 </section>
 
-<!-- ================= FOOTER ================= -->
 <footer class="footer">
   Instituto Sumaúma © 2026 · Ficha Técnica da Pesquisa
 </footer>
+
+<script>
+function abrirMenu(){
+  document.getElementById('mobileMenu').style.display='block';
+}
+function fecharMenu(){
+  document.getElementById('mobileMenu').style.display='none';
+}
+function abrirLivro(){
+  window.open('PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf','_blank');
+}
+</script>
 
 </body>
 </html>
