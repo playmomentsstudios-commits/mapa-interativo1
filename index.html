@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<title>Pesquisa Cultural – Instituto Sumaúma</title>
+<title>Mapeamento Cultural – Instituto Sumaúma</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
@@ -20,7 +20,6 @@ html,body{
   height:160px;
   background:url('banner-capa.png') center/cover no-repeat;
 }
-
 .header-overlay{
   position:absolute;
   inset:0;
@@ -30,27 +29,19 @@ html,body{
   padding:0 30px;
   background:rgba(0,0,0,.35);
 }
-
-/* LOGO */
 .header-left img{
   height:100px;
   width:auto;
 }
-
-/* MENU DESKTOP */
 .menu{
   display:flex;
   gap:30px;
 }
-
 .menu a{
   color:#fff;
   text-decoration:none;
   font-size:16px;
-  cursor:pointer;
 }
-
-/* MENU MOBILE TOGGLE */
 .menu-toggle{
   display:none;
   font-size:28px;
@@ -58,14 +49,12 @@ html,body{
   cursor:pointer;
 }
 
-/* ================= MOBILE HEADER ================= */
+/* ================= MOBILE MENU ================= */
 @media(max-width:768px){
   .menu{display:none;}
   .menu-toggle{display:block;}
   .header{height:200px;}
 }
-
-/* ================= MOBILE MENU ================= */
 .mobile-menu{
   display:none;
   position:fixed;
@@ -74,7 +63,6 @@ html,body{
   z-index:5000;
   padding:40px 30px;
 }
-
 .mobile-menu a{
   display:block;
   color:#fff;
@@ -82,7 +70,6 @@ html,body{
   margin-bottom:25px;
   text-decoration:none;
 }
-
 .mobile-menu .close{
   font-size:28px;
   color:#fff;
@@ -103,9 +90,7 @@ html,body{
   border-right:1px solid #ddd;
   overflow-y:auto;
 }
-
 .sidebar-inner{padding:20px;}
-
 input,select{
   width:100%;
   height:44px;
@@ -123,9 +108,7 @@ input,select{
   margin-bottom:10px;
   cursor:pointer;
 }
-
 .item:hover{background:#145743;}
-
 .tag-pendente{
   color:#ffdd9a;
   font-size:12px;
@@ -135,7 +118,7 @@ input,select{
 #content{flex:1;position:relative;}
 #map{width:100%;height:100%;}
 
-/* ================= DETALHES (DESKTOP) ================= */
+/* ================= DETALHES DESKTOP ================= */
 #details{
   display:none;
   position:absolute;
@@ -149,55 +132,38 @@ input,select{
   overflow-y:auto;
   z-index:1000;
 }
-
 .show-details #details{display:block;}
 .full-map #sidebar,
 .full-map #details{display:none;}
 
-/* ================= MODAL LIVRO ================= */
-.modal{
-  display:none;
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.65);
-  z-index:4000;
-  align-items:center;
-  justify-content:center;
+/* ================= DETALHES MODERNOS ================= */
+#details h2{color:#0f3d2e;}
+.info-line{margin-bottom:10px;font-size:15px;}
+.info-line b{color:#0f3d2e;}
+.info-icons{
+  display:flex;
+  gap:12px;
+  margin:15px 0;
 }
-
-.modal-content{
-  background:#fff;
-  width:90%;
-  max-width:500px;
-  padding:30px;
-  border-radius:6px;
-  text-align:center;
-  position:relative;
+.info-icons a{
+  width:42px;height:42px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;text-decoration:none;font-size:18px;
 }
-
-.modal-content img{width:200px;margin-bottom:20px;}
-
-.modal-content a{
+.whatsapp{background:#25D366;}
+.site{background:#0f3d2e;}
+.instagram{background:#C13584;}
+.map{background:#1e88e5;}
+.btn-map-view{
   display:inline-block;
-  margin:10px;
   padding:12px 18px;
+  background:#0f3d2e;
   color:#fff;
-  text-decoration:none;
   border-radius:4px;
-}
-
-.btn-read{background:#0f3d2e;}
-.btn-download{background:#25D366;}
-
-.close{
-  position:absolute;
-  top:10px;
-  right:15px;
-  font-size:22px;
   cursor:pointer;
 }
 
-/* ================= RESULT MODAL (MOBILE) ================= */
+/* ================= MODAL MOBILE ================= */
 .result-modal{
   display:none;
   position:fixed;
@@ -207,7 +173,6 @@ input,select{
   align-items:center;
   justify-content:center;
 }
-
 .result-box{
   background:#fff;
   width:90%;
@@ -215,6 +180,13 @@ input,select{
   padding:25px;
   border-radius:6px;
   position:relative;
+}
+.result-box .close{
+  position:absolute;
+  top:10px;
+  right:15px;
+  font-size:22px;
+  cursor:pointer;
 }
 </style>
 </head>
@@ -224,7 +196,7 @@ input,select{
 <header class="header">
   <div class="header-overlay">
     <div class="header-left">
-      <a href="https://pesquisa.sumauma.org/">
+      <a href="index.html">
         <img src="instituto_sumauma.png">
       </a>
     </div>
@@ -232,7 +204,7 @@ input,select{
     <div class="menu-toggle" onclick="abrirMenu()">☰</div>
 
     <nav class="menu">
-      <a href="https://pesquisa.sumauma.org/">Início</a>
+      <a href="index.html">Início</a>
       <a href="pesquisa.html">Pesquisa</a>
       <a onclick="abrirLivro()">Livro</a>
       <a href="ficha-tecnica.html">Ficha Técnica</a>
@@ -243,7 +215,7 @@ input,select{
 
 <div class="mobile-menu" id="mobileMenu">
   <div class="close" onclick="fecharMenu()">✕</div>
-  <a href="https://pesquisa.sumauma.org/">Início</a>
+  <a href="index.html">Início</a>
   <a href="pesquisa.html">Pesquisa</a>
   <a onclick="abrirLivro();fecharMenu()">Livro</a>
   <a href="ficha-tecnica.html">Ficha Técnica</a>
@@ -251,10 +223,9 @@ input,select{
 </div>
 
 <div id="layout">
-
   <aside id="sidebar">
     <div class="sidebar-inner">
-      <input type="text" id="search" placeholder="Buscar por nome...">
+      <input id="search" placeholder="Buscar por nome...">
       <select id="filterEstado"><option value="">Todos os estados</option></select>
       <select id="filterCidade"><option value="">Todas as cidades</option></select>
       <select id="filterCategoria"><option value="">Todas as categorias</option></select>
@@ -266,24 +237,8 @@ input,select{
     <div id="map"></div>
     <div id="details"></div>
   </section>
-
 </div>
 
-<!-- MODAL LIVRO -->
-<div class="modal" id="modalLivro">
-  <div class="modal-content">
-    <span class="close" onclick="fecharLivro()">×</span>
-    <img src="images/capa-livro.jpg">
-    <p>
-      Panorama das práticas comunicacionais quilombolas no Brasil,
-      compreendendo a comunicação como ato político, ancestral e de justiça climática.
-    </p>
-    <a class="btn-read" href="PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf" target="_blank">📖 Ler online</a>
-    <a class="btn-download" href="PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf" download>📥 Baixar PDF</a>
-  </div>
-</div>
-
-<!-- MODAL RESULTADO MOBILE -->
 <div class="result-modal" id="resultModal">
   <div class="result-box">
     <span class="close" onclick="fecharResultado()">×</span>
@@ -299,7 +254,9 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
 let dados=[],markers=[];
 
-fetch('Mapeamento_mestre.csv').then(r=>r.text()).then(t=>{
+fetch('Mapeamento_mestre.csv')
+.then(r=>r.text())
+.then(t=>{
   dados=parseCSV(t);
   popularFiltros(dados);
   renderizar(dados);
@@ -325,7 +282,7 @@ function parseCSV(text){
 }
 
 function popularFiltros(data){
-  const estados=new Set(), categorias=new Set();
+  const estados=new Set(),categorias=new Set();
   data.forEach(d=>{
     if(d.estado) estados.add(d.estado);
     if(d.categoria) categorias.add(d.categoria);
@@ -378,28 +335,45 @@ function renderizar(lista){
 }
 
 function abrirDetalhes(d){
+  const temLoc=d.latitude&&d.longitude&&!isNaN(d.latitude);
+  let icons='';
+  if(d.link){
+    if(d.link.includes('wa.me')||d.link.includes('whatsapp')) icons+=`<a class="whatsapp" href="${d.link}" target="_blank">💬</a>`;
+    else if(d.link.includes('instagram')) icons+=`<a class="instagram" href="${d.link}" target="_blank">📸</a>`;
+    else icons+=`<a class="site" href="${d.link}" target="_blank">🔗</a>`;
+  }
+  if(temLoc) icons+=`<a class="map" onclick="verNoMapa(${d.latitude},${d.longitude})">📍</a>`;
+
   const html=`
     <h2>${d.nome}</h2>
-    <p><b>Cidade:</b> ${d.cidade} - ${d.estado}</p>
-    <p><b>Categoria:</b> ${d.categoria}</p>
-    ${d.descricao?`<p>${d.descricao}</p>`:''}
-    ${d.contato?`<p><b>Contato:</b> ${d.contato}</p>`:''}
-    ${d.link?`<a class="btn-read" href="${d.link}" target="_blank">Entrar em contato</a>`:''}
+    <div class="info-line"><b>Cidade:</b> ${d.cidade} - ${d.estado}</div>
+    <div class="info-line"><b>Categoria:</b> ${d.categoria}</div>
+    ${d.descricao?`<div class="info-line"><b>Descrição:</b> ${d.descricao}</div>`:''}
+    ${d.contato?`<div class="info-line"><b>Contato:</b> ${d.contato}</div>`:''}
+    <div class="info-icons">${icons}</div>
+    ${temLoc?`<a class="btn-map-view" onclick="verNoMapa(${d.latitude},${d.longitude})">Ver no mapa</a>`:''}
   `;
+
   if(window.innerWidth<=768){
-    document.getElementById('resultContent').innerHTML=html;
-    document.getElementById('resultModal').style.display='flex';
+    resultContent.innerHTML=html;
+    resultModal.style.display='flex';
   }else{
     document.body.classList.add('show-details');
     details.innerHTML=html;
   }
 }
 
-function abrirLivro(){document.getElementById('modalLivro').style.display='flex';}
-function fecharLivro(){document.getElementById('modalLivro').style.display='none';}
-function abrirMenu(){document.getElementById('mobileMenu').style.display='block';}
-function fecharMenu(){document.getElementById('mobileMenu').style.display='none';}
-function fecharResultado(){document.getElementById('resultModal').style.display='none';}
+function verNoMapa(lat,lng){
+  document.body.classList.add('full-map');
+  map.setView([lat,lng],15);
+}
+
+function abrirMenu(){mobileMenu.style.display='block';}
+function fecharMenu(){mobileMenu.style.display='none';}
+function fecharResultado(){resultModal.style.display='none';}
+function abrirLivro(){
+  window.open('PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf','_blank');
+}
 </script>
 
 </body>
