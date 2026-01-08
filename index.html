@@ -50,24 +50,44 @@ html,body{
   cursor:pointer;
 }
 
+/* MENU MOBILE TOGGLE */
+.menu-toggle{
+  display:none;
+  font-size:28px;
+  color:#fff;
+  cursor:pointer;
+}
+
 /* ================= MOBILE HEADER ================= */
 @media(max-width:768px){
-  .header{height:220px;}
+  .menu{display:none;}
+  .menu-toggle{display:block;}
+  .header{height:200px;}
+}
 
-  .header-overlay{
-    flex-direction:column;
-    justify-content:space-between;
-    padding:20px;
-    text-align:center;
-  }
+/* ================= MOBILE MENU ================= */
+.mobile-menu{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.9);
+  z-index:5000;
+  padding:40px 30px;
+}
 
-  .menu{
-    flex-direction:column;
-    gap:16px;
-    margin-bottom:10px;
-  }
+.mobile-menu a{
+  display:block;
+  color:#fff;
+  font-size:22px;
+  margin-bottom:25px;
+  text-decoration:none;
+}
 
-  .menu a{font-size:18px;}
+.mobile-menu .close{
+  font-size:28px;
+  color:#fff;
+  cursor:pointer;
+  margin-bottom:40px;
 }
 
 /* ================= LAYOUT ================= */
@@ -92,7 +112,6 @@ input,select{
   padding:10px;
   margin-bottom:10px;
   box-sizing:border-box;
-  font-size:14px;
 }
 
 /* ================= RESULTADOS ================= */
@@ -116,7 +135,7 @@ input,select{
 #content{flex:1;position:relative;}
 #map{width:100%;height:100%;}
 
-/* ================= DETALHES ================= */
+/* ================= DETALHES (DESKTOP) ================= */
 #details{
   display:none;
   position:absolute;
@@ -128,7 +147,7 @@ input,select{
   border-left:1px solid #ddd;
   padding:20px;
   overflow-y:auto;
-  z-index:999;
+  z-index:1000;
 }
 
 .show-details #details{display:block;}
@@ -141,38 +160,61 @@ input,select{
   position:fixed;
   inset:0;
   background:rgba(0,0,0,.65);
-  z-index:3000;
+  z-index:4000;
   align-items:center;
   justify-content:center;
 }
 
 .modal-content{
   background:#fff;
-  max-width:500px;
   width:90%;
+  max-width:500px;
   padding:30px;
   border-radius:6px;
   text-align:center;
   position:relative;
 }
 
-.modal-content img{
-  width:180px;
-  margin-bottom:20px;
+.modal-content img{width:200px;margin-bottom:20px;}
+
+.modal-content a{
+  display:inline-block;
+  margin:10px;
+  padding:12px 18px;
+  color:#fff;
+  text-decoration:none;
+  border-radius:4px;
 }
+
+.btn-read{background:#0f3d2e;}
+.btn-download{background:#25D366;}
 
 .close{
   position:absolute;
   top:10px;
   right:15px;
-  font-size:20px;
+  font-size:22px;
   cursor:pointer;
 }
 
-/* ================= RESPONSIVO ================= */
-@media(max-width:900px){
-  #layout{flex-direction:column;}
-  #sidebar{width:100%;}
+/* ================= RESULT MODAL (MOBILE) ================= */
+.result-modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.65);
+  z-index:4500;
+  align-items:center;
+  justify-content:center;
+}
+
+.result-box{
+  background:#fff;
+  width:90%;
+  max-width:500px;
+  padding:25px;
+  border-radius:6px;
+  position:relative;
 }
 </style>
 </head>
@@ -181,15 +223,14 @@ input,select{
 
 <header class="header">
   <div class="header-overlay">
-
-    <!-- LOGO -->
     <div class="header-left">
       <a href="https://pesquisa.sumauma.org/">
-        <img src="instituto_sumauma.png" alt="Instituto Sumaúma">
+        <img src="instituto_sumauma.png">
       </a>
     </div>
 
-    <!-- MENU -->
+    <div class="menu-toggle" onclick="abrirMenu()">☰</div>
+
     <nav class="menu">
       <a href="https://pesquisa.sumauma.org/">Início</a>
       <a href="pesquisa.html">Pesquisa</a>
@@ -197,9 +238,17 @@ input,select{
       <a href="ficha-tecnica.html">Ficha Técnica</a>
       <a href="https://www.sumauma.org/" target="_blank">Institucional</a>
     </nav>
-
   </div>
 </header>
+
+<div class="mobile-menu" id="mobileMenu">
+  <div class="close" onclick="fecharMenu()">✕</div>
+  <a href="https://pesquisa.sumauma.org/">Início</a>
+  <a href="pesquisa.html">Pesquisa</a>
+  <a onclick="abrirLivro();fecharMenu()">Livro</a>
+  <a href="ficha-tecnica.html">Ficha Técnica</a>
+  <a href="https://www.sumauma.org/" target="_blank">Institucional</a>
+</div>
 
 <div id="layout">
 
@@ -229,8 +278,16 @@ input,select{
       Panorama das práticas comunicacionais quilombolas no Brasil,
       compreendendo a comunicação como ato político, ancestral e de justiça climática.
     </p>
-    <a href="PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf" target="_blank">📖 Ler online</a><br><br>
-    <a href="PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf" download>📥 Baixar PDF</a>
+    <a class="btn-read" href="PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf" target="_blank">📖 Ler online</a>
+    <a class="btn-download" href="PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf" download>📥 Baixar PDF</a>
+  </div>
+</div>
+
+<!-- MODAL RESULTADO MOBILE -->
+<div class="result-modal" id="resultModal">
+  <div class="result-box">
+    <span class="close" onclick="fecharResultado()">×</span>
+    <div id="resultContent"></div>
   </div>
 </div>
 
@@ -308,7 +365,12 @@ function renderizar(lista){
     const temLoc=d.latitude&&d.longitude&&!isNaN(d.latitude);
     const div=document.createElement('div');
     div.className='item';
-    div.innerHTML=`<strong>${d.nome}</strong><br>${d.cidade} - ${d.estado}<br>${d.categoria}${!temLoc?'<div class="tag-pendente">📍 Localização pendente</div>':''}`;
+    div.innerHTML=`
+      <strong>${d.nome}</strong><br>
+      ${d.cidade} - ${d.estado}<br>
+      ${d.categoria}
+      ${!temLoc?'<div class="tag-pendente">📍 Localização pendente</div>':''}
+    `;
     div.onclick=()=>abrirDetalhes(d);
     results.appendChild(div);
     if(temLoc) markers.push(L.marker([+d.latitude,+d.longitude]).addTo(map));
@@ -316,12 +378,28 @@ function renderizar(lista){
 }
 
 function abrirDetalhes(d){
-  document.body.classList.add('show-details');
-  details.innerHTML=`<h2>${d.nome}</h2><p>${d.cidade} - ${d.estado}</p><p>${d.categoria}</p>`;
+  const html=`
+    <h2>${d.nome}</h2>
+    <p><b>Cidade:</b> ${d.cidade} - ${d.estado}</p>
+    <p><b>Categoria:</b> ${d.categoria}</p>
+    ${d.descricao?`<p>${d.descricao}</p>`:''}
+    ${d.contato?`<p><b>Contato:</b> ${d.contato}</p>`:''}
+    ${d.link?`<a class="btn-read" href="${d.link}" target="_blank">Entrar em contato</a>`:''}
+  `;
+  if(window.innerWidth<=768){
+    document.getElementById('resultContent').innerHTML=html;
+    document.getElementById('resultModal').style.display='flex';
+  }else{
+    document.body.classList.add('show-details');
+    details.innerHTML=html;
+  }
 }
 
 function abrirLivro(){document.getElementById('modalLivro').style.display='flex';}
 function fecharLivro(){document.getElementById('modalLivro').style.display='none';}
+function abrirMenu(){document.getElementById('mobileMenu').style.display='block';}
+function fecharMenu(){document.getElementById('mobileMenu').style.display='none';}
+function fecharResultado(){document.getElementById('resultModal').style.display='none';}
 </script>
 
 </body>
