@@ -30,12 +30,15 @@ html,body{
   background:rgba(0,0,0,.35);
 }
 .header-left img{
-  height:100px;
+  height:130px; /* img-topo.png */
   width:auto;
 }
+
+/* ================= MENU ================= */
 .menu{
   display:flex;
   gap:30px;
+  align-items:center;
 }
 .menu a{
   color:#fff;
@@ -43,14 +46,18 @@ html,body{
   font-size:16px;
   cursor:pointer;
 }
+.menu-logo{
+  height:50px;
+  width:auto;
+}
+
+/* ================= MOBILE ================= */
 .menu-toggle{
   display:none;
   font-size:28px;
   color:#fff;
   cursor:pointer;
 }
-
-/* ================= MOBILE MENU ================= */
 @media(max-width:768px){
   .menu{display:none;}
   .menu-toggle{display:block;}
@@ -119,7 +126,7 @@ input,select{
 #content{flex:1;position:relative;}
 #map{width:100%;height:100%;}
 
-/* ================= DETALHES DESKTOP ================= */
+/* ================= DETALHES ================= */
 #details{
   display:none;
   position:absolute;
@@ -140,6 +147,7 @@ input,select{
 #details h2{color:#0f3d2e;}
 .info-line{margin-bottom:10px;font-size:15px;}
 .info-line b{color:#0f3d2e;}
+
 .info-icons{
   display:flex;
   gap:12px;
@@ -154,6 +162,7 @@ input,select{
 .site{background:#0f3d2e;}
 .instagram{background:#C13584;}
 .map-icon{background:#1e88e5;}
+
 .btn-map-view{
   display:inline-block;
   padding:12px 18px;
@@ -163,8 +172,9 @@ input,select{
   cursor:pointer;
 }
 
-/* ================= MODAL RESULTADO MOBILE ================= */
-.result-modal{
+/* ================= MODAIS ================= */
+.result-modal,
+.modal{
   display:none;
   position:fixed;
   inset:0;
@@ -173,7 +183,8 @@ input,select{
   align-items:center;
   justify-content:center;
 }
-.result-box{
+.result-box,
+.modal-content{
   background:#fff;
   width:90%;
   max-width:500px;
@@ -181,32 +192,12 @@ input,select{
   border-radius:6px;
   position:relative;
 }
-.result-box .close{
+.close{
   position:absolute;
   top:10px;
   right:15px;
   font-size:22px;
   cursor:pointer;
-}
-
-/* ================= MODAL LIVRO ================= */
-.modal{
-  display:none;
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.65);
-  z-index:4000;
-  align-items:center;
-  justify-content:center;
-}
-.modal-content{
-  background:#fff;
-  width:90%;
-  max-width:500px;
-  padding:30px;
-  border-radius:6px;
-  text-align:center;
-  position:relative;
 }
 .modal-content img{
   width:200px;
@@ -222,13 +213,6 @@ input,select{
 }
 .btn-read{background:#0f3d2e;}
 .btn-download{background:#25D366;}
-.close{
-  position:absolute;
-  top:10px;
-  right:15px;
-  font-size:22px;
-  cursor:pointer;
-}
 </style>
 </head>
 
@@ -236,21 +220,25 @@ input,select{
 
 <header class="header">
   <div class="header-overlay">
+
     <div class="header-left">
       <a href="index.html">
-        <img src="instituto_sumauma.png">
+        <img src="img-topo.png">
       </a>
     </div>
 
     <div class="menu-toggle" onclick="abrirMenu()">☰</div>
 
     <nav class="menu">
+      <img src="instituto-sumauma.png" class="menu-logo">
+
       <a href="index.html">Início</a>
       <a href="pesquisa.html">Pesquisa</a>
       <a onclick="abrirLivro()">Livro</a>
       <a href="ficha-tecnica.html">Ficha Técnica</a>
       <a href="https://www.sumauma.org/" target="_blank">Institucional</a>
     </nav>
+
   </div>
 </header>
 
@@ -280,14 +268,6 @@ input,select{
   </section>
 </div>
 
-<!-- MODAL RESULTADO MOBILE -->
-<div class="result-modal" id="resultModal">
-  <div class="result-box">
-    <span class="close" onclick="fecharResultado()">×</span>
-    <div id="resultContent"></div>
-  </div>
-</div>
-
 <!-- MODAL LIVRO -->
 <div class="modal" id="modalLivro">
   <div class="modal-content">
@@ -299,144 +279,16 @@ input,select{
       compreendendo a comunicação como ato político, ancestral
       e de justiça climática.
     </p>
-    <a class="btn-read"
-       href="docs/PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf"
-       target="_blank">📖 Ler online</a>
-    <a class="btn-download"
-       href="docs/PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf"
-       download>📥 Baixar PDF</a>
+    <a class="btn-read" href="PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf" target="_blank">📖 Ler online</a>
+    <a class="btn-download" href="PESQUISA - Práticas Comunicacionais e Culturais Quilombolas.pdf" download>📥 Baixar PDF</a>
   </div>
 </div>
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <script>
-const map=L.map('map').setView([-14.235,-51.9253],4);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-
-let dados=[],markers=[];
-
-fetch('Mapeamento_mestre.csv')
-.then(r=>r.text())
-.then(t=>{
-  dados=parseCSV(t);
-  popularFiltros(dados);
-  renderizar(dados);
-  setTimeout(()=>map.invalidateSize(),300);
-});
-
-function parseCSV(text){
-  const rows=[],headers=[];
-  let cur=[],val='',q=false;
-  for(let i=0;i<text.length;i++){
-    const c=text[i],n=text[i+1];
-    if(c=='"'&&q&&n=='"'){val+='"';i++;}
-    else if(c=='"'){q=!q;}
-    else if(c==','&&!q){cur.push(val);val='';}
-    else if(c=='\n'&&!q){cur.push(val);rows.push(cur);cur=[];val='';}
-    else{val+=c;}
-  }
-  if(val){cur.push(val);rows.push(cur);}
-  headers.push(...rows.shift().map(h=>h.toLowerCase()));
-  return rows.map(r=>{
-    let o={};headers.forEach((h,i)=>o[h]=r[i]||'');return o;
-  });
-}
-
-function popularFiltros(data){
-  const estados=new Set(),categorias=new Set();
-  data.forEach(d=>{
-    if(d.estado) estados.add(d.estado);
-    if(d.categoria) categorias.add(d.categoria);
-  });
-  estados.forEach(e=>filterEstado.innerHTML+=`<option>${e}</option>`);
-  categorias.forEach(c=>filterCategoria.innerHTML+=`<option>${c}</option>`);
-}
-
-function atualizarCidades(){
-  filterCidade.innerHTML='<option value="">Todas as cidades</option>';
-  dados.filter(d=>!filterEstado.value||d.estado===filterEstado.value)
-       .map(d=>d.cidade)
-       .filter((v,i,a)=>v&&a.indexOf(v)===i)
-       .forEach(c=>filterCidade.innerHTML+=`<option>${c}</option>`);
-}
-
-function aplicarFiltros(){
-  const s=search.value.toLowerCase();
-  renderizar(dados.filter(d=>
-    (!s||d.nome.toLowerCase().includes(s)) &&
-    (!filterEstado.value||d.estado===filterEstado.value) &&
-    (!filterCidade.value||d.cidade===filterCidade.value) &&
-    (!filterCategoria.value||d.categoria===filterCategoria.value)
-  ));
-}
-
-search.oninput=aplicarFiltros;
-filterEstado.onchange=()=>{atualizarCidades();aplicarFiltros();};
-filterCidade.onchange=aplicarFiltros;
-filterCategoria.onchange=aplicarFiltros;
-
-function renderizar(lista){
-  results.innerHTML='';
-  markers.forEach(m=>map.removeLayer(m));
-  markers=[];
-  lista.forEach(d=>{
-    const temLoc=d.latitude&&d.longitude&&!isNaN(d.latitude);
-    const div=document.createElement('div');
-    div.className='item';
-    div.innerHTML=`
-      <strong>${d.nome}</strong><br>
-      ${d.cidade} - ${d.estado}<br>
-      ${d.categoria}
-      ${!temLoc?'<div class="tag-pendente">📍 Localização pendente</div>':''}
-    `;
-    div.onclick=()=>abrirDetalhes(d);
-    results.appendChild(div);
-    if(temLoc) markers.push(L.marker([+d.latitude,+d.longitude]).addTo(map));
-  });
-}
-
-function abrirDetalhes(d){
-  const temLoc=d.latitude&&d.longitude&&!isNaN(d.latitude);
-  let icons='';
-  if(d.link){
-    if(d.link.includes('wa.me')||d.link.includes('whatsapp'))
-      icons+=`<a class="whatsapp" href="${d.link}" target="_blank">💬</a>`;
-    else if(d.link.includes('instagram'))
-      icons+=`<a class="instagram" href="${d.link}" target="_blank">📸</a>`;
-    else
-      icons+=`<a class="site" href="${d.link}" target="_blank">🔗</a>`;
-  }
-  if(temLoc)
-    icons+=`<a class="map-icon" onclick="verNoMapa(${d.latitude},${d.longitude})">📍</a>`;
-
-  const html=`
-    <h2>${d.nome}</h2>
-    <div class="info-line"><b>Cidade:</b> ${d.cidade} - ${d.estado}</div>
-    <div class="info-line"><b>Categoria:</b> ${d.categoria}</div>
-    ${d.descricao?`<div class="info-line"><b>Descrição:</b> ${d.descricao}</div>`:''}
-    ${d.contato?`<div class="info-line"><b>Contato:</b> ${d.contato}</div>`:''}
-    <div class="info-icons">${icons}</div>
-    ${temLoc?`<a class="btn-map-view" onclick="verNoMapa(${d.latitude},${d.longitude})">Ver no mapa</a>`:''}
-  `;
-
-  if(window.innerWidth<=768){
-    resultContent.innerHTML=html;
-    resultModal.style.display='flex';
-  }else{
-    document.body.classList.add('show-details');
-    details.innerHTML=html;
-  }
-}
-
-function verNoMapa(lat,lng){
-  document.body.classList.add('full-map');
-  map.setView([lat,lng],15);
-}
-
 function abrirMenu(){mobileMenu.style.display='block';}
 function fecharMenu(){mobileMenu.style.display='none';}
-function fecharResultado(){resultModal.style.display='none';}
 function abrirLivro(){modalLivro.style.display='flex';}
 function fecharLivro(){modalLivro.style.display='none';}
 </script>
