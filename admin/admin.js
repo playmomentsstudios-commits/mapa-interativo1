@@ -5,6 +5,13 @@
   const loginView = $("loginView");
   const dashView = $("dashView");
   const btnLogout = $("btnLogout");
+  const PAGES_TO_SCAN = [
+    { name: "Início", path: "/404.html" },
+    { name: "Pesquisa", path: "/pesquisa.html" },
+    { name: "Ficha técnica", path: "/ficha-tecnica.html" },
+    { name: "Relatório", path: "/relatorio.html" }
+  ];
+  let inventoryHooked = false;
 
   function showMsg(el, msg, ok=false){
     el.textContent = msg || "";
@@ -152,6 +159,241 @@
     showMsg($("mediaMsg"), "Excluído ✅", true);
   });
 
+  function uniq(arr){ return Array.from(new Set(arr)); }
+
+  async function scanKeysFromPage(path){
+    const res = await fetch(path, { cache: "no-store" });
+    if(!res.ok) throw new Error(`Falha ao carregar ${path}: ${res.status}`);
+    const html = await res.text();
+    const doc = new DOMParser().parseFromString(html, "text/html");
+
+    const contentKeys = [];
+    const mediaKeys = [];
+
+    doc.querySelectorAll("[data-content-key]").forEach(el=>{
+      const k = el.getAttribute("data-content-key");
+      if(k) contentKeys.push(k);
+    });
+
+    doc.querySelectorAll("img[data-media-key]").forEach(el=>{
+      const k = el.getAttribute("data-media-key");
+      if(k) mediaKeys.push(k);
+    });
+
+    doc.querySelectorAll("[data-bg-media-key]").forEach(el=>{
+      const k = el.getAttribute("data-bg-media-key");
+      if(k) mediaKeys.push(k);
+    });
+
+    return { contentKeys: uniq(contentKeys), mediaKeys: uniq(mediaKeys) };
+  }
+
+  async function scanSiteKeys(){
+    const mapContentWhere = new Map();
+    const mapMediaWhere = new Map();
+
+    for(const p of PAGES_TO_SCAN){
+      try{
+        const { contentKeys, mediaKeys } = await scanKeysFromPage(p.path);
+
+        contentKeys.forEach(k=>{
+          const arr = mapContentWhere.get(k) || [];
+          arr.push(`${p.name} (${p.path})`);
+          mapContentWhere.set(k, arr);
+        });
+
+        mediaKeys.forEach(k=>{
+          const arr = mapMediaWhere.get(k) || [];
+          arr.push(`${p.name} (${p.path})`);
+          mapMediaWhere.set(k, arr);
+        });
+
+      }catch(e){
+        console.warn("[scan]", e.message);
+      }
+    }
+
+    return { mapContentWhere, mapMediaWhere };
+  }
+
+  async function fetchSupabaseData(client){
+    const [cRes, mRes] = await Promise.all([
+      client.from("conteudo").select("key,value"),
+      client.from("midia").select("key,url,alt,updated_at")
+    ]);
+
+    if(cRes.error) throw new Error("Erro conteudo: " + cRes.error.message);
+    if(mRes.error) throw new Error("Erro midia: " + mRes.error.message);
+
+    const conteudo = new Map();
+    const midia = new Map();
+
+    (cRes.data || []).forEach(r => conteudo.set(r.key, r.value));
+    (mRes.data || []).forEach(r => midia.set(r.key, r));
+
+    return { conteudo, midia };
+  }
+
+  function renderInventoryUI(conteudo, midia, mapContentWhere, mapMediaWhere){
+    const tbTexts = document.querySelector("#tblTexts tbody");
+    const tbMedia = document.querySelector("#tblMedia tbody");
+    if(!tbTexts || !tbMedia) return;
+    const searchEl = document.getElementById("invSearch");
+    const search = (searchEl?.value || "").trim().toLowerCase();
+
+    const contentKeysAll = uniq([
+      ...Array.from(mapContentWhere.keys()),
+      ...Array.from(conteudo.keys())
+    ]).sort();
+
+    const mediaKeysAll = uniq([
+      ...Array.from(mapMediaWhere.keys()),
+      ...Array.from(midia.keys())
+    ]).sort();
+
+    tbTexts.innerHTML = "";
+    tbMedia.innerHTML = "";
+
+    contentKeysAll
+      .filter(k => !search || k.toLowerCase().includes(search))
+      .forEach(k=>{
+        const val = conteudo.get(k) ?? "";
+        const where = mapContentWhere.get(k) || [];
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td class="k">${k}</td>
+          <td>${(val || "").slice(0, 140)}${(val || "").length > 140 ? "…" : ""}</td>
+          <td class="where">${where.length ? where.join("<br>") : "— (não detectado nas páginas)"}</td>
+          <td>
+            <div class="actionBtns">
+              <button class="btn btnSm" data-act="editText" data-key="${k}">Editar</button>
+              <button class="btn ghost btnSm" data-act="loadText" data-key="${k}">Carregar</button>
+              <button class="btn danger ghost btnSm" data-act="delText" data-key="${k}">Excluir</button>
+            </div>
+          </td>
+        `;
+        tbTexts.appendChild(tr);
+      });
+
+    mediaKeysAll
+      .filter(k => !search || k.toLowerCase().includes(search))
+      .forEach(k=>{
+        const row = midia.get(k);
+        const where = mapMediaWhere.get(k) || [];
+        const url = row?.url || "";
+        const isPdf = /\.pdf($|\?)/i.test(url);
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td class="k">${k}</td>
+          <td>
+            ${
+              url
+              ? (isPdf
+                ? `<a href="${url}" target="_blank">Abrir PDF</a>`
+                : `<img class="previewThumb" src="${url}" alt="${row?.alt||""}">`
+              )
+              : `<span class="where">— sem mídia no Supabase</span>`
+            }
+            ${url ? `<div class="where" style="margin-top:6px">${url.slice(0,80)}${url.length>80?"…":""}</div>` : ""}
+          </td>
+          <td class="where">${where.length ? where.join("<br>") : "— (não detectado nas páginas)"}</td>
+          <td>
+            <div class="actionBtns">
+              <button class="btn btnSm" data-act="useSlot" data-key="${k}">Trocar/Upload</button>
+              <button class="btn ghost btnSm" data-act="loadMedia" data-key="${k}">Carregar</button>
+              <button class="btn danger ghost btnSm" data-act="delMedia" data-key="${k}">Excluir</button>
+            </div>
+          </td>
+        `;
+        tbMedia.appendChild(tr);
+      });
+  }
+
+  async function refreshInventory(client){
+    const tbTexts = document.querySelector("#tblTexts tbody");
+    const tbMedia = document.querySelector("#tblMedia tbody");
+    if(!tbTexts || !tbMedia) return;
+    const invMsg = document.getElementById("invMsg");
+    if(invMsg) invMsg.textContent = "Atualizando inventário…";
+    try{
+      const [{ conteudo, midia }, { mapContentWhere, mapMediaWhere }] = await Promise.all([
+        fetchSupabaseData(client),
+        scanSiteKeys()
+      ]);
+
+      window.__invCache = { conteudo, midia, mapContentWhere, mapMediaWhere };
+      renderInventoryUI(conteudo, midia, mapContentWhere, mapMediaWhere);
+      if(invMsg){
+        invMsg.textContent = "Inventário atualizado ✅";
+        invMsg.style.color = "var(--ok)";
+      }
+    }catch(e){
+      console.warn(e);
+      if(invMsg){
+        invMsg.textContent = "Erro no inventário: " + (e.message || e);
+        invMsg.style.color = "var(--muted)";
+      }
+    }
+  }
+
+  function hookInventoryEvents(client){
+    if(inventoryHooked) return;
+    inventoryHooked = true;
+    const btn = document.getElementById("btnRefreshInventory");
+    const search = document.getElementById("invSearch");
+
+    btn?.addEventListener("click", ()=> refreshInventory(client));
+
+    search?.addEventListener("input", ()=>{
+      const c = window.__invCache;
+      if(!c) return;
+      renderInventoryUI(c.conteudo, c.midia, c.mapContentWhere, c.mapMediaWhere);
+    });
+
+    document.addEventListener("click", async (ev) => {
+      const b = ev.target.closest("button[data-act]");
+      if(!b) return;
+
+      const act = b.getAttribute("data-act");
+      const key = b.getAttribute("data-key");
+
+      const setVal = (id,val)=>{ const el=document.getElementById(id); if(el) el.value=val; };
+
+      if(act === "loadText" || act === "editText"){
+        setVal("txtKey", key);
+        document.getElementById("btnLoadText")?.click();
+        if(act === "editText") setTimeout(()=>document.getElementById("txtValue")?.focus(),200);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      if(act === "delText"){
+        setVal("txtKey", key);
+        document.getElementById("btnDeleteText")?.click();
+        setTimeout(()=>refreshInventory(client), 500);
+      }
+
+      if(act === "useSlot"){
+        setVal("mediaKey", key);
+        document.getElementById("btnLoadMedia")?.click();
+        document.getElementById("mediaFile")?.click();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      if(act === "loadMedia"){
+        setVal("mediaKey", key);
+        document.getElementById("btnLoadMedia")?.click();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      if(act === "delMedia"){
+        setVal("mediaKey", key);
+        document.getElementById("btnDeleteMedia")?.click();
+        setTimeout(()=>refreshInventory(client), 500);
+      }
+    });
+  }
+
   // PING
   $("btnPing").addEventListener("click", async () => {
     await requireClient();
@@ -165,6 +407,17 @@
   // Init
   (async () => {
     await refreshSessionUI();
-    client?.auth?.onAuthStateChange(() => refreshSessionUI());
+    const { data } = await client.auth.getSession();
+    if(data.session){
+      hookInventoryEvents(client);
+      refreshInventory(client);
+    }
+    client?.auth?.onAuthStateChange((_event, session) => {
+      refreshSessionUI();
+      if(session){
+        hookInventoryEvents(client);
+        refreshInventory(client);
+      }
+    });
   })();
 })();
