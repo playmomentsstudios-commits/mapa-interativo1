@@ -81,18 +81,18 @@ input,select{width:100%;height:44px;padding:10px;margin-bottom:10px;box-sizing:b
 </head>
 <body>
 
-<header class="header">
+<header class="header" data-bg-media-key="header.banner">
   <div class="header-overlay">
     <div class="header-left">
       <a href="/">
-        <h1 class="brand-title">Mapeamento de práticas culturais<br>e comunicacionais quilombolas
+        <h1 class="brand-title" data-content-key="header.title">Mapeamento de práticas culturais<br>e comunicacionais quilombolas
         
         </h1>
       </a>
     </div>
     <div class="menu-toggle" onclick="abrirMenu()">☰</div>
     <nav class="menu">
-      <img src="/instituto_sumauma.png" class="menu-logo" alt="Logo Instituto Sumaúma">
+      <img src="/instituto_sumauma.png" class="menu-logo" alt="Logo Instituto Sumaúma" data-media-key="header.logo">
       <a href="/">Início</a>
       <a href="/pesquisa.html">Pesquisa</a>
       <a onclick="abrirRelatório()">Relatório</a>
@@ -136,6 +136,10 @@ input,select{width:100%;height:44px;padding:10px;margin-bottom:10px;box-sizing:b
 </div>
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/js/supabase-config.js"></script>
+<script src="/js/supabase-client.js"></script>
+<script src="/js/content-runtime.js"></script>
 <script>
 function abrirMenu(){document.getElementById('mobileMenu').style.display='block';}
 function fecharMenu(){document.getElementById('mobileMenu').style.display='none';}

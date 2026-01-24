@@ -151,17 +151,17 @@ html,body{
 <body>
 
 <!-- HEADER -->
-<header class="header">
+<header class="header" data-bg-media-key="header.banner">
   <div class="header-overlay">
     <div>
-      <h1 class="brand-title">
+      <h1 class="brand-title" data-content-key="header.title">
         Mapeamento de práticas culturais 
         <span class="brand-subtitle">e comunicacionais quilombolas</span>
       </h1>
     </div>
 
     <nav class="menu">
-      <img src="instituto_sumauma.png" class="menu-logo">
+      <img src="instituto_sumauma.png" class="menu-logo" data-media-key="header.logo">
       <a href="index.html">Início</a>
       <a href="pesquisa.html">Pesquisa</a>
       <a href="ficha-tecnica.html">Ficha Técnica</a>
@@ -176,12 +176,12 @@ html,body{
 
     <div class="logo-box">
       <h3>Realização</h3>
-      <img src="logo-sumauma-2.png" alt="Instituto Sumaúma">
+      <img src="logo-sumauma-2.png" alt="Instituto Sumaúma" data-media-key="ficha.realizacao.logo">
     </div>
 
     <div class="logo-box">
       <h3>Financiador</h3>
-      <img src="images/clua_logo.png" alt="Climate and Land Use Alliance">
+      <img src="images/clua_logo.png" alt="Climate and Land Use Alliance" data-media-key="ficha.financiador.logo">
     </div>
 
   </div>
@@ -194,55 +194,55 @@ html,body{
   <div class="people-grid">
 
     <div class="person-card">
-      <img src="images/equipe/tais-oliveira.jpg">
+      <img src="images/equipe/tais-oliveira.jpg" data-media-key="ficha.equipe.tais-oliveira">
       <h3>Taís Oliveira</h3>
       <p>Coordenação Geral</p>
     </div>
 
     <div class="person-card">
-      <img src="images/equipe/juliane-sousa.jpg">
+      <img src="images/equipe/juliane-sousa.jpg" data-media-key="ficha.equipe.juliane-sousa">
       <h3>Juliane Sousa</h3>
       <p>Consultora Convidada</p>
     </div>
 
     <div class="person-card">
-      <img src="images/equipe/vanessa-silva.jpg">
+      <img src="images/equipe/vanessa-silva.jpg" data-media-key="ficha.equipe.vanessa-silva">
       <h3>Vanessa Silva</h3>
       <p>Analista de Pesquisa</p>
     </div>
 
     <div class="person-card">
-      <img src="images/equipe/anicely-santos.jpg">
+      <img src="images/equipe/anicely-santos.jpg" data-media-key="ficha.equipe.anicely-santos">
       <h3>Anicely Santos</h3>
       <p>Analista de Dados</p>
     </div>
 
     <div class="person-card">
-      <img src="images/equipe/maria-fernanda-ruas.jpg">
+      <img src="images/equipe/maria-fernanda-ruas.jpg" data-media-key="ficha.equipe.maria-fernanda-ruas">
       <h3>Maria Fernanda Ruas</h3>
       <p>Analista de Comunicação</p>
     </div>
 
     <div class="person-card">
-      <img src="images/equipe/abraao-felipe-oliveira.jpg">
+      <img src="images/equipe/abraao-felipe-oliveira.jpg" data-media-key="ficha.equipe.abraao-felipe-oliveira">
       <h3>Abraão Felipe Oliveira</h3>
       <p>Assistente de Comunicação</p>
     </div>
 
     <div class="person-card">
-      <img src="images/equipe/diego-galofero.jpg">
+      <img src="images/equipe/diego-galofero.jpg" data-media-key="ficha.equipe.diego-galofero">
       <h3>Diego Galofero</h3>
       <p>Assistente Administrativo</p>
     </div>
 
     <div class="person-card">
-      <img src="images/equipe/higor-torres.jpg">
+      <img src="images/equipe/higor-torres.jpg" data-media-key="ficha.equipe.higor-torres">
       <h3>Hígor Torres</h3>
       <p>Revisão</p>
     </div>
 
     <div class="person-card">
-      <img src="images/equipe/felipe-da-costa-souza.jpg">
+      <img src="images/equipe/felipe-da-costa-souza.jpg" data-media-key="ficha.equipe.felipe-da-costa-souza">
       <h3>Felipe da Costa Souza</h3>
       <p>Design e Diagramação</p>
     </div>
@@ -253,6 +253,11 @@ html,body{
 <footer class="footer">
   Instituto Sumaúma © 2026 · Ficha Técnica da Pesquisa
 </footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/js/supabase-config.js"></script>
+<script src="/js/supabase-client.js"></script>
+<script src="/js/content-runtime.js"></script>
 
 </body>
 </html>

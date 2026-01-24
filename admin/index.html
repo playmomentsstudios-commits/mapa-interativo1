@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Admin – Instituto Sumaúma</title>
+  <link rel="stylesheet" href="./admin.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase-config.js"></script>
+  <script src="../js/supabase-client.js"></script>
+</head>
+<body>
+  <div class="wrap">
+
+    <header class="topbar">
+      <div class="brand">
+        <div class="dot"></div>
+        <div>
+          <div class="t1">Painel Admin</div>
+          <div class="t2">Instituto Sumaúma</div>
+        </div>
+      </div>
+      <button id="btnLogout" class="btn ghost hidden">Sair</button>
+    </header>
+
+    <main class="card">
+      <!-- LOGIN -->
+      <section id="loginView">
+        <h1>🔐 Acesso restrito</h1>
+        <p>Entre com e-mail/senha cadastrados no Supabase Auth.</p>
+
+        <label>E-mail</label>
+        <input id="email" type="email" placeholder="admin@exemplo.com" />
+
+        <label>Senha</label>
+        <input id="password" type="password" placeholder="••••••••" />
+
+        <button id="btnLogin" class="btn">Entrar</button>
+        <div id="loginMsg" class="msg"></div>
+
+        <div class="hint">
+          <b>Setup:</b> no Supabase → Authentication → Users → crie o usuário admin (email/senha).
+        </div>
+      </section>
+
+      <!-- DASHBOARD -->
+      <section id="dashView" class="hidden">
+        <h1>📦 Conteúdo do site</h1>
+        <p class="small">Edite textos e troque imagens via upload. O site público aplica automaticamente.</p>
+
+        <div class="grid">
+          <div class="panel">
+            <h2>📝 Textos (key/value)</h2>
+
+            <div class="row">
+              <input id="txtKey" placeholder="Ex: home.title" />
+              <button id="btnLoadText" class="btn ghost">Carregar</button>
+            </div>
+
+            <textarea id="txtValue" rows="8" placeholder="Texto..."></textarea>
+
+            <div class="row">
+              <button id="btnSaveText" class="btn">Salvar texto</button>
+              <button id="btnDeleteText" class="btn danger ghost">Excluir</button>
+            </div>
+
+            <div id="textMsg" class="msg"></div>
+
+            <div class="hint">
+              Sugestões de keys:
+              <ul>
+                <li>header.title</li>
+                <li>pesquisa.section1</li>
+                <li>ficha.equipe.titulo</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h2>🖼️ Mídia (upload por slot)</h2>
+
+            <label>Slot (key)</label>
+            <input id="mediaKey" placeholder="Ex: header.banner / pesquisa.img-1" />
+
+            <label>Alt (opcional)</label>
+            <input id="mediaAlt" placeholder="Descrição da imagem" />
+
+            <label>Arquivo</label>
+            <input id="mediaFile" type="file" accept="image/*,.pdf" />
+
+            <div class="row">
+              <button id="btnUpload" class="btn">Upload & Salvar</button>
+              <button id="btnLoadMedia" class="btn ghost">Buscar slot</button>
+              <button id="btnDeleteMedia" class="btn danger ghost">Excluir</button>
+            </div>
+
+            <div id="mediaPreview" class="preview hidden"></div>
+            <div id="mediaMsg" class="msg"></div>
+
+            <div class="hint">
+              Slots recomendados para seu site:
+              <ul>
+                <li>header.banner (banner topo)</li>
+                <li>header.logo (logo realização)</li>
+                <li>relatorio.capa (capa do PDF se quiser)</li>
+                <li>pesquisa.img-1 … pesquisa.img-10</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <hr class="sep" />
+
+        <div class="panel">
+          <h2>✅ Status</h2>
+          <button id="btnPing" class="btn ghost">Testar conexão (listar 5 conteúdos)</button>
+          <pre id="pingOut" class="code"></pre>
+        </div>
+
+      </section>
+    </main>
+
+  </div>
+
+  <script src="./admin.js"></script>
+</body>
+</html>
