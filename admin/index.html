@@ -48,6 +48,52 @@
         <h1>📦 Conteúdo do site</h1>
         <p class="small">Edite textos e troque imagens via upload. O site público aplica automaticamente.</p>
 
+        <div class="panel">
+          <div class="row" style="align-items:center">
+            <div style="flex:2">
+              <h2>📌 Inventário do site (automaticamente)</h2>
+              <p class="small">Lista tudo que existe e também o que está sendo usado nas páginas. Você edita/troca direto daqui.</p>
+            </div>
+            <button id="btnRefreshInventory" class="btn ghost" style="flex:1">Atualizar inventário</button>
+          </div>
+
+          <div class="row">
+            <input id="invSearch" placeholder="Buscar por key (ex: header., pesquisa., ficha.)" />
+          </div>
+
+          <h3 style="margin:14px 0 8px 0;">📝 Textos detectados</h3>
+          <div class="tablewrap">
+            <table class="tbl" id="tblTexts">
+              <thead>
+                <tr>
+                  <th>Key</th>
+                  <th>Valor (preview)</th>
+                  <th>Onde aparece</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+
+          <h3 style="margin:14px 0 8px 0;">🖼️ Mídias detectadas</h3>
+          <div class="tablewrap">
+            <table class="tbl" id="tblMedia">
+              <thead>
+                <tr>
+                  <th>Key</th>
+                  <th>Preview</th>
+                  <th>Onde aparece</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+
+          <div id="invMsg" class="msg"></div>
+        </div>
+
         <div class="grid">
           <div class="panel">
             <h2>📝 Textos (key/value)</h2>
